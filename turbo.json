@@ -10,12 +10,20 @@
 				".next/**"
 			]
 		},
+		"prod": {
+			"cache": false,
+			"dependsOn": [
+				"^build"
+			]
+		},
 		"test": {
 			"dependsOn": [
 				"^build"
 			],
 			"outputs": []
 		},
+		"clean": {},
+		"release": {},
 		"docs": {},
 		"dev": {
 			"cache": false

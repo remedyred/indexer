@@ -30,6 +30,7 @@ package-lock.json
 ## Compiled files
 dist/
 lib/
+bin/
 
 ## secrets
 .npmrc

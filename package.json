@@ -9,28 +9,23 @@
 		"access": "public"
 	},
 	"workspaces": [
-		"monorepo/packages/*",
-		"monorepo/clis/*",
-		"feathers/*",
-		"packages/*",
-		"clis/*"
+		"packages/*"
 	],
 	"scripts": {
 		"purge": "yarn clean:builds && yarn clean:modules && yarn clean:lock && yarn clean:logs",
-		"clean:cache": "shx rm -rf **/.ultra.cache.json",
-		"clean:builds": "ultra -r clean && yarn clean:cache",
+		"clean:cache": "shx rm -rf **/.turbo",
+		"clean:builds": "turbo run clean",
 		"clean:docs": "shx rm -rf **/docs **/DOCS.md **/DOC.md",
 		"clean:modules": "shx rm -rf **/node_modules **/yarn-error.log **/lerna-debug.log",
 		"clean:lock": "shx rm -f yarn.lock",
-		"clean:logs": "shx rm -rf **/yarn-error.log **/.ultra.cache.json",
-		"prebuild": "cd monorepo/packages/utilities && yarn build && cd ../cycle && yarn build",
-		"build": "ultra -r -b build",
-		"prod": "ultra -r --rebuild prod",
-		"docs": "ultra -r docs",
+		"clean:logs": "shx rm -rf **/yarn-error.log yarn clean:cache",
+		"build": "turbo run build",
+		"prod": "turbo run prod",
+		"docs": "turbo run docs",
 		"test": "jest --passWithNoTests --silent --noStackTrace --colors",
-		"depcheck": "ultra -r depcheck",
+		"depcheck": "turbo run depcheck",
 		"prerelease": "yarn clean:builds && yarn prod && yarn test && yarn docs",
-		"release": "node clis/releaser/bin/releaser.js -dp"
+		"release": "lerna publish"
 	},
 	"devDependencies": {
 		"@changesets/changelog-git": "^0.1.11",
