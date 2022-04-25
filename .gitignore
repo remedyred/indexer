@@ -1,6 +1,7 @@
 # General Ignores
 
 ## hidden folders & junk files
+.*
 .*/
 .DS_Store
 .thumbs.db
