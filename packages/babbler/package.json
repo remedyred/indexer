@@ -1,0 +1,43 @@
+{
+	"name": "@snickbit/babbler",
+	"description": "",
+	"version": "1.3.84",
+	"license": "UNLICENSED",
+	"preferGlobal": true,
+	"publishConfig": {
+		"registry": "https://npm.remedyred.com/",
+		"access": "public"
+	},
+	"bin": {
+		"babbler": "./bin/babbler.js"
+	},
+	"files": [
+		"bin"
+	],
+	"engines": {
+		"node": ">= 12"
+	},
+	"scripts": {
+		"start": "node bin/babbler.js",
+		"clean": "shx rm -rf ./bin",
+		"build": "esbuild src/index.js --bundle --outfile=bin/babbler.js --target=node12 --platform=node",
+		"watch": "yarn build --watch",
+		"prod": "yarn clean && yarn build --minify"
+	},
+	"dependencies": {
+		"@babel/core": "^7.17.9",
+		"@snickbit/node-cli": "^1.0.28",
+		"@snickbit/node-utilities": "^4.2.23",
+		"@snickbit/out": "^2.0.7",
+		"@snickbit/utilities": "^3.0.7",
+		"chokidar": "^3.5.3",
+		"debounce": "^1.2.1",
+		"del": "^6.0.0",
+		"glob": "^7.2.0",
+		"terser": "^5.12.1"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.17.6",
+		"babel-plugin-add-module-exports": "^1.0.4"
+	}
+}

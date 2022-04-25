@@ -1,0 +1,15 @@
+{
+	"packages": [
+		"packages/*",
+		"clis/*"
+	],
+	"version": "independent",
+	"npmClient": "yarn",
+	"useWorkspaces": true,
+	"command": {
+		"publish": {
+			"message": "chore(release): publish",
+			"verifyAccess": false
+		}
+	}
+}
