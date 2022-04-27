@@ -24,7 +24,7 @@ node_modules/
 vendor/
 
 ## lock files
-yarn.lock
+*.lock
 pnpm-lock.yaml
 package-lock.json
 
