@@ -23,17 +23,20 @@
 		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs",
 		"build:meta": "yarpm build --metafile",
 		"prod": "yarpm build --minify",
-		"watch": "yarpm build --watch"
+		"watch": "pnpm build --watch"
 	},
 	"dependencies": {
 		"@npmcli/map-workspaces": "^2.0.3",
 		"@npmcli/run-script": "^3.0.2",
+		"@snickbit/model": "^1.0.28",
+		"@snickbit/ninia": "^0.0.1",
 		"@snickbit/node-cli": "^1.0.26",
-		"@snickbit/node-utilities": "^4.2.23",
+		"@snickbit/node-utilities": "^4.2.24",
 		"@snickbit/out": "^2.0.5",
-		"@snickbit/utilities": "^3.0.7",
+		"@snickbit/utilities": "^3.0.8",
 		"changelog-io": "^7.0.0",
 		"execa": "^6.1.0",
+		"fast-glob": "^3.2.11",
 		"release-it": "^14.14.2",
 		"semver": "^7.3.7"
 	},

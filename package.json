@@ -43,7 +43,7 @@
 		"ts-jest": "^27.1.4",
 		"turbo": "^1.2.5",
 		"typescript": "^4.6.3",
-		"yalc": "^1.0.0-pre.53",
+		"yalc": "^1.0.0-pre.53"
 	},
 	"jest": {
 		"verbose": true,

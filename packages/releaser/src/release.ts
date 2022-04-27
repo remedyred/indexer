@@ -1,260 +1,225 @@
 import {execa, execaCommand} from 'execa'
-import {interpolate, isEmpty, isObject, objectExcept} from '@snickbit/utilities'
-import {$out, awaitProcesses, getConfig, maxProcesses, PackageJson, processes, ReleaseName, releases} from './config'
-import {getFileJson, progress, saveFileJson} from '@snickbit/node-utilities'
-import fg from 'fast-glob'
+import {$out, getConfig, ReleaserConfig, ReleaserGitConfig, ReleaserNpmConfig} from './config'
+import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitPush, gitTag, isGitClean} from './git'
+import {Out} from '@snickbit/out'
+import {Pkg} from './pkg'
+import {interpolate} from '@snickbit/utilities'
+import {saveFileJson} from '@snickbit/node-utilities'
 
-async function exTrim(cmd: string, args: string[], directory?: string) {
-	let results
-
-	try {
-		results = await execa(cmd, args, {cwd: directory})
-	} catch (e) {
-		results = {stdout: '', stderr: ''}
-	}
-
-	return results.stdout.trim()
+export interface ShouldPublishResults {
+	results: boolean
+	npm_version: string
+	behindUpstream: string
 }
 
-async function isGitClean(directory: string): Promise<string> {
-	return exTrim('git', ['status', '--porcelain'], directory)
+export type ReleaseName = string
+
+export interface Release {
+	[key: string | symbol]: any
 }
 
-async function gitBranch(directory: string): Promise<string> {
-	return exTrim('git', ['rev-parse', '--abbrev-ref', 'HEAD'], directory)
-}
+export class Release {
+	private _config: ReleaserConfig
+	protected proxy: Release
+	pkg: Pkg
+	version?: string
+	out: Out
+	pushReady: boolean = false
+	publishReady: boolean = false
+	bumpReady: boolean = false
+	branch: string = 'main'
 
-async function gitCanPush(directory: string, branch = 'main'): Promise<string> {
-	return exTrim('git', ['diff', `origin/${branch}..HEAD`], directory)
-}
+	constructor(pkg: Pkg, version: string) {
+		this.pkg = pkg
+		this.out = new Out(this.pkg.name)
+		this.version = version
 
-async function npmVersion(packageName: string): Promise<string> {
-	return exTrim('npm', ['show', packageName, 'version'])
-}
+		this.publishReady = this.pkg.npm_version === this.pkg.version
+		this.bumpReady = true
 
-export async function shouldPublish(pkg: PackageJson, packageDir: string) {
-	const config = await getConfig()
+		this.proxy = new Proxy(this, {
+			get(target: Release, prop: string, receiver?: any): any {
+				if (prop in target) {
+					return target[prop]
+				}
 
-	const npm_version = await npmVersion(pkg.name)
-	const canPush = await gitCanPush(packageDir)
+				if (prop in target.pkg) {
+					return target.pkg[prop]
+				}
 
-	return {
-		results: (npm_version !== pkg.version || canPush) || config.force,
-		npm_version,
-		canPush
-	}
-}
+				return Reflect.get(target, prop, receiver)
+			},
+			set: function (target: Release, prop: string, value?: any) {
+				if (prop in target) {
+					target[prop] = value
+					return true
+				}
 
-export async function findPackages(workspaces: string[]): Promise<PackageJson[]> {
-	$out.info('Finding packages...', workspaces)
-	// gather packages
-	let $progress = progress({message: 'Scanning workspace for packages', total: workspaces.length}).start()
-	const files: string[] = []
-	for (let workspace of workspaces) {
-		files.push(...await fg(workspace, {onlyDirectories: true, absolute: true}) as string[])
-		$progress.tick()
-	}
-	$progress.finish()
+				if (prop in target.pkg) {
+					target.pkg[prop] = value
+					return true
+				}
 
-	$progress = progress({message: 'Checking for eligible packages', total: files.length}).start()
-	const errors: string[] = []
-	const warnings: string[] = []
-	const results: PackageJson[] = []
-
-	for (let fileDir of files) {
-		if (processes.length >= maxProcesses) await awaitProcesses()
-		processes.push(loadPackage(fileDir).then((pkg: PackageJson | string) => {
-			if (isObject(pkg)) {
-				results.push(pkg as PackageJson)
-			} else {
-				warnings.push(pkg as string)
+				return Reflect.set(target, prop, value)
 			}
-		}).catch(err => {
-			errors.push(err.message)
-		}).finally(() => $progress.tick()))
-	}
-	await awaitProcesses()
-	$progress.finish()
+		})
 
-	if (!isEmpty(errors)) {
-		for (let error of errors) {
-			$out.broken.error(...error.split('\n'))
+		return this.proxy
+	}
+
+	get name(): string {
+		return this.pkg.name
+	}
+
+	async getConfig() {
+		if (!this._config) {
+			this._config = await getConfig()
 		}
+		return this._config
 	}
 
-	if (!isEmpty(warnings)) {
-		for (let warning of warnings) {
-			$out.broken.force.warn(...warning.split('\n'))
+	async getBranch() {
+		if (!this.branch) {
+			this.branch = await gitBranch(this.dir)
 		}
+		return this.branch
 	}
 
-	return results
-}
+	async bump() {
+		const config = await this.getConfig()
 
-async function loadPackage(packageDir: string): Promise<PackageJson | string> {
-	const config = await getConfig()
-
-	const packagePath = packageDir + '/package.json'
-	const pkg = getFileJson(packagePath)
-	if (!pkg) {
-		return 'No package.json found at ' + packageDir
-	}
-	if (pkg.private && !config.allowPrivate) {
-		return `Skipping private package: {magenta}${pkg.name}{/magenta}`
-	}
-
-	const should_publish = await shouldPublish(pkg, packageDir)
-	if (!should_publish.results) {
-		return `Package version matches published, git matches HEAD/Origin, skipping: {magenta}${pkg.name}{/magenta}\nTo force bump, use the --force flag`
-	}
-
-	pkg.dir = packageDir
-	pkg.path = packagePath
-	pkg.npm_version = should_publish.npm_version
-
-	return pkg
-}
-
-export async function bumpPackage(release: ReleaseName) {
-	const {name, bump, version, pkg, dryRun, out} = releases[release]
-	const config = await getConfig()
-
-	const {scripts} = pkg
-
-	releases[release].branch = await gitBranch(pkg.dir)
-
-	out.debug('Checking working tree')
-	const status = await isGitClean(pkg.dir)
-	if (status.length) {
-		out.force.error(`Working tree is dirty, skipping release for {cyan}${name}{/cyan}`)
-		out.force.broken.error(...status.split('\n'))
-		return
-	}
-
-	if (scripts?.prerelease) {
-		out.info(`Running prerelease script`)
-		if (dryRun) {
-			out.force.warn(`DRY RUN: ${scripts.prerelease}`)
-		} else {
-			await execaCommand(scripts.prerelease, {cwd: pkg.dir})
-		}
-	}
-
-	out.info(`Bumping version to {magenta}${version}{/magenta}`)
-	pkg.version = version
-	if (dryRun) {
-		out.force.warn(`DRY RUN: bumping ${pkg.name}@${pkg.version}`)
-	} else {
-		saveFileJson(pkg.path, objectExcept(pkg, ['dir', 'path', 'npm_version']))
-	}
-
-	out.debug('Adding changes')
-	if (dryRun) {
-		out.force.warn(`DRY RUN: git add ${pkg.path}`)
-	} else {
-		await execa('git', ['add', pkg.path], {cwd: pkg.dir})
-	}
-
-	out.info('Committing changes')
-
-	const commitMessage = interpolate(config.commitMessage, {
-		name,
-		version,
-		bump
-	})
-
-	if (dryRun) {
-		out.force.warn(`DRY RUN: git commit --message "${commitMessage}"`)
-	} else {
-		await execa('git', ['commit', '--message', commitMessage], {cwd: pkg.dir})
-	}
-
-	out.debug('Tagging release')
-
-	const tagMessage = interpolate(config.tagMessage, {
-		name,
-		version,
-		bump
-	})
-
-	const tagName = interpolate(config.tagName, {
-		name,
-		version,
-		bump
-	})
-
-	if (dryRun) {
-		out.force.warn(`DRY RUN: git tag --annotate --message="${tagMessage}" ${tagName}`)
-	} else {
-		await execa('git', ['tag', '--annotate', '--message', tagMessage, tagName], {cwd: pkg.dir})
-	}
-
-	out.info('Marking to be pushed and published')
-	releases[release].pushReady = true
-}
-
-export async function pushRelease(release: ReleaseName) {
-	const {pkg, dryRun, out, branch} = releases[release]
-
-	out.debug('Pushing changes')
-	if (dryRun) {
-		out.force.warn(`DRY RUN: git push origin --follow-tags`)
-	} else {
-		const status = await gitCanPush(pkg.dir, branch)
-		if (!status.length) {
-			out.debug('Nothing to push, skipping')
+		this.out.debug('Checking working tree')
+		const status = await isGitClean(this.dir)
+		if (status.length) {
+			this.out.force.error(`Working tree is dirty, skipping release for {cyan}${this.name}{/cyan}`)
+			this.out.force.broken.error(...status.split('\n'))
 			return
 		}
 
-		await execa('git', ['push', 'origin', branch, '--follow-tags'], {cwd: pkg.dir})
+		if (this.scripts?.prerelease) {
+			this.out.info(`Running prerelease script`)
+			if (config.dryRun) {
+				this.out.force.warn(`DRY RUN: ${this.scripts.prerelease}`)
+			} else {
+				await execaCommand(this.scripts.prerelease, {cwd: this.dir})
+			}
+		}
 
-		releases[release].publishReady = true
-	}
-}
-
-export async function publishRelease(release: ReleaseName) {
-	const {dryRun, out, pkg} = releases[release]
-	const {scripts} = pkg
-	const config = await getConfig()
-
-	if (scripts?.prepublish) {
-		out.info(`Running prepublish script`)
-
-		if (dryRun) {
-			out.force.warn(`DRY RUN: ${scripts.prepublish}`)
+		this.out.info(`Bumping version to {magenta}${this.version}{/magenta}`)
+		this.pkg.version = this.version
+		if (config.dryRun) {
+			this.out.force.warn(`DRY RUN: bumping ${this.pkg.name}@${this.pkg.version}`)
 		} else {
-			await execaCommand(scripts.prepublish, {cwd: pkg.dir})
+			// @ts-ignore
+			saveFileJson(this.pkg.path, this.pkg.toJSON())
+		}
+
+		if (config.git) {
+			const gitConfig = config.git as ReleaserGitConfig
+
+			this.out.debug('Adding changes')
+			if (config.dryRun) {
+				this.out.force.warn(`DRY RUN: git add ${this.pkg.path}`)
+			} else {
+				await gitAdd(this.dir, this.pkg.path)
+			}
+
+			this.out.info('Committing changes')
+
+			const commitMessage = interpolate(gitConfig.commitMessage, {name: this.name, version: this.version})
+			if (config.dryRun) {
+				this.out.force.warn(`DRY RUN: git commit --message "${commitMessage}"`)
+			} else {
+				await gitCommit(this.dir, commitMessage)
+			}
+
+			this.out.debug('Tagging release')
+
+			const tagMessage = interpolate(gitConfig.tagMessage, {name: this.name, version: this.version})
+			const tagName = interpolate(gitConfig.tagName, {name: this.name, version: this.version})
+			if (config.dryRun) {
+				this.out.force.warn(`DRY RUN: git tag --annotate --message="${tagMessage}" ${tagName}`)
+			} else {
+				await gitTag(this.dir, tagName, tagMessage)
+			}
+
+			this.out.info('Marking to be pushed and published')
+		}
+
+		this.pushReady = true
+	}
+
+	async push() {
+		const config = await this.getConfig()
+		const branch = await this.getBranch()
+
+		this.out.debug('Pushing changes')
+		if (config.dryRun) {
+			this.out.force.warn(`DRY RUN: git push`)
+		} else {
+			const status = await gitBehindUpstream(this.dir, branch)
+			if (!status.length) {
+				this.out.debug('Nothing to push, skipping')
+				return
+			}
+			await gitPush(this.dir, branch)
+			this.publishReady = true
 		}
 	}
 
-	out.info('Publishing package')
+	async publish() {
+		const config = await this.getConfig()
 
-	const npmPublishArgs = [
-		'publish',
-		'--ignore-scripts',
-		`--access=${config.access}`
-	]
+		if (config.npm && (config.npm as ReleaserNpmConfig)?.publish) {
+			const npmConfig = config.npm as ReleaserNpmConfig
 
-	if (dryRun) {
-		npmPublishArgs.push('--dry-run')
-	}
+			if (this.scripts?.prepublish) {
+				this.out.info(`Running prepublish script`)
 
-	if (config.otp) {
-		npmPublishArgs.push(`--otp=${config.otp}`)
-	}
+				if (config.dryRun) {
+					this.out.force.warn(`DRY RUN: ${this.scripts.prepublish}`)
+				} else {
+					await execaCommand(this.scripts.prepublish, {cwd: this.dir})
+				}
+			}
 
-	try {
-		await execa('npm', npmPublishArgs, {cwd: pkg.dir, stdout: 'inherit'})
-	} catch (e) {
-		$out.error('Publishing failed', e.message)
-	}
+			this.out.info('Publishing package')
 
-	if (scripts?.postpublish) {
-		out.info(`Running postpublish script`)
-		if (dryRun) {
-			out.force.warn(`DRY RUN: ${scripts.postpublish}`)
-		} else {
-			await execaCommand(scripts.postpublish, {cwd: pkg.dir})
+			const npmPublishArgs = [
+				'publish',
+				'--ignore-scripts',
+				`--access=${npmConfig.access || 'public'}`
+			]
+
+			if (config.dryRun) {
+				npmPublishArgs.push('--dry-run')
+			}
+
+			if (npmConfig.otp) {
+				npmPublishArgs.push(`--otp=${npmConfig.otp}`)
+			}
+
+			if (npmConfig.registry) {
+				npmPublishArgs.push(`--registry=${npmConfig.registry}`)
+			}
+
+			try {
+				await execa('npm', npmPublishArgs, {cwd: this.dir, stdout: 'inherit'})
+			} catch (e) {
+				$out.error('Publishing failed', e.message)
+			}
+
+			if (this.scripts?.postpublish) {
+				this.out.info(`Running postpublish script`)
+				if (config.dryRun) {
+					this.out.force.warn(`DRY RUN: ${this.scripts.postpublish}`)
+				} else {
+					await execaCommand(this.scripts.postpublish, {cwd: this.dir})
+				}
+			}
 		}
 	}
 }
+
+
+

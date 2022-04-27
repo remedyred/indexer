@@ -1,71 +1,84 @@
 import {Out} from '@snickbit/out'
 import {fileExists, getFileJson} from '@snickbit/node-utilities'
 import os from 'os'
+import {Model} from '@snickbit/model'
+import {Release} from './release'
 
 export interface PackageJson {
 	name: string
 	version: string
 	scripts?: Record<string, string>
-	dir?: string
-	path?: string
-	npm_version?: string
+
+	[key: string]: any
 }
+
+const gitArgs = ['commitMessage', 'tagName', 'tagMessage']
+
+export interface ReleaserGitConfig {
+	commit: boolean
+	commitMessage?: string
+	tag: boolean
+	tagName?: string
+	tagMessage?: string
+	push: boolean
+	branch?: string
+	remote?: string
+}
+
+const npmArgs = ['access', 'otp', 'registry']
+
+export interface ReleaserNpmConfig {
+	publish: boolean
+	access?: string
+	otp?: string
+	registry?: string
+}
+
+const releaserArgs = ['force', 'dryRun', 'allowPrivate', 'config', 'bump']
 
 export interface ReleaserConfig {
 	workspaces: string[]
-	commitMessage: string
-	tagName: string
-	tagMessage: string
-	access: string
-	otp?: string
 	force?: boolean
-	bump?: 'major' | 'minor' | 'patch'
 	dryRun?: boolean
 	allowPrivate?: boolean
 	config?: string
+	bump?: 'major' | 'minor' | 'patch' | 'prerelease'
+	git: ReleaserGitConfig | boolean
+	npm: ReleaserNpmConfig | boolean
 }
 
-export interface Argv {
-	bump: 'major' | 'minor' | 'patch'
+export interface Argv extends ReleaserGitConfig, ReleaserNpmConfig {
+	bump: 'major' | 'minor' | 'patch' | 'prerelease'
 	dryRun: boolean
-	allowPrivate: boolean
-	otp?: string
-	access?: string
 	config?: string
 	force?: boolean
 }
 
-export type ReleaseName = string
-
-export interface ReleaseConfig {
-	name: ReleaseName
-	bump: 'patch' | 'minor' | 'major' | number | boolean
-	pkg: PackageJson
-	version: string
-	dryRun: boolean
-	out: Out
-	pushReady: boolean
-	publishReady: boolean
-	bumpReady: boolean
-	branch?: string
-	force?: boolean
-}
 
 export const defaultConfig: ReleaserConfig = {
 	workspaces: [],
-	commitMessage: 'chore(release): publish',
-	tagName: '${name}@${version}',
-	tagMessage: '${name} ${version}',
-	access: 'public'
+	git: {
+		commit: true,
+		commitMessage: 'chore(release): publish',
+		tag: true,
+		tagName: '${name}@${version}',
+		tagMessage: '${name} ${version}',
+		remote: 'origin',
+		push: true
+	},
+	npm: {
+		access: 'public',
+		publish: true
+	}
 }
 
 let config: ReleaserConfig
 
-export type Releases = Record<ReleaseName, ReleaseConfig>
-
-export const releases: Releases = {}
+export const releases: Release[] = []
 
 export const $out = new Out('releaser')
+
+export const cache = new Model()
 
 export const maxProcesses = os.cpus().length - 1
 export const processes = []
@@ -97,7 +110,27 @@ export async function getConfig(argv?: Argv) {
 	}
 
 	if (conf?.workspaces) {
-		config = Object.assign(defaultConfig, conf, (argv || {})) as ReleaserConfig
+		config = Object.assign(defaultConfig, conf) as ReleaserConfig
+
+
+		for (const gitArg of gitArgs) {
+			if (argv?.[gitArg]) {
+				config.git[gitArg] = argv[gitArg]
+			}
+		}
+
+		for (const npmArg of npmArgs) {
+			if (argv?.[npmArg]) {
+				config.npm[npmArg] = argv[npmArg]
+			}
+		}
+
+		for (const releaserArg of releaserArgs) {
+			if (argv?.[releaserArg]) {
+				config[releaserArg] = argv[releaserArg]
+			}
+		}
+
 		return config
 	}
 

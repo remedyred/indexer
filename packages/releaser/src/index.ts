@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import {cli} from '@snickbit/node-cli'
-import {Out} from '@snickbit/out'
 import {ask, confirm} from '@snickbit/node-utilities'
 import semverInc from 'semver/functions/inc'
-import {count, objectFilter} from '@snickbit/utilities'
-import {$out, awaitProcesses, getConfig, maxProcesses, processes, ReleaseConfig, releases} from './config'
-import {bumpPackage, findPackages, publishRelease, pushRelease} from './release'
+import {$out, awaitProcesses, getConfig, maxProcesses, processes, releases} from './config'
+import {Release} from './release'
+import {findPackages} from './packages'
 
 cli()
 .name('@snickbit/releaser')
@@ -49,15 +48,13 @@ cli()
 
 	const packages = await findPackages(config.workspaces)
 	for (let pkg of packages) {
-		const {name, version} = pkg
-
 		const versions = {
-			patch: semverInc(version, 'patch'),
-			minor: semverInc(version, 'minor'),
-			major: semverInc(version, 'major')
+			patch: semverInc(pkg.version, 'patch'),
+			minor: semverInc(pkg.version, 'minor'),
+			major: semverInc(pkg.version, 'major')
 		}
 
-		const bump = argv.bump || applyToAll || await ask(`Bump version for ${name} (${version})?`, {
+		const bump = argv.bump || applyToAll || await ask(`Bump version for ${pkg.name} (${pkg.version})?`, {
 			type: 'select',
 			choices: [
 				{
@@ -86,46 +83,29 @@ cli()
 			$out.fatal('No bump version selected')
 		}
 		if (bump === 'skip') {
-			$out.warn(`Skipping ${name}`)
+			$out.warn(`Skipping ${pkg.name}`)
 			continue
 		}
 
-		releases[pkg.name] = {
-			name,
-			pkg,
-			bump,
-			dryRun: argv.dryRun,
-			version: versions[bump],
-			out: new Out(pkg.name),
-			pushReady: false,
-			publishReady: pkg.npm_version === pkg.version, // if the package is already published, we don't need to publish it again
-			bumpReady: true // if the package has been bumped, we don't need to bump it again
+		releases.push(new Release(pkg, versions[bump]))
+	}
+
+	const actions = {
+		bump: (release: Release) => release.bumpReady,
+		push: (release: Release) => release.pushReady,
+		publish: (release: Release) => release.version !== release.npm_version
+	}
+
+	for (let action in actions) {
+		const filter = actions[action]
+		const processableReleases = releases.filter(filter)
+		$out.info('Processing action', action, 'for', processableReleases.length, 'releases')
+		for (let release of processableReleases) {
+			if (processes.length >= maxProcesses) await awaitProcesses()
+			processes.push(release[action]().catch(err => $out.error(err)))
 		}
+		await awaitProcesses()
 	}
-
-	const bumpableReleases = objectFilter(releases, (release: string, releaseConfig: ReleaseConfig) => releaseConfig.bumpReady)
-	$out.ln.info(`Bumping versions for ${count(bumpableReleases)} packages`).ln()
-	for (let release in bumpableReleases) {
-		if (processes.length >= maxProcesses) await awaitProcesses()
-		processes.push(bumpPackage(release).catch(err => $out.error(err)))
-	}
-	await awaitProcesses()
-
-	const pushableReleases = objectFilter(releases, (release: string, releaseConfig: ReleaseConfig) => releaseConfig.pushReady)
-	$out.ln.info(`Pushing repos for ${count(pushableReleases)} packages`).ln()
-	for (let release in pushableReleases) {
-		if (processes.length >= maxProcesses) await awaitProcesses()
-		processes.push(pushRelease(release).catch(err => $out.error(err)))
-	}
-	await awaitProcesses()
-
-	const publishableReleases = objectFilter(releases, (release: string, releaseConfig: ReleaseConfig) => releaseConfig.pkg.version !== releaseConfig.pkg.npm_version)
-	$out.ln.info(`Publishing ${count(publishableReleases)} packages`).ln()
-	for (let release in publishableReleases) {
-		if (processes.length >= maxProcesses) await awaitProcesses()
-		processes.push(publishRelease(release).catch(err => $out.error(err)))
-	}
-	await awaitProcesses()
 
 	$out.block.ln().done('Done')
 })
