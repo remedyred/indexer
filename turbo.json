@@ -2,31 +2,73 @@
 	"$schema": "https://turborepo.org/schema.json",
 	"baseBranch": "origin/main",
 	"pipeline": {
+		"clean": {
+			"outputs": []
+		},
+		"depcheck": {
+			"outputs": [],
+			"inputs": [
+				"package.json"
+			]
+		},
+		"lint": {
+			"outputs": []
+		},
+		"fix": {
+			"outputs": []
+		},
 		"build": {
 			"dependsOn": [
 				"^build"
 			],
+			"inputs": [
+				"src/**/*.ts",
+				"src/**/*.js"
+			],
 			"outputs": [
-				".next/**"
+				"dist/**",
+				"bin/**"
 			]
 		},
 		"prod": {
-			"cache": false,
 			"dependsOn": [
 				"^build"
+			],
+			"inputs": [
+				"src/**/*.ts",
+				"src/**/*.js"
+			],
+			"outputs": [
+				"dist/**",
+				"bin/**"
 			]
 		},
 		"test": {
 			"dependsOn": [
 				"^build"
 			],
+			"inputs": [
+				"src/**/*.ts",
+				"src/**/*.js",
+				"__tests__/**/*.ts",
+				"__tests__/**/*.js"
+			],
 			"outputs": []
 		},
-		"clean": {},
-		"release": {},
-		"docs": {},
-		"dev": {
-			"cache": false
+		"prerelease": {
+			"dependsOn": [
+				"^prod"
+			]
+		},
+		"release": {
+			"dependsOn": [
+				"depcheck"
+			]
+		},
+		"docs": {
+			"outputs": [
+				"docs/**"
+			]
 		}
 	}
 }

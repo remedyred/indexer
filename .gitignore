@@ -39,3 +39,9 @@ bin/
 
 ## Keep
 !.husky
+!.gitignore
+!.changeset/
+!.eslintignore
+!.eslintrc.json
+!.depcheckrc
+!.editorconfig

@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 import {cli} from '@snickbit/node-cli'
-import {ask, fallOverConfig, getFileJson, Spinner} from '@snickbit/node-utilities'
+import {ask, Spinner} from '@snickbit/node-utilities'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 import del from 'del'
-import babler, {_out, default_config, getBabelConfig} from './index'
+import {lilconfig} from 'lilconfig'
+import packageJson from '../package.json'
+import babbler, {_out, default_config} from './index'
 
 cli()
-	.name('@snickbit/babler')
-	.version(require('../package.json').version)
+	.name('@snickbit/babbler')
+	.version(packageJson.version)
 	.banner('Transpiling')
 	.includeWorkingPackage()
 	.args({
@@ -44,10 +46,10 @@ cli()
 		}
 	})
 	.run().then(async argv => {
-	const babler_config = getFileJson('babler.config.json', {})
-	const config = fallOverConfig(default_config, argv, babler_config)
-
-	config.babel = getBabelConfig()
+	const babbler_result = await lilconfig('babbler', {searchPlaces: ['package.json', 'babbler.config.json', 'babbler.conf.js']}).search()
+	const config = babbler_result.config
+	const babel_result = await lilconfig('babel', {searchPlaces: ['package.json', 'babel.config.json', 'babel.conf.js']}).search()
+	config.babel = babel_result.config
 
 	_out.label('Config').verbose(config)
 
@@ -71,20 +73,20 @@ cli()
 		_out.debug(`watch files`)
 		const watcher = chokidar.watch(config.src, {
 			ignored: [
-				/(^|[\/\\])\../
+				/(^|[/\\])\../
 			],
 			persistent: true
 		})
 		watcher.on('all', debounce(async function () {
 			try {
-				await babler(config)
+				await babbler(config)
 				_out.info('Waiting for changes...')
 			} catch (e) {
 				_out.alert(e)
 			}
 		}, 300))
 	} else {
-		await babler(config)
+		await babbler(config)
 		_out.done('Done')
 	}
 })

@@ -2,6 +2,7 @@ import {PackageJson} from './config'
 import {ShouldPublishResults} from './release'
 
 export interface Pkg extends PackageJson {
+	[key: string]: any
 }
 
 export class Pkg {

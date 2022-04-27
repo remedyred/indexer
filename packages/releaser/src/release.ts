@@ -24,10 +24,10 @@ export class Release {
 	pkg: Pkg
 	version?: string
 	out: Out
-	pushReady: boolean = false
-	publishReady: boolean = false
-	bumpReady: boolean = false
-	branch: string = 'main'
+	pushReady = false
+	publishReady = false
+	bumpReady = false
+	branch = 'main'
 
 	constructor(pkg: Pkg, version: string) {
 		this.pkg = pkg

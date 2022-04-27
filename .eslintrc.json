@@ -1,0 +1,43 @@
+{
+	"env": {
+		"node": true,
+		"browser": true,
+		"es2021": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:editorconfig/all",
+		"plugin:markdown/recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": "latest",
+		"sourceType": "module"
+	},
+	"plugins": [
+		"@typescript-eslint",
+		"editorconfig"
+	],
+	"rules": {
+		"editorconfig/charset": "error",
+		"editorconfig/eol-last": "error",
+		"editorconfig/indent": "off",
+		"editorconfig/linebreak-style": "error",
+		"editorconfig/no-trailing-spaces": "error",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/ban-ts-comment": "off",
+		"prefer-const": "off",
+		"indent": "off"
+	},
+	"overrides": [
+		{
+			"files": [
+				"**/*.md/*.js"
+			],
+			"rules": {
+				"@typescript-eslint/no-unused-vars": "off"
+			}
+		}
+	]
+}

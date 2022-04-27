@@ -1,12 +1,12 @@
 import * as babel from '@babel/core'
-import {out} from '@snickbit/out'
 import {findUp, progress, Spinner} from '@snickbit/node-utilities'
+import {Out} from '@snickbit/out'
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
 import {minify} from 'terser'
 
-export const _out = out.app('babler', 0)
+export const _out = new Out('babbler')
 
 export const default_config = {
 	minify: false,
