@@ -27,15 +27,13 @@
 		"watch": "pnpm build --watch"
 	},
 	"dependencies": {
-		"@snickbit/model": "^1.0.28",
-		"@snickbit/node-cli": "^1.0.26",
-		"@snickbit/node-utilities": "^4.2.24",
-		"@snickbit/out": "^2.0.5",
-		"@snickbit/utilities": "^3.0.8",
-		"changelog-io": "^7.0.0",
+		"@snickbit/model": "^1.0.31",
+		"@snickbit/node-cli": "^1.0.35",
+		"@snickbit/node-utilities": "^4.2.27",
+		"@snickbit/out": "^2.0.14",
+		"@snickbit/utilities": "^3.0.11",
 		"execa": "^6.1.0",
 		"fast-glob": "^3.2.11",
-		"release-it": "^14.14.2",
 		"semver": "^7.3.7"
 	},
 	"devDependencies": {
