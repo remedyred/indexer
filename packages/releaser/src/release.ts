@@ -1,10 +1,11 @@
 import {execa, execaCommand} from 'execa'
-import {$out, getConfig, ReleaserConfig, ReleaserGitConfig, ReleaserNpmConfig} from './config'
-import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitPush, gitTag, isGitClean} from './git'
+import {$out, cache, getConfig, ReleaserConfig} from './config'
+import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitPush, gitRepoPath, gitTag, isGitClean} from './git'
 import {Out} from '@snickbit/out'
 import {Pkg} from './pkg'
 import {interpolate} from '@snickbit/utilities'
-import {saveFileJson} from '@snickbit/node-utilities'
+import {fileExists, getFile, saveFile, saveFileJson} from '@snickbit/node-utilities'
+import path from 'path'
 
 export interface ShouldPublishResults {
 	results: boolean
@@ -24,18 +25,22 @@ export class Release {
 	pkg: Pkg
 	version?: string
 	out: Out
-	pushReady = false
+	stage: string
 	publishReady = false
 	bumpReady = false
 	branch = 'main'
+	repoPath: string
+
+	commitMessage?: string
+	tagMessage?: string
+	tagName?: string
 
 	constructor(pkg: Pkg, version: string) {
 		this.pkg = pkg
 		this.out = new Out(this.pkg.name)
 		this.version = version
-
 		this.publishReady = this.pkg.npm_version === this.pkg.version
-		this.bumpReady = true
+		this.stage = 'bump'
 
 		this.proxy = new Proxy(this, {
 			get(target: Release, prop: string, receiver?: any): any {
@@ -85,6 +90,23 @@ export class Release {
 		return this.branch
 	}
 
+	async getRepoPath() {
+		if (!this.repoPath) {
+			this.repoPath = await gitRepoPath(this.dir)
+		}
+		return this.repoPath
+	}
+
+	async getGitMessages() {
+		const config = await this.getConfig()
+		if (config.git) {
+			const gitConfig = config.git
+			this.commitMessage = interpolate(gitConfig.commitMessage, {name: this.name, version: this.version})
+			this.tagMessage = interpolate(gitConfig.tagMessage, {name: this.name, version: this.version})
+			this.tagName = interpolate(gitConfig.tagName, {name: this.name, version: this.version})
+		}
+	}
+
 	async bump() {
 		const config = await this.getConfig()
 
@@ -114,64 +136,162 @@ export class Release {
 			saveFileJson(this.pkg.path, this.pkg.toJSON())
 		}
 
+		this.stage = 'changelog'
+	}
+
+	async changelog() {
+		const config = await this.getConfig()
+
+		await this.getGitMessages()
+
+		if (config.changelog) {
+			const changelogConfig = config.changelog
+
+			this.out.info(`Generating changelog`)
+
+			const changelogVars = {
+				version: this.version,
+				name: this.name,
+				date: new Date().toISOString(),
+				gitRelativePath: await this.getRepoPath(),
+				branch: await this.getBranch(),
+				tagName: this.tagName,
+				tagMessage: this.tagMessage,
+				commitMessage: this.commitMessage
+			}
+
+			const changelogCommand = interpolate(changelogConfig.command, changelogVars)
+
+			if (config.dryRun) {
+				this.out.force.warn(`DRY RUN: ${changelogCommand}`)
+			} else {
+				const results = await execaCommand(changelogCommand, {cwd: this.dir})
+				if (results.stderr) {
+					this.out.force.error(results.stderr)
+				} else if (results.stdout) {
+					let changelog = results.stdout
+
+					if (changelogConfig.format === 'markdown') {
+						changelog = changelog.replace(/^\s*\* /gm, '- ')
+						changelog = changelog.replace(/\n\n\n/gm, '\n\n')
+						changelog = changelog.replace(/\n\n/gm, '\n')
+					} else {
+						changelog = changelog.replace(/^\s*\* /gm, '')
+						changelog = changelog.replace(/\n\n\n/gm, '\n\n')
+						changelog = changelog.replace(/\n\n/gm, '\n')
+					}
+
+					const changelogPath = path.join(this.pkg.dir, changelogConfig.file)
+
+					let header = ''
+					let body = ''
+					if (fileExists(changelogPath)) {
+						const logLines = getFile(changelogPath).split('\n')
+						let headerLines
+						for (headerLines = 0; headerLines < logLines.length; headerLines++) {
+							if (logLines[headerLines].match(/^\s*$/)) {
+								break
+							}
+						}
+						header = logLines.splice(0, headerLines).join('\n')
+						body = logLines.join('\n')
+					}
+
+					if (!header.trim()) {
+						header += `# ${this.name} Changelog`
+					}
+
+					const final = `${header}\n\n${changelog}\n\n${body}`
+
+					saveFile(path.join(this.pkg.dir, changelogConfig.file), final)
+				}
+			}
+		}
+
+		this.stage = 'commit'
+	}
+
+	async commit() {
+		const config = await this.getConfig()
+
 		if (config.git) {
-			const gitConfig = config.git as ReleaserGitConfig
+			await this.getGitMessages()
 
 			this.out.debug('Adding changes')
+
+			const paths = [this.pkg.path]
+
+
+			if (config.changelog) {
+				const changelogConfig = config.changelog
+				const changeLogPath = path.join(this.pkg.dir, changelogConfig.file)
+				if (fileExists(changeLogPath)) {
+					paths.push(changeLogPath)
+				}
+			}
+
 			if (config.dryRun) {
-				this.out.force.warn(`DRY RUN: git add ${this.pkg.path}`)
+				this.out.force.warn(`DRY RUN: git add ${paths.join(' ')}`)
 			} else {
-				await gitAdd(this.dir, this.pkg.path)
+				await gitAdd(this.dir, ...paths)
 			}
 
 			this.out.info('Committing changes')
 
-			const commitMessage = interpolate(gitConfig.commitMessage, {name: this.name, version: this.version})
+
 			if (config.dryRun) {
-				this.out.force.warn(`DRY RUN: git commit --message "${commitMessage}"`)
+				this.out.force.warn(`DRY RUN: git commit --message "${this.commitMessage}"`)
 			} else {
-				await gitCommit(this.dir, commitMessage)
+				await gitCommit(this.dir, this.commitMessage)
 			}
 
 			this.out.debug('Tagging release')
 
-			const tagMessage = interpolate(gitConfig.tagMessage, {name: this.name, version: this.version})
-			const tagName = interpolate(gitConfig.tagName, {name: this.name, version: this.version})
+
 			if (config.dryRun) {
-				this.out.force.warn(`DRY RUN: git tag --annotate --message="${tagMessage}" ${tagName}`)
+				this.out.force.warn(`DRY RUN: git tag --annotate --message="${this.tagMessage}" ${this.tagName}`)
 			} else {
-				await gitTag(this.dir, tagName, tagMessage)
+				await gitTag(this.dir, this.tagName, this.tagMessage)
 			}
 
 			this.out.info('Marking to be pushed and published')
 		}
 
-		this.pushReady = true
+		this.stage = 'push'
 	}
 
 	async push() {
-		const config = await this.getConfig()
-		const branch = await this.getBranch()
-
-		this.out.debug('Pushing changes')
-		if (config.dryRun) {
-			this.out.force.warn(`DRY RUN: git push`)
+		const repoPath = await this.getRepoPath()
+		if (cache.pushedRepos.has(repoPath)) {
+			this.out.debug(`Skipping already pushed repo: ${repoPath}`)
 		} else {
-			const status = await gitBehindUpstream(this.dir, branch)
-			if (!status.length) {
-				this.out.debug('Nothing to push, skipping')
-				return
+			const config = await this.getConfig()
+			const branch = await this.getBranch()
+
+			this.out.debug('Pushing changes')
+			if (config.dryRun) {
+				this.out.force.warn(`DRY RUN: git push`)
+			} else {
+				const status = await gitBehindUpstream(this.dir, branch)
+				if (!status.length) {
+					this.out.debug('Nothing to push, skipping')
+				} else {
+					await gitPush(this.dir, branch)
+					cache.pushedRepos.add(repoPath)
+					this.publishReady = true
+				}
 			}
-			await gitPush(this.dir, branch)
-			this.publishReady = true
 		}
+
+		this.publishReady = true
+		this.stage = 'publish'
 	}
 
 	async publish() {
 		const config = await this.getConfig()
 
-		if (config.npm && (config.npm as ReleaserNpmConfig)?.publish) {
-			const npmConfig = config.npm as ReleaserNpmConfig
+		if (config.npm && config.npm?.publish && this.version !== this.pkg.npm_version) {
+			const npmConfig = config.npm
 
 			if (this.scripts?.prepublish) {
 				this.out.info(`Running prepublish script`)
@@ -217,6 +337,8 @@ export class Release {
 					await execaCommand(this.scripts.postpublish, {cwd: this.dir})
 				}
 			}
+		} else {
+			this.out.warn('Publishing skipped')
 		}
 	}
 }

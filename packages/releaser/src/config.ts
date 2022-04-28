@@ -1,7 +1,6 @@
 import {Out} from '@snickbit/out'
 import {fileExists, getFileJson} from '@snickbit/node-utilities'
 import os from 'os'
-import {Model} from '@snickbit/model'
 import {Release} from './release'
 
 export interface PackageJson {
@@ -25,6 +24,12 @@ export interface ReleaserGitConfig {
 	remote?: string
 }
 
+export interface ReleaserChangelogConfig {
+	file: string
+	format: 'markdown' | 'plain'
+	command: string
+}
+
 const npmArgs = ['access', 'otp', 'registry']
 
 export interface ReleaserNpmConfig {
@@ -43,8 +48,9 @@ export interface ReleaserConfig {
 	allowPrivate?: boolean
 	config?: string
 	bump?: 'major' | 'minor' | 'patch' | 'prerelease'
-	git: ReleaserGitConfig | boolean
-	npm: ReleaserNpmConfig | boolean
+	git: ReleaserGitConfig | false
+	npm: ReleaserNpmConfig | false
+	changelog: ReleaserChangelogConfig | false
 }
 
 export interface Argv extends ReleaserGitConfig, ReleaserNpmConfig {
@@ -69,16 +75,23 @@ export const defaultConfig: ReleaserConfig = {
 	npm: {
 		access: 'public',
 		publish: true
+	},
+	changelog: {
+		file: 'CHANGELOG.md',
+		format: 'markdown',
+		command: 'git log --pretty=format:\\"* %s (%h)\\" ${tagName}..HEAD -- ${gitRelativePath}'
 	}
 }
 
 let config: ReleaserConfig
 
+export const cache = {
+	pushedRepos: new Set<string>()
+}
+
 export const releases: Release[] = []
 
 export const $out = new Out('releaser')
-
-export const cache = new Model()
 
 export const maxProcesses = os.cpus().length - 1
 export const processes = []

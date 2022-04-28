@@ -27,3 +27,7 @@ export async function gitAdd(directory: string, ...paths: string[]): Promise<str
 export async function gitTag(directory: string, tagName: string, tagMessage: string): Promise<string> {
 	return exTrim('git', ['tag', '--annotate', '--message', tagMessage, tagName], directory)
 }
+
+export async function gitRepoPath(directory: string): Promise<string> {
+	return exTrim('git', ['rev-parse', '--show-toplevel'], directory)
+}

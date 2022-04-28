@@ -89,16 +89,16 @@ cli()
 
 		releases.push(new Release(pkg, versions[bump]))
 	}
-
-	const actions = {
-		bump: (release: Release) => release.bumpReady,
-		push: (release: Release) => release.pushReady,
-		publish: (release: Release) => release.version !== release.npm_version
-	}
+	const actions = [
+		'bump',
+		'changelog',
+		'commit',
+		'push',
+		'publish'
+	]
 
 	for (let action in actions) {
-		const filter = actions[action]
-		const processableReleases = releases.filter(filter)
+		const processableReleases = releases.filter((release: Release) => release.stage === 'bump')
 		$out.info('Processing action', action, 'for', processableReleases.length, 'releases')
 		for (let release of processableReleases) {
 			if (processes.length >= maxProcesses) await awaitProcesses()
