@@ -22,8 +22,8 @@
 		"clean": "shx rm -rf ./bin",
 		"build": "esbuild src/index.js --bundle --outfile=bin/babbler.js --target=node12 --platform=node",
 		"depcheck": "depcheck",
-		"watch": "yarpm run build --watch",
-		"prod": "yarpm run clean && yarpm run build --minify"
+		"watch": "npm run build --watch",
+		"prod": "npm run clean && npm run build --minify"
 	},
 	"dependencies": {
 		"@babel/core": "^7.17.9",

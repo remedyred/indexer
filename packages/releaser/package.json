@@ -21,10 +21,10 @@
 		"start": "node bin/releaser.js",
 		"clean": "shx rm -rf ./dist ./bin",
 		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs",
-		"build:meta": "yarpm run build --metafile",
+		"build:meta": "npm run build --metafile",
 		"depcheck": "depcheck",
-		"prod": "yarpm run build --minify",
-		"watch": "pnpm build --watch"
+		"prod": "npm run build -- --minify",
+		"watch": "npm build -- --watch"
 	},
 	"dependencies": {
 		"@snickbit/model": "^1.0.31",
