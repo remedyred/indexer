@@ -26,7 +26,7 @@
 		"depcheck": "turbo run depcheck",
 		"lint": "eslint . --cache --color",
 		"fix": "npm run lint -- --fix",
-		"prerelease": "npm run test && npm run docs && npm run fix  && npm depcheck",
+		"prerelease": "npm run test && npm run docs && npm run fix  && npm run depcheck",
 		"release": "lerna publish",
 		"prepare": "husky install"
 	},

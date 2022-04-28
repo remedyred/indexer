@@ -27,7 +27,6 @@
 		"watch": "npm build -- --watch"
 	},
 	"dependencies": {
-		"@snickbit/model": "^1.0.31",
 		"@snickbit/node-cli": "^1.0.35",
 		"@snickbit/node-utilities": "^4.2.27",
 		"@snickbit/out": "^2.0.14",
