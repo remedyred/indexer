@@ -8,7 +8,7 @@ import {npmVersion} from './npm'
 import {ShouldPublishResults} from './release'
 
 export async function findPackages(workspaces: string[]): Promise<Pkg[]> {
-	$out.info('Finding packages...', workspaces)
+	$out.info('Finding packages...')
 	// gather packages
 	let $progress = progress({message: 'Scanning workspace for packages', total: workspaces.length}).start()
 	const files: string[] = []
