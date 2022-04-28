@@ -87,7 +87,7 @@ cli()
 			continue
 		}
 
-		releases.push(new Release(pkg, versions[bump]))
+		releases.push(new Release(pkg, bump, versions[bump]))
 	}
 	const actions = [
 		'bump',
@@ -97,12 +97,18 @@ cli()
 		'publish'
 	]
 
-	for (let action in actions) {
-		const processableReleases = releases.filter((release: Release) => release.stage === 'bump')
+	for (let action of actions) {
+		const processableReleases = releases.filter((release: Release) => release.stage === action)
 		$out.info('Processing action', action, 'for', processableReleases.length, 'releases')
 		for (let release of processableReleases) {
 			if (processes.length >= maxProcesses) await awaitProcesses()
-			processes.push(release[action]().catch(err => $out.error(err)))
+			let promise: Promise<any>
+			try {
+				promise = release[action]()
+			} catch (e) {
+				$out.fatal(`Error while processing ${action} for ${release.name}`, e)
+			}
+			processes.push(promise.catch(err => $out.error(err)))
 		}
 		await awaitProcesses()
 	}

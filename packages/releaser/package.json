@@ -31,6 +31,7 @@
 		"@snickbit/node-cli": "^1.0.35",
 		"@snickbit/node-utilities": "^4.2.27",
 		"@snickbit/out": "^2.0.14",
+		"@snickbit/upwords": "^2.0.9",
 		"@snickbit/utilities": "^3.0.11",
 		"execa": "^6.1.0",
 		"fast-glob": "^3.2.11",

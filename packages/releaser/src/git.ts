@@ -31,3 +31,7 @@ export async function gitTag(directory: string, tagName: string, tagMessage: str
 export async function gitRepoPath(directory: string): Promise<string> {
 	return exTrim('git', ['rev-parse', '--show-toplevel'], directory)
 }
+
+export async function gitLog(directory: string, tagName: string, gitRelativePath: string): Promise<string> {
+	return exTrim('git', ['log', '--pretty=format:"* %s (%h)"', `${tagName}..HEAD`, '--', gitRelativePath || '.'], directory)
+}

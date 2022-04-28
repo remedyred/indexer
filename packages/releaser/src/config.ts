@@ -26,8 +26,6 @@ export interface ReleaserGitConfig {
 
 export interface ReleaserChangelogConfig {
 	file: string
-	format: 'markdown' | 'plain'
-	command: string
 }
 
 const npmArgs = ['access', 'otp', 'registry']
@@ -77,9 +75,7 @@ export const defaultConfig: ReleaserConfig = {
 		publish: true
 	},
 	changelog: {
-		file: 'CHANGELOG.md',
-		format: 'markdown',
-		command: 'git log --pretty=format:\\"* %s (%h)\\" ${tagName}..HEAD -- ${gitRelativePath}'
+		file: 'CHANGELOG.md'
 	}
 }
 

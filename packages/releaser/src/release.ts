@@ -1,11 +1,12 @@
 import {execa, execaCommand} from 'execa'
 import {$out, cache, getConfig, ReleaserConfig} from './config'
-import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitPush, gitRepoPath, gitTag, isGitClean} from './git'
+import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitLog, gitPush, gitRepoPath, gitTag, isGitClean} from './git'
 import {Out} from '@snickbit/out'
 import {Pkg} from './pkg'
 import {interpolate} from '@snickbit/utilities'
 import {fileExists, getFile, saveFile, saveFileJson} from '@snickbit/node-utilities'
 import path from 'path'
+import upwords from '@snickbit/upwords'
 
 export interface ShouldPublishResults {
 	results: boolean
@@ -14,6 +15,8 @@ export interface ShouldPublishResults {
 }
 
 export type ReleaseName = string
+
+export type ReleaseStage = 'bump' | 'changelog' | 'commit' | 'push' | 'publish'
 
 export interface Release {
 	[key: string | symbol]: any
@@ -24,8 +27,9 @@ export class Release {
 	protected proxy: Release
 	pkg: Pkg
 	version?: string
+	bumpType?: string
 	out: Out
-	stage: string
+	stage: ReleaseStage
 	publishReady = false
 	bumpReady = false
 	branch = 'main'
@@ -34,10 +38,12 @@ export class Release {
 	commitMessage?: string
 	tagMessage?: string
 	tagName?: string
+	lastTagName?: string
 
-	constructor(pkg: Pkg, version: string) {
+	constructor(pkg: Pkg, bump: string, version: string) {
 		this.pkg = pkg
 		this.out = new Out(this.pkg.name)
+		this.bumpType = bump
 		this.version = version
 		this.publishReady = this.pkg.npm_version === this.pkg.version
 		this.stage = 'bump'
@@ -104,6 +110,7 @@ export class Release {
 			this.commitMessage = interpolate(gitConfig.commitMessage, {name: this.name, version: this.version})
 			this.tagMessage = interpolate(gitConfig.tagMessage, {name: this.name, version: this.version})
 			this.tagName = interpolate(gitConfig.tagName, {name: this.name, version: this.version})
+			this.lastTagName = interpolate(gitConfig.tagName, {name: this.name, version: this.pkg.npm_version})
 		}
 	}
 
@@ -136,6 +143,7 @@ export class Release {
 			saveFileJson(this.pkg.path, this.pkg.toJSON())
 		}
 
+		this.out.info('Setting stage to changelog')
 		this.stage = 'changelog'
 	}
 
@@ -149,62 +157,47 @@ export class Release {
 
 			this.out.info(`Generating changelog`)
 
-			const changelogVars = {
-				version: this.version,
-				name: this.name,
-				date: new Date().toISOString(),
-				gitRelativePath: await this.getRepoPath(),
-				branch: await this.getBranch(),
-				tagName: this.tagName,
-				tagMessage: this.tagMessage,
-				commitMessage: this.commitMessage
-			}
+			const repoPath = await this.getRepoPath()
+			const gitRelativePath = path.relative(repoPath, this.pkg.dir).replace(/\\/g, '/')
+			const results = await gitLog(repoPath, this.lastTagName, gitRelativePath)
 
-			const changelogCommand = interpolate(changelogConfig.command, changelogVars)
+			if (results.trim().length) {
+				let changelog = `## ${this.version}\n\n`
 
-			if (config.dryRun) {
-				this.out.force.warn(`DRY RUN: ${changelogCommand}`)
-			} else {
-				const results = await execaCommand(changelogCommand, {cwd: this.dir})
-				if (results.stderr) {
-					this.out.force.error(results.stderr)
-				} else if (results.stdout) {
-					let changelog = results.stdout
-
-					if (changelogConfig.format === 'markdown') {
-						changelog = changelog.replace(/^\s*\* /gm, '- ')
-						changelog = changelog.replace(/\n\n\n/gm, '\n\n')
-						changelog = changelog.replace(/\n\n/gm, '\n')
-					} else {
-						changelog = changelog.replace(/^\s*\* /gm, '')
-						changelog = changelog.replace(/\n\n\n/gm, '\n\n')
-						changelog = changelog.replace(/\n\n/gm, '\n')
-					}
-
-					const changelogPath = path.join(this.pkg.dir, changelogConfig.file)
-
-					let header = ''
-					let body = ''
-					if (fileExists(changelogPath)) {
-						const logLines = getFile(changelogPath).split('\n')
-						let headerLines
-						for (headerLines = 0; headerLines < logLines.length; headerLines++) {
-							if (logLines[headerLines].match(/^\s*$/)) {
-								break
-							}
-						}
-						header = logLines.splice(0, headerLines).join('\n')
-						body = logLines.join('\n')
-					}
-
-					if (!header.trim()) {
-						header += `# ${this.name} Changelog`
-					}
-
-					const final = `${header}\n\n${changelog}\n\n${body}`
-
-					saveFile(path.join(this.pkg.dir, changelogConfig.file), final)
+				if (this.bumpType) {
+					changelog += `### ${upwords(this.bumpType)} Changes\n\n`
 				}
+
+				changelog += results.replace(/^"\* (.*?) ?\((.*?)\)*"$/gm, `- $2: $1`)
+
+				const changelogPath = path.join(this.pkg.dir, changelogConfig.file)
+
+				let header = ''
+				let body = ''
+				if (fileExists(changelogPath)) {
+					const logLines = getFile(changelogPath).split('\n')
+					let headerLines
+					for (headerLines = 0; headerLines < logLines.length; headerLines++) {
+						if (logLines[headerLines].match(/^\s*$/)) {
+							break
+						}
+					}
+					header = logLines.splice(0, headerLines).join('\n')
+					body = logLines.join('\n')
+				}
+
+				if (!header.trim()) {
+					header += `# ${this.name} Changelog`
+				}
+
+				const final = `${header}\n\n${changelog}\n${body}`
+				if (config.dryRun) {
+					this.out.force.warn(`DRY RUN: Saving changelog to ${changelogPath}`)
+				} else {
+					saveFile(changelogPath, final)
+				}
+			} else {
+				this.out.warn('No git log found, skipping changelog')
 			}
 		}
 
