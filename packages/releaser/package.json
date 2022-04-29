@@ -20,21 +20,27 @@
 	"scripts": {
 		"start": "node bin/releaser.js",
 		"clean": "shx rm -rf ./dist ./bin",
-		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs",
+		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs --sourcemap",
 		"build:meta": "npm run build --metafile",
 		"depcheck": "depcheck",
 		"prod": "npm run build --minify",
 		"watch": "npm run build --watch"
 	},
 	"dependencies": {
+		"@hapi/topo": "^5.1.0",
+		"@snickbit/cycle": "^0.0.12",
 		"@snickbit/node-cli": "^1.0.35",
 		"@snickbit/node-utilities": "^4.2.27",
 		"@snickbit/out": "^2.0.14",
 		"@snickbit/upwords": "^2.0.9",
 		"@snickbit/utilities": "^3.0.11",
+		"ansi-styles-template": "^1.0.0",
 		"execa": "^6.1.0",
 		"fast-glob": "^3.2.11",
-		"semver": "^7.3.7"
+		"lilconfig": "^2.0.5",
+		"log-update": "^5.0.1",
+		"semver": "^7.3.7",
+		"workspace-tools": "^0.18.4"
 	},
 	"devDependencies": {
 		"esbuild": "^0.14.38",

@@ -1,31 +1,42 @@
-import {$out, awaitProcesses, getConfig, maxProcesses, PackageJson, processes} from './config'
-import fg from 'fast-glob'
-import {isEmpty, isObject} from '@snickbit/utilities'
-import {getFileJson, progress} from '@snickbit/node-utilities'
-import {Pkg} from './pkg'
-import {gitBehindUpstream} from './git'
+import {$out, $run, awaitProcesses, getConfig, maxProcesses, processes} from './config'
+import {count, interpolate, isEmpty, isObject, parse} from '@snickbit/utilities'
+import {progress} from '@snickbit/node-utilities'
+import {Pkg} from './Pkg'
+import {gitBehindUpstream, gitLog, gitRepoPath} from './git'
 import {npmVersion} from './npm'
-import {ShouldPublishResults} from './release'
+import {Release, ShouldPublishResults} from './Release'
+import {getDependentMap, getPackageInfos, PackageInfo, PackageInfos} from 'workspace-tools'
+import Topo from '@hapi/topo'
+import * as path from 'path'
 
-export async function findPackages(workspaces: string[]): Promise<Pkg[]> {
-	$out.info('Finding packages...')
+export type TopologicalGraph = {
+	[name: string]: {
+		location: string;
+		dependencies: string[];
+	};
+};
+
+export interface Workspace {
+	root: string
+	allPackages: PackageInfos
+}
+
+let showForceBumpMessage = false
+
+export async function findPackages(): Promise<Pkg[]> {
 	// gather packages
-	let $progress = progress({message: 'Scanning workspace for packages', total: workspaces.length}).start()
-	const files: string[] = []
-	for (let workspace of workspaces) {
-		files.push(...await fg(workspace, {onlyDirectories: true, absolute: true}) as string[])
-		$progress.tick()
-	}
-	$progress.finish()
+	$run.packageInfos = getPackageInfos($run.cwd)
 
-	$progress = progress({message: 'Checking for eligible packages', total: files.length}).start()
+	const $progress = progress({message: 'Checking for eligible packages', total: count($run.packageInfos)}).start()
 	const errors: string[] = []
 	const warnings: string[] = []
 	const results: Pkg[] = []
 
-	for (let fileDir of files) {
+	for (let packageName in $run.packageInfos) {
+		const packageInfo = $run.packageInfos[packageName]
+
 		if (processes.length >= maxProcesses) await awaitProcesses()
-		processes.push(loadPackage(fileDir).then((result: Pkg | string) => {
+		processes.push(loadPackage(packageInfo).then((result: Pkg | string) => {
 			if (isObject(result)) {
 				results.push(result as Pkg)
 			} else {
@@ -46,42 +57,93 @@ export async function findPackages(workspaces: string[]): Promise<Pkg[]> {
 
 	if (!isEmpty(warnings)) {
 		for (let warning of warnings) {
-			$out.broken.force.warn(...warning.split('\n'))
+			$out.broken.warn(...warning.split('\n'))
 		}
 	}
+
+	if (showForceBumpMessage) {
+		$out.force.info('You can force a bump by using the --force flag.')
+	}
+
+	return sortTopologically(results) as Pkg[]
+}
+
+async function loadPackage(packageInfo: PackageInfo): Promise<Pkg | string> {
+	const config = await getConfig()
+
+	if (!packageInfo) {
+		throw new Error('Package not found')
+	}
+
+	if (packageInfo.private && !config.allowPrivate) {
+		return `{magenta}${packageInfo.name}{/magenta} Skipping private package`
+	}
+
+	const should_publish = await shouldPublish(packageInfo)
+	if (!should_publish.pass) {
+		showForceBumpMessage = true
+		return `{magenta}${packageInfo.name}{/magenta} Package version matches published | No commits to push`
+	}
+
+	return new Pkg(packageInfo, should_publish)
+}
+
+export async function shouldPublish(packageInfo: PackageInfo): Promise<ShouldPublishResults> {
+	const config = await getConfig()
+
+	const results: ShouldPublishResults = {
+		pass: false,
+		npm_version: '0.0.0',
+		behindUpstream: 0,
+		tests: [config.force]
+	}
+
+	if (config.npm) {
+		results.npm_version = await npmVersion(packageInfo.name)
+		results.tests.push(results.npm_version !== packageInfo.version)
+	}
+
+	if (config.git) {
+		const gitConfig = config.git
+		if (results.npm_version) {
+			const lastTagName = interpolate(gitConfig.tagName, {name: packageInfo.name, version: results.npm_version})
+			const pkgDir = path.dirname(packageInfo.packageJsonPath)
+			const repoPath = await gitRepoPath(pkgDir)
+			const gitRelativePath = path.relative(repoPath, pkgDir).replace(/\\/g, '/')
+			results.behindUpstream = (await gitLog(repoPath, lastTagName, gitRelativePath)).split('\n').length
+		} else {
+			results.behindUpstream = parse((await gitBehindUpstream(path.dirname(packageInfo.packageJsonPath))).match(/0\s+\d+/))
+		}
+
+		results.tests.push(results.behindUpstream > 0)
+	}
+
+	results.pass = results.tests.some(result => result === true)
 
 	return results
 }
 
-async function loadPackage(packageDir: string): Promise<Pkg | string> {
-	const config = await getConfig()
+export type TopoSortSubject = Pkg | Release
 
-	const packagePath = packageDir + '/package.json'
-	const pkgJson = getFileJson(packagePath)
-	if (!pkgJson) {
-		return 'No package.json found at ' + packageDir
-	}
-	if (pkgJson.private && !config.allowPrivate) {
-		return `Skipping private package: {magenta}${pkgJson.name}{/magenta}`
-	}
+export function sortTopologically(packages: TopoSortSubject[]): TopoSortSubject[] {
+	if (!$run.toposort) {
+		const graph = new Topo.Sorter()
+		const dependencyMap = getDependentMap($run.packageInfos)
+		for (const packageName of dependencyMap.keys()) {
+			const dependentPackages = Array.from(dependencyMap.get(packageName))
+			graph.add(packageName, {after: dependentPackages, manual: true})
+			$run.dependencyMap[packageName] = dependentPackages
+		}
 
-	const should_publish = await shouldPublish(pkgJson, packageDir)
-	if (!should_publish.results) {
-		return `Package version matches published, git matches HEAD/Origin, skipping: {magenta}${pkgJson.name}{/magenta}\nTo force bump, use the --force flag`
+		$run.toposort = graph.sort() as string[]
 	}
 
-	return new Pkg(pkgJson, packageDir, should_publish)
-}
-
-export async function shouldPublish(pkg: PackageJson, packageDir: string): Promise<ShouldPublishResults> {
-	const config = await getConfig()
-
-	const npm_version = await npmVersion(pkg.name)
-	const behindUpstream = await gitBehindUpstream(packageDir)
-
-	return {
-		results: !!((npm_version !== pkg.version || behindUpstream) || config.force),
-		npm_version,
-		behindUpstream
+	const toposort: TopoSortSubject[] = []
+	for (let item of $run.toposort) {
+		const pk = packages.find(pkg => pkg.name === item)
+		if (pk) {
+			toposort.push(pk)
+		}
 	}
+	return toposort
 }

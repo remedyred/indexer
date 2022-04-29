@@ -35,3 +35,7 @@ export async function gitRepoPath(directory: string): Promise<string> {
 export async function gitLog(directory: string, tagName: string, gitRelativePath: string): Promise<string> {
 	return exTrim('git', ['log', '--pretty=format:"* %s (%h)"', `${tagName}..HEAD`, '--', gitRelativePath || '.'], directory)
 }
+
+export async function gitUrl(directory: string) {
+	return exTrim('git', ['config', '--get', 'remote.origin.url'], directory)
+}

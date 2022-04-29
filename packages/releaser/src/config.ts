@@ -6,6 +6,7 @@ import path from 'path'
 import {PackageInfos} from 'workspace-tools'
 import {Pkg} from './Pkg'
 import {findPackages} from './packages'
+import {Render} from './Render'
 
 export interface PackageJson {
 	name: string
@@ -20,6 +21,7 @@ const gitArgs = ['commitMessage', 'tagName', 'tagMessage']
 export interface ReleaserGitConfig {
 	commit: boolean
 	commitMessage?: string
+	autoCommitFiles?: string[]
 	tag: boolean
 	tagName?: string
 	tagMessage?: string
@@ -39,6 +41,7 @@ export interface ReleaserNpmConfig {
 	access?: string
 	otp?: string
 	registry?: string
+	client?: string
 }
 
 const releaserArgs = ['force', 'dryRun', 'allowPrivate', 'config', 'bump']
@@ -49,10 +52,20 @@ export interface ReleaserConfig {
 	dryRun?: boolean
 	allowPrivate?: boolean
 	config?: string
+	rootPackage?: PackageJson
 	bump?: 'major' | 'minor' | 'patch' | 'prerelease'
 	git: ReleaserGitConfig | false
 	npm: ReleaserNpmConfig | false
 	changelog: ReleaserChangelogConfig | false
+}
+
+export interface ReleaserRun {
+	cwd: string
+	packageInfos: PackageInfos
+	packages: Pkg[]
+	toposort?: string[]
+	dependencyMap: Record<string, string[]>
+	pushedRepos: Set<string>
 }
 
 export interface Argv extends ReleaserGitConfig, ReleaserNpmConfig {
@@ -62,12 +75,12 @@ export interface Argv extends ReleaserGitConfig, ReleaserNpmConfig {
 	force?: boolean
 }
 
-
 export const defaultConfig: ReleaserConfig = {
 	workspaces: [],
 	git: {
 		commit: true,
 		commitMessage: 'chore(release): publish',
+		autoCommitFiles: [],
 		tag: true,
 		tagName: '${name}@${version}',
 		tagMessage: '${name} ${version}',
@@ -85,13 +98,18 @@ export const defaultConfig: ReleaserConfig = {
 
 let config: ReleaserConfig
 
-export const cache = {
+
+export const $run: ReleaserRun = {
+	cwd: process.cwd(),
+	packageInfos: {},
+	packages: [],
+	dependencyMap: {},
 	pushedRepos: new Set<string>()
 }
 
-export const releases: Release[] = []
-
 export const $out = new Out('releaser')
+
+export const $render = new Render()
 
 export const maxProcesses = os.cpus().length - 1
 export const processes = []
@@ -103,28 +121,36 @@ export async function getConfig(argv?: Argv) {
 	let conf: any
 	if (argv?.config && fileExists(argv.config)) {
 		conf = getFileJson(argv.config)
+		$run.cwd = path.dirname(argv.config)
+	} else {
+		const result = await lilconfig('releaser').search()
+		conf = result.config
+		$run.cwd = path.dirname(result.filepath)
 	}
 
-	if (!conf && fileExists('releaser.config.json')) {
-		conf = getFileJson('releaser.config.json')
-	}
-
-	if ((!conf || !conf.workspaces) && fileExists('package.json')) {
+	if (fileExists('package.json')) {
 		let packageConfig = getFileJson('package.json')
-		if (packageConfig?.releaser?.workspaces) {
-			packageConfig = packageConfig.releaser
+
+		if ((!conf || !conf.workspaces)) {
+			$run.cwd = process.cwd()
+			if (packageConfig?.releaser?.workspaces) {
+				packageConfig = packageConfig.releaser
+			} else if (packageConfig.workspaces) {
+				if (!conf) {
+					conf = {workspaces: packageConfig.workspaces}
+				} else if (!conf.workspaces) {
+					conf.workspaces = packageConfig.workspaces
+				}
+			} else {
+				$out.fatal('No workspaces found, no releaser config found.')
+			}
 		}
 
-		if (!conf) {
-			conf = packageConfig
-		} else if (!conf.workspaces) {
-			conf.workspaces = packageConfig.workspaces
-		}
+		conf.rootPackage = packageConfig
 	}
 
 	if (conf?.workspaces) {
 		config = Object.assign(defaultConfig, conf) as ReleaserConfig
-
 
 		for (const gitArg of gitArgs) {
 			if (argv?.[gitArg]) {
@@ -143,6 +169,8 @@ export async function getConfig(argv?: Argv) {
 				config[releaserArg] = argv[releaserArg]
 			}
 		}
+
+		$run.packages = await findPackages()
 
 		return config
 	}
