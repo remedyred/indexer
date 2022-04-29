@@ -1,7 +1,11 @@
 import {Out} from '@snickbit/out'
 import {fileExists, getFileJson} from '@snickbit/node-utilities'
 import os from 'os'
-import {Release} from './release'
+import {lilconfig} from 'lilconfig'
+import path from 'path'
+import {PackageInfos} from 'workspace-tools'
+import {Pkg} from './Pkg'
+import {findPackages} from './packages'
 
 export interface PackageJson {
 	name: string

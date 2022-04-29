@@ -23,8 +23,8 @@
 		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs",
 		"build:meta": "npm run build --metafile",
 		"depcheck": "depcheck",
-		"prod": "npm run build -- --minify",
-		"watch": "npm build -- --watch"
+		"prod": "npm run build --minify",
+		"watch": "npm run build --watch"
 	},
 	"dependencies": {
 		"@snickbit/node-cli": "^1.0.35",
