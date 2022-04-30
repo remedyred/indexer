@@ -26,18 +26,18 @@
 		"prod": "npm run clean && npm run build --minify"
 	},
 	"dependencies": {
-		"@babel/core": "^7.17.9",
-		"@snickbit/node-cli": "^1.0.35",
-		"@snickbit/node-utilities": "^4.2.27",
-		"@snickbit/out": "^2.0.14",
+		"@babel/core": "^7.17.10",
+		"@snickbit/node-cli": "^1.0.38",
+		"@snickbit/node-utilities": "^4.2.30",
+		"@snickbit/out": "^2.0.17",
 		"chokidar": "^3.5.3",
 		"debounce": "^1.2.1",
 		"del": "^6.0.0",
 		"glob": "^7.2.0",
 		"lilconfig": "^2.0.5",
-		"terser": "^5.12.1"
+		"terser": "^5.13.1"
 	},
 	"devDependencies": {
-		"@babel/cli": "^7.17.6"
+		"@babel/cli": "^7.17.10"
 	}
 }

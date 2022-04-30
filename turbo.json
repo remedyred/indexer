@@ -62,7 +62,7 @@
 		},
 		"release": {
 			"dependsOn": [
-				"depcheck"
+				"^prerelease"
 			]
 		},
 		"docs": {
