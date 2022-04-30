@@ -60,11 +60,6 @@
 				"^prod"
 			]
 		},
-		"release": {
-			"dependsOn": [
-				"^prerelease"
-			]
-		},
 		"docs": {
 			"outputs": [
 				"docs/**"
