@@ -112,7 +112,8 @@ cli()
 			]
 		})
 		if (applyToAll === undefined) {
-			applyToAll = bump && (await confirm(`Apply to all?`))
+			// bump has to come last so applyToAll can be set to the bump value
+			applyToAll = (await confirm(`Apply to all?`)) && bump
 		}
 
 		if (!bump) {
