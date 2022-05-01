@@ -27,9 +27,9 @@
 	},
 	"dependencies": {
 		"@babel/core": "^7.17.10",
-		"@snickbit/node-cli": "^1.0.38",
-		"@snickbit/node-utilities": "^4.2.30",
-		"@snickbit/out": "^2.0.17",
+		"@snickbit/node-cli": "^1.0.39",
+		"@snickbit/node-utilities": "^4.2.31",
+		"@snickbit/out": "^2.0.18",
 		"chokidar": "^3.5.3",
 		"debounce": "^1.2.1",
 		"del": "^6.0.0",
