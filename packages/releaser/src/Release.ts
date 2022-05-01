@@ -55,7 +55,7 @@ export class Release {
 		this.out = $render.add(pkg.name)
 
 		this.proxy = new Proxy(this, {
-			get(target: Release, prop: string, receiver?: any): any {
+			get: (target: Release, prop: string, receiver?: any): any => {
 				if (prop in target) {
 					return target[prop]
 				}
@@ -66,7 +66,7 @@ export class Release {
 
 				return Reflect.get(target, prop, receiver)
 			},
-			set: function (target: Release, prop: string, value?: any) {
+			set: (target: Release, prop: string, value?: any): any => {
 				if (prop in target) {
 					target[prop] = value
 					return true
@@ -141,6 +141,11 @@ export class Release {
 			} else {
 				await execaCommand(this.scripts.prerelease, {cwd: this.dir})
 			}
+		}
+
+		if (!this.version) {
+			this.out.error(`No version specified, skipping release for {cyan} ${this.name}{/cyan}`)
+			return
 		}
 
 		this.out.log(`Bumping version to {magenta}${this.version}{/magenta}`)

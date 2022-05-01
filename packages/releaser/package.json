@@ -24,7 +24,7 @@
 		"build:meta": "npm run build --metafile",
 		"depcheck": "depcheck",
 		"prod": "npm run build --minify",
-		"watch": "npm run build --watch"
+		"watch": "npm run build -- --watch"
 	},
 	"dependencies": {
 		"@hapi/topo": "^5.1.0",

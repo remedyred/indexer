@@ -1,7 +1,6 @@
 import logUpdate from 'log-update'
 import {Cycle} from '@snickbit/cycle'
 import {template} from 'ansi-styles-template'
-import {ReleaserConfig} from './config'
 
 export interface RenderData {
 	[key: string]: RenderDefinition;
@@ -18,7 +17,7 @@ export class Render {
 	data: RenderData = {}
 	proxy: Render
 
-	constructor(config: ReleaserConfig) {
+	constructor() {
 		this.proxy = new Proxy(this, {
 			get: (target, prop: string, receiver) => {
 				if (prop in target.data) {
