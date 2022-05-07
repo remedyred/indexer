@@ -23,7 +23,7 @@
 		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs --sourcemap",
 		"build:meta": "npm run build --metafile",
 		"depcheck": "depcheck",
-		"prod": "npm run build --minify",
+		"prod": "npm run build -- --minify",
 		"watch": "npm run build -- --watch"
 	},
 	"dependencies": {
