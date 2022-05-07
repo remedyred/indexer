@@ -3,77 +3,15 @@ import {fileExists, getFileJson} from '@snickbit/node-utilities'
 import os from 'os'
 import {lilconfig} from 'lilconfig'
 import path from 'path'
-import {PackageInfos} from 'workspace-tools'
-import {Pkg} from './Pkg'
 import {findPackages} from './packages'
 import {Render} from './Render'
-
-export interface PackageJson {
-	name: string
-	version: string
-	scripts?: Record<string, string>
-
-	[key: string]: any
-}
+import {Argv, Bump, ReleaserConfig, ReleaserRun} from './definitions'
 
 const gitArgs = ['commitMessage', 'tagName', 'tagMessage']
 
-export interface ReleaserGitConfig {
-	commit: boolean
-	commitMessage?: string
-	autoCommitFiles?: string[]
-	tag: boolean
-	tagName?: string
-	tagMessage?: string
-	push: boolean
-	branch?: string
-	remote?: string
-}
-
-export interface ReleaserChangelogConfig {
-	file: string
-}
-
 const npmArgs = ['access', 'otp', 'registry']
 
-export interface ReleaserNpmConfig {
-	publish: boolean
-	access?: string
-	otp?: string
-	registry?: string
-	client?: string
-}
-
 const releaserArgs = ['force', 'dryRun', 'allowPrivate', 'config', 'bump']
-
-export interface ReleaserConfig {
-	workspaces: string[]
-	force?: boolean
-	dryRun?: boolean
-	allowPrivate?: boolean
-	config?: string
-	rootPackage?: PackageJson
-	bump?: 'major' | 'minor' | 'patch' | 'prerelease'
-	git: ReleaserGitConfig | false
-	npm: ReleaserNpmConfig | false
-	changelog: ReleaserChangelogConfig | false
-}
-
-export interface ReleaserRun {
-	cwd: string
-	packageInfos: PackageInfos
-	packages: Pkg[]
-	toposort?: string[]
-	dependencyMap: Record<string, string[]>
-	pushedRepos: Set<string>
-}
-
-export interface Argv extends ReleaserGitConfig, ReleaserNpmConfig {
-	bump: 'major' | 'minor' | 'patch' | 'prerelease'
-	dryRun: boolean
-	config?: string
-	force?: boolean
-}
 
 export const defaultConfig: ReleaserConfig = {
 	workspaces: [],
@@ -97,7 +35,6 @@ export const defaultConfig: ReleaserConfig = {
 }
 
 let config: ReleaserConfig
-
 
 export const $run: ReleaserRun = {
 	cwd: process.cwd(),
