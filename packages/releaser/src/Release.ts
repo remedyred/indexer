@@ -313,7 +313,6 @@ export class Release {
 
 			this.out.log('Committing changes')
 
-
 			if (config.dryRun) {
 				this.out.warn(`DRY RUN: git commit --message "${this.commitMessage}"`)
 			} else {
@@ -321,7 +320,6 @@ export class Release {
 			}
 
 			this.out.log('Tagging release')
-
 
 			if (config.dryRun) {
 				this.out.warn(`DRY RUN: git tag --annotate --message="${this.tagMessage}" ${this.tagName}`)

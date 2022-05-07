@@ -40,7 +40,7 @@ export class Pkg {
 
 				return Reflect.get(target, prop, receiver)
 			},
-			set: function (target: Pkg, prop: string, value?: any) {
+			set(target: Pkg, prop: string, value?: any) {
 				if (prop in target) {
 					target[prop] = value
 					return true
