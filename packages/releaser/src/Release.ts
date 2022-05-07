@@ -235,7 +235,7 @@ export class Release {
 					header += `# ${this.name} Changelog`
 				}
 
-				this.changelogContent = `${header}\n\n${changelog}\n${body}`
+				this.changelogContent = `${header}\n\n${changelog}\n${body}`.replace(/\n\n\n+/g, '\n\n')
 			} else {
 				this.out.warn('No git log found, skipping changelog')
 			}
