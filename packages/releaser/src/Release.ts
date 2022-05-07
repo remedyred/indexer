@@ -159,7 +159,7 @@ export class Release {
 			return
 		}
 
-		this.out.log(`Bumping version to {magenta}${this.version}{/magenta}`)
+		this.out.log(`Bumping version from {cyan}${this.pkg.version}{/cyan} to {magenta}${this.version}{/magenta}`)
 		this.pkg.version = this.version
 
 		this.out.log('Checking for dependencies')
