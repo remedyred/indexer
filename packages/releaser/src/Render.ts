@@ -39,8 +39,8 @@ export class Render {
 	}
 
 	private _log(key, text) {
-		this.data[key].text.push(text)
-		// this.data[key].text = [...this.data[key].text.slice(-2), text]
+		// this.data[key].text.push(text)
+		this.data[key].text = [...this.data[key].text.slice(-5), text]
 		this.render()
 	}
 
