@@ -35,6 +35,8 @@ export async function run() {
 		}
 
 		await $queue.run()
+		await Promise.all(Object.values(activeReleases).map((release) => release.promise))
+
 		activeReleases = {}
 	}
 }
