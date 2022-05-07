@@ -1,6 +1,5 @@
-import {$out, $run, awaitProcesses, getConfig, maxProcesses, processes} from './config'
+import {$out, $run, getConfig} from './config'
 import {count, interpolate, isEmpty, isObject, parse} from '@snickbit/utilities'
-import {progress} from '@snickbit/node-utilities'
 import {Pkg} from './Pkg'
 import {gitBehindUpstream, gitLog, gitRepoPath} from './git'
 import {npmVersion} from './npm'
@@ -8,6 +7,8 @@ import {Release, ShouldPublishResults} from './Release'
 import {getDependentMap, getPackageInfos, PackageInfo, PackageInfos} from 'workspace-tools'
 import Topo from '@hapi/topo'
 import * as path from 'path'
+import {Queue} from '@snickbit/queue'
+import {progress, spinner} from '@snickbit/node-utilities'
 
 export type TopologicalGraph = {
 	[name: string]: {
@@ -25,28 +26,29 @@ let showForceBumpMessage = false
 
 export async function findPackages(): Promise<Pkg[]> {
 	// gather packages
+	const $spinner = spinner().start('Gathering packages...')
 	$run.packageInfos = getPackageInfos($run.cwd)
+	$spinner.finish('Gathered packages')
 
-	const $progress = progress({message: 'Checking for eligible packages', total: count($run.packageInfos)}).start()
 	const errors: string[] = []
 	const warnings: string[] = []
 	const results: Pkg[] = []
 
+	const $q = new Queue()
+	const $progress = progress({message: 'Checking for eligible packages', total: count($run.packageInfos)})
 	for (let packageName in $run.packageInfos) {
 		const packageInfo = $run.packageInfos[packageName]
-
-		if (processes.length >= maxProcesses) await awaitProcesses()
-		processes.push(loadPackage(packageInfo).then((result: Pkg | string) => {
+		$q.push(loadPackage(packageInfo).then((result: Pkg | string) => {
 			if (isObject(result)) {
 				results.push(result as Pkg)
 			} else {
 				warnings.push(result as string)
 			}
-		}).catch(err => {
-			errors.push(err.message)
-		}).finally(() => $progress.tick()))
+		}))
 	}
-	await awaitProcesses()
+	await $q.run()
+	.catchEach(err => errors.push(err.message))
+	.finallyEach(() => $progress.tick())
 	$progress.finish()
 
 	if (!isEmpty(errors)) {
@@ -110,9 +112,11 @@ export async function shouldPublish(packageInfo: PackageInfo): Promise<ShouldPub
 			const pkgDir = path.dirname(packageInfo.packageJsonPath)
 			const repoPath = await gitRepoPath(pkgDir)
 			const gitRelativePath = path.relative(repoPath, pkgDir).replace(/\\/g, '/')
-			results.behindUpstream = (await gitLog(repoPath, lastTagName, gitRelativePath)).split('\n').length
+			const git_log = await gitLog(repoPath, lastTagName, gitRelativePath)
+			results.behindUpstream = (git_log).split('\n').filter(Boolean).length
 		} else {
 			results.behindUpstream = parse((await gitBehindUpstream(path.dirname(packageInfo.packageJsonPath))).match(/0\s+\d+/))
+			$out.fatal('Used git behind upstream to determine if package should be published', results.behindUpstream)
 		}
 
 		results.tests.push(results.behindUpstream > 0)

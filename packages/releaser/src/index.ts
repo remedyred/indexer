@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import {cli} from '@snickbit/node-cli'
 import {ask, confirm} from '@snickbit/node-utilities'
-import semverInc from 'semver/functions/inc'
-import {$out, $run, awaitProcesses, getConfig, maxProcesses, processes} from './config'
+import {$out, $run, getConfig, releases} from './config'
 import {plural} from '@snickbit/utilities'
 import {Pkg} from './Pkg'
 import {template} from 'ansi-styles-template'
-import {sortTopologically} from './packages'
-import {Release, ReleaseStage} from './Release'
+import {Release} from './Release'
+import {Bump, BumpRecord} from './definitions'
+import {genBump, genBumps} from './helpers'
+import {run} from './run'
 
 cli()
 .name('@snickbit/releaser')
@@ -46,8 +47,8 @@ cli()
 .then(async (argv) => {
 	const config = await getConfig(argv)
 
-	let applyToAll: boolean
-	if (argv.bump) applyToAll = true
+	let applyToAll: boolean | Bump
+	if (argv.bump) applyToAll = argv.bump as Bump
 
 	if (!$run.packages.length) {
 		$out.done('No packages to release!')
@@ -81,80 +82,47 @@ cli()
 		})
 	}
 
-	const releases: Release[] = []
-
 	for (let pkg of packagesToRelease) {
-		const versions = {
-			patch: semverInc(pkg.version, 'patch'),
-			minor: semverInc(pkg.version, 'minor'),
-			major: semverInc(pkg.version, 'major')
-		}
+		type SkipBumpRecord = Omit<BumpRecord, 'type'> & { type: Bump | 'skip' }
 
-		const bump = argv.bump || applyToAll || await ask(`Bump version for ${pkg.name} (${pkg.version})?`, {
-			type: 'select',
-			choices: [
-				{
-					title: `Patch (${versions.patch})`,
-					value: 'patch'
-				},
-				{
-					title: `Minor (${versions.minor})`,
-					value: 'minor'
-				},
-				{
-					title: `Major (${versions.major})`,
-					value: 'major'
-				},
-				{
-					title: 'Skip',
-					value: 'skip'
-				}
-			]
+		const bumps = genBumps(pkg.version) as SkipBumpRecord[]
+
+		bumps.push({
+			title: 'Skip',
+			type: 'skip'
 		})
-		if (applyToAll === undefined) {
-			// bump has to come last so applyToAll can be set to the bump value
-			applyToAll = (await confirm(`Apply to all?`)) && bump
-		}
+
+		let bump: SkipBumpRecord | Bump = applyToAll || await ask(`Bump version for ${pkg.name} (${pkg.version})?`, {
+			type: 'select',
+			choices: bumps.map(b => ({title: b.title, value: b}))
+		})
 
 		if (!bump) {
 			$out.fatal('No bump version selected')
 		}
-		if (bump === 'skip') {
+
+		if (typeof bump === 'string') {
+			bump = genBump(pkg.version, bump)
+		}
+
+		if (bump.type === 'skip') {
 			$out.warn(`Skipping ${pkg.name}`)
+			applyToAll = false
 			continue
 		}
 
+		if (applyToAll === undefined && await confirm(`Apply to all?`)) {
+			applyToAll = bump.type
+		}
+
 		try {
-			releases.push(new Release(pkg, bump, versions[bump]))
+			releases[pkg.name] = new Release(pkg, bump.type, bump.version)
 		} catch (e) {
 			$out.fatal('Failed to add release', e)
 		}
 	}
 
-	const stages: ReleaseStage[] = [
-		'bump',
-		'changelog',
-		'save',
-		'commit',
-		'push',
-		'publish'
-	]
-
-	for (let stage of stages) {
-		const active = sortTopologically(releases.filter((release: Release) => release.stage === stage))
-		$out.info('Processing stage: {yellow}' + stage + '{/yellow} for {blueBright}', active.length, '{/blueBright} releases')
-		for (let release of active) {
-			if (processes.length >= maxProcesses) await awaitProcesses()
-			let promise: Promise<any>
-			try {
-				promise = release[stage]()
-			} catch (e) {
-				$out.fatal(`Error while processing {yellow}${stage}{/yellow} for {magenta}${release.name}{magenta}`, e)
-			}
-			processes.push(promise.catch(err => $out.error(err)))
-		}
-		await awaitProcesses()
-	}
+	await run()
 
 	$out.block.ln().done('Done')
 })

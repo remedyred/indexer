@@ -28,10 +28,11 @@
 	},
 	"dependencies": {
 		"@hapi/topo": "^5.1.0",
-		"@snickbit/cycle": "^0.0.15",
+		"@snickbit/cycle": "^0.0.17",
 		"@snickbit/node-cli": "^1.0.39",
-		"@snickbit/node-utilities": "^4.2.31",
+		"@snickbit/node-utilities": "^4.3.2",
 		"@snickbit/out": "^2.0.18",
+		"@snickbit/queue": "^1.0.0",
 		"@snickbit/upwords": "^2.0.13",
 		"@snickbit/utilities": "^3.0.15",
 		"ansi-styles-template": "^1.0.0",
@@ -39,9 +40,10 @@
 		"lilconfig": "^2.0.5",
 		"log-update": "^5.0.1",
 		"semver": "^7.3.7",
-		"workspace-tools": "^0.18.4"
+		"workspace-tools": "^0.19.0"
 	},
 	"devDependencies": {
+		"@types/node": "^17.0.31",
 		"esbuild": "^0.14.38",
 		"shx": "^0.3.4",
 		"typescript": "^4.6.3"

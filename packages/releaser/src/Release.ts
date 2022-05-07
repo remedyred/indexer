@@ -1,5 +1,5 @@
 import {execa, execaCommand} from 'execa'
-import {$render, $run, getConfig, ReleaserConfig} from './config'
+import {$render, $run, getConfig} from './config'
 import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitLog, gitPush, gitRepoPath, gitTag, gitUrl, isGitClean} from './git'
 import {Pkg} from './Pkg'
 import {interpolate, isArray, isEmpty, sleep} from '@snickbit/utilities'
@@ -7,6 +7,9 @@ import {fileExists, getFile, saveFile, saveFileJson} from '@snickbit/node-utilit
 import path from 'path'
 import upwords from '@snickbit/upwords'
 import {Renderer} from './Render'
+import {Bump, ReleaserConfig} from './definitions'
+import {addRelease, isDependent} from './run'
+import {Out} from '@snickbit/out'
 
 export interface ShouldPublishResults {
 	pass: boolean
@@ -28,7 +31,7 @@ export class Release {
 	protected proxy: Release
 	pkg: Pkg
 	version?: string
-	bumpType?: string
+	bumpType?: Bump
 	stage: ReleaseStage
 	publishReady = false
 	bumpReady = false
@@ -43,9 +46,9 @@ export class Release {
 	changelogContent?: string
 	changelogPath?: string
 
-	out: Renderer
+	out: Renderer | Out
 
-	constructor(pkg: Pkg, bump: string, version: string) {
+	constructor(pkg: Pkg, bump: Bump, version: string) {
 		this.pkg = pkg
 		this.bumpType = bump
 		this.version = version
@@ -53,6 +56,7 @@ export class Release {
 		this.stage = 'bump'
 
 		this.out = $render.add(pkg.name)
+		// this.out = new Out(pkg.name)
 
 		this.proxy = new Proxy(this, {
 			get: (target: Release, prop: string, receiver?: any): any => {
@@ -86,6 +90,12 @@ export class Release {
 
 	get name(): string {
 		return this.pkg.name
+	}
+
+	get dependencies(): string[] {
+		const dependencies = Object.keys(this.pkg.dependencies) || []
+		const devDependencies = Object.keys(this.pkg.devDependencies) || []
+		return [...dependencies, ...devDependencies]
 	}
 
 	async getConfig() {
@@ -126,6 +136,7 @@ export class Release {
 
 	async bump() {
 		const config = await this.getConfig()
+		await isDependent(this.name)
 
 		this.out.log('Checking working tree')
 		const status = await isGitClean(this.dir)
@@ -157,10 +168,12 @@ export class Release {
 				if (!pkg || pkg.name === this.name) continue
 				if (pkg.dependencies && this.name in pkg.dependencies) {
 					pkg.dependencies[this.name] = `^${this.version}`
+					addRelease(pkg.name, 'patch', true)
 					this.out.log(`Bumped ${this.name} to ${this.version} in ${pkg.name} dependencies`)
 				}
 				if (pkg.devDependencies && this.name in pkg.devDependencies) {
 					pkg.devDependencies[this.name] = `^${this.version}`
+					addRelease(pkg.name, 'patch', true)
 					this.out.log(`Bumped ${this.name} to ${this.version} in ${pkg.name} devDependencies`)
 				}
 			}
@@ -192,7 +205,7 @@ export class Release {
 					changelog += `### ${upwords(this.bumpType)} Changes\n\n`
 				}
 
-				const parsedCommits = results.matchAll(/^"\* (?:(?<type>[a-z]+)(?:\((?<scope>.*?)\))?: )?(?<description>[\w\W\s\n]*?)\s+\((?<commit>[a-z0-9]{7})\)"$/gm)
+				const parsedCommits = results.matchAll(/^"\* (?:(?<type>[a-z]+)(?:\((?<scope>.*?)\))?: )?(?<description>[\w\W\s\n]*?)\s+\((?<commit>[a-z\d]{7})\)"$/gm)
 
 				for (let parsedCommit of parsedCommits) {
 					let {type, scope, description, commit} = parsedCommit.groups

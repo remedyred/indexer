@@ -1,8 +1,8 @@
-import {PackageJson} from './config'
 import {ShouldPublishResults} from './Release'
 import {PackageInfo} from 'workspace-tools'
 import path from 'path'
 import {objectExcept} from '@snickbit/utilities'
+import {PackageJson} from './definitions'
 
 export interface Pkg extends PackageJson {
 	[key: string]: any
@@ -17,13 +17,16 @@ export class Pkg {
 	should_publish: boolean
 	behind_upstream: number
 
-	constructor(packageInfo: PackageInfo, should_publish: ShouldPublishResults) {
+	constructor(packageInfo: PackageInfo, should_publish?: ShouldPublishResults) {
 		this.dir = path.dirname(packageInfo.packageJsonPath)
 		this.path = packageInfo.packageJsonPath
 		this.data = packageInfo
-		this.npm_version = should_publish.npm_version
-		this.should_publish = should_publish.pass
-		this.behind_upstream = should_publish.behindUpstream
+
+		if (should_publish) {
+			this.npm_version = should_publish.npm_version
+			this.should_publish = should_publish.pass
+			this.behind_upstream = should_publish.behindUpstream
+		}
 
 		this.proxy = new Proxy(this, {
 			get(target: Pkg, prop: string, receiver?: any): any {

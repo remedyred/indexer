@@ -6,6 +6,8 @@ import path from 'path'
 import {findPackages} from './packages'
 import {Render} from './Render'
 import {Argv, Bump, ReleaserConfig, ReleaserRun} from './definitions'
+import {Queue} from '@snickbit/queue'
+import {Release} from './Release'
 
 const gitArgs = ['commitMessage', 'tagName', 'tagMessage']
 
@@ -13,8 +15,15 @@ const npmArgs = ['access', 'otp', 'registry']
 
 const releaserArgs = ['force', 'dryRun', 'allowPrivate', 'config', 'bump']
 
+export const releases: Record<string, Release> = {}
+
+export const bumpTypes: Bump[] = ['patch', 'minor', 'major', 'prerelease', 'prepatch', 'preminor', 'premajor']
+
+export const $queue = new Queue()
+
 export const defaultConfig: ReleaserConfig = {
 	workspaces: [],
+	dependencies: true,
 	git: {
 		commit: true,
 		commitMessage: 'chore(release): publish',
