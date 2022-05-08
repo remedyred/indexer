@@ -9,9 +9,11 @@ import {Release} from './Release'
 import {Bump, BumpRecord} from './definitions'
 import {genBump, genBumps} from './helpers'
 import {run} from './run'
+import packageJson from '../package.json'
 
 cli()
 .name('@snickbit/releaser')
+.version(packageJson.version)
 .arg('bump')
 .options({
 	config: {
