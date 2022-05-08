@@ -54,10 +54,10 @@ export function queueRelease(release: Release, stage?: ReleaseStage) {
 	if (!stage) stage = $stage
 	const releasePromise = release[stage]()
 	.then(() => {
-		// $out.success(`{green}${stage}{/green} {blueBright}${release.name}{/blueBright}`)
+		$out.success(`{green}${stage}{/green} {blueBright}${release.name}{/blueBright}`)
 	})
 	.catch(e => {
-		// $out.fatal(`Error while processing {yellow}${stage}{/yellow} for {magenta}${release.name}{magenta}`, e)
+		$out.error(`Error while processing {yellow}${stage}{/yellow} for {magenta}${release.name}{magenta}`, e)
 	}).finally(() => {
 		if (release.name in activeReleases) {
 			delete activeReleases[release.name]
