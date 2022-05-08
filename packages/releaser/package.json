@@ -2,39 +2,35 @@
 	"name": "@remedyred/releaser",
 	"version": "0.0.9",
 	"license": "UNLICENSED",
-	"preferGlobal": true,
-	"publishConfig": {
-		"registry": "https://npm.remedyred.com/",
-		"access": "public"
-	},
+	"main": "./bin/releaser.js",
 	"bin": {
 		"releaser": "./bin/releaser.js"
 	},
-	"main": "./bin/releaser.js",
 	"files": [
 		"dist"
 	],
-	"engines": {
-		"node": ">= 12"
-	},
 	"scripts": {
-		"start": "node bin/releaser.js",
-		"clean": "shx rm -rf ./dist ./bin",
 		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs --sourcemap",
 		"build:meta": "npm run build --metafile",
+		"clean": "shx rm -rf ./dist ./bin",
 		"depcheck": "depcheck",
 		"prod": "npm run build -- --minify",
+		"start": "node bin/releaser.js",
 		"watch": "npm run build -- --watch"
+	},
+	"jest": {
+		"preset": "ts-jest",
+		"testEnvironment": "node"
 	},
 	"dependencies": {
 		"@hapi/topo": "^5.1.0",
-		"@snickbit/cycle": "^0.0.17",
-		"@snickbit/node-cli": "^1.0.39",
-		"@snickbit/node-utilities": "^4.3.2",
-		"@snickbit/out": "^2.0.18",
+		"@snickbit/cycle": "^0.0.18",
+		"@snickbit/node-cli": "^1.0.43",
+		"@snickbit/node-utilities": "^4.3.3",
+		"@snickbit/out": "^2.0.23",
 		"@snickbit/queue": "^1.0.0",
-		"@snickbit/upwords": "^2.0.13",
-		"@snickbit/utilities": "^3.0.15",
+		"@snickbit/upwords": "^2.0.15",
+		"@snickbit/utilities": "^3.0.18",
 		"ansi-styles-template": "^1.0.0",
 		"execa": "^6.1.0",
 		"lilconfig": "^2.0.5",
@@ -48,9 +44,13 @@
 		"shx": "^0.3.4",
 		"typescript": "^4.6.3"
 	},
-	"jest": {
-		"preset": "ts-jest",
-		"testEnvironment": "node"
+	"engines": {
+		"node": ">= 12"
+	},
+	"preferGlobal": true,
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://npm.remedyred.com/"
 	},
 	"tsup": {
 		"entry": [

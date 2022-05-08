@@ -2,33 +2,34 @@
 	"name": "root",
 	"version": "0.0.2",
 	"private": true,
-	"engines": {
-		"node": ">= 12"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
 	"workspaces": [
 		"packages/*"
 	],
 	"scripts": {
-		"purge": "npm run clean:builds && npm run clean:modules && npm run clean:lock && npm run clean:logs",
-		"clean:cache": "shx rm -rf **/.turbo",
-		"clean:builds": "turbo run clean",
+		"build": "pnpm run -r build",
+		"clean": "pnpm run clean:builds && pnpm run clean:modules && pnpm run clean:lock && pnpm run clean:logs",
+		"clean:builds": "pnpm run -r --parallel clean",
 		"clean:docs": "shx rm -rf **/docs **/DOCS.md **/DOC.md",
-		"clean:modules": "shx rm -rf **/node_modules **/yarn-error.log **/lerna-debug.log",
-		"clean:lock": "shx rm -f yarn.lock yarn-error.log pnpm-lock.yaml pnpm-error.log pnpm-debug.log",
-		"clean:logs": "shx rm -rf **/yarn-error.log npm run clean:cache",
-		"build": "turbo run build",
-		"prod": "turbo run prod",
-		"docs": "turbo run docs",
-		"test": "turbo run test -- --passWithNoTests",
-		"depcheck": "turbo run depcheck",
+		"clean:lock": "shx rm -f *.lock *-lock.yaml *-lock.json",
+		"clean:logs": "shx rm -rf **/*.log",
+		"clean:modules": "shx rm -rf **/node_modules **/.yalc **/yalc.lock",
+		"depcheck": "pnpm run -r depcheck",
+		"dev": "pnpm run -r dev",
+		"docs": "pnpm run -r docs",
+		"fix": "sort-package-json \"packages/*/package.json\" \"./package.json\" && eslint . --cache --color --fix",
 		"lint": "eslint . --cache --color",
-		"fix": "npm run lint -- --fix",
+		"prepare": "husky install",
+		"prod": "pnpm run -r prod",
 		"prerelease": "npm run test && npm run docs && npm run fix  && npm run depcheck",
 		"release": "lerna publish",
-		"prepare": "husky install"
+		"test": "pnpm jest"
+	},
+	"jest": {
+		"noStackTrace": true,
+		"passWithNoTests": true,
+		"preset": "ts-jest",
+		"silent": true,
+		"testEnvironment": "node"
 	},
 	"devDependencies": {
 		"@changesets/changelog-git": "^0.1.11",
@@ -39,23 +40,22 @@
 		"@typescript-eslint/parser": "^5.21.0",
 		"depcheck": "^1.4.3",
 		"esbuild": "^0.14.38",
-		"eslint": "^8.14.0",
+		"eslint": "^8.15.0",
 		"eslint-plugin-editorconfig": "^3.2.0",
 		"eslint-plugin-markdown": "^2.2.1",
 		"husky": "^7.0.4",
 		"jest": "^27.5.1",
 		"shx": "^0.3.4",
+		"sort-package-json": "^1.57.0",
 		"ts-jest": "^27.1.4",
 		"turbo": "^1.2.6",
 		"typescript": "^4.6.4",
 		"yalc": "^1.0.0-pre.53"
 	},
-	"jest": {
-		"verbose": true,
-		"preset": "ts-jest",
-		"testEnvironment": "node",
-		"projects": [
-			"packages/*"
-		]
+	"engines": {
+		"node": ">= 12"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
