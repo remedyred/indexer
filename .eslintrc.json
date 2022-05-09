@@ -6,9 +6,8 @@
 	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:editorconfig/all",
-		"plugin:markdown/recommended",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:@typescript-eslint/recommended",
+		"plugin:editorconfig/all"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
@@ -17,9 +16,12 @@
 	},
 	"plugins": [
 		"@typescript-eslint",
+		"json-files",
 		"editorconfig"
 	],
 	"rules": {
+		"json-files/sort-package-json": "error",
+		"json-files/require-unique-dependency-names": "error",
 		"editorconfig/charset": "error",
 		"editorconfig/eol-last": "error",
 		"editorconfig/indent": "off",
@@ -29,15 +31,5 @@
 		"@typescript-eslint/ban-ts-comment": "off",
 		"prefer-const": "off",
 		"indent": "off"
-	},
-	"overrides": [
-		{
-			"files": [
-				"**/*.md/*.js"
-			],
-			"rules": {
-				"@typescript-eslint/no-unused-vars": "off"
-			}
-		}
-	]
+	}
 }
