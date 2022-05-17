@@ -14,9 +14,9 @@
 		"build:meta": "npm run build --metafile",
 		"clean": "shx rm -rf ./dist ./bin",
 		"depcheck": "depcheck",
-		"prod": "npm run build -- --minify",
+		"prod": "pnpm run build --minify",
 		"start": "node bin/releaser.js",
-		"watch": "npm run build -- --watch"
+		"watch": "pnpm run build --watch"
 	},
 	"jest": {
 		"preset": "ts-jest",
