@@ -1,6 +1,6 @@
 {
 	"name": "@remedyred/releaser",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"license": "UNLICENSED",
 	"main": "./bin/releaser.js",
 	"bin": {
