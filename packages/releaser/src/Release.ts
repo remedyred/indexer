@@ -93,8 +93,8 @@ export class Release {
 	}
 
 	get dependencies(): string[] {
-		const dependencies = Object.keys(this.pkg.dependencies) || []
-		const devDependencies = Object.keys(this.pkg.devDependencies) || []
+		const dependencies = this.pkg.dependencies ? Object.keys(this.pkg.dependencies) : []
+		const devDependencies = this.pkg.devDependencies ? Object.keys(this.pkg.devDependencies) : []
 		return [...dependencies, ...devDependencies]
 	}
 
