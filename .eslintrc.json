@@ -6,8 +6,8 @@
 	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:@typescript-eslint/recommended",
-		"plugin:editorconfig/all"
+		"plugin:json/recommended",
+		"plugin:@typescript-eslint/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
@@ -17,19 +17,35 @@
 	"plugins": [
 		"@typescript-eslint",
 		"json-files",
-		"editorconfig"
+		"sort-class-members"
 	],
 	"rules": {
 		"json-files/sort-package-json": "error",
 		"json-files/require-unique-dependency-names": "error",
-		"editorconfig/charset": "error",
-		"editorconfig/eol-last": "error",
-		"editorconfig/indent": "off",
-		"editorconfig/linebreak-style": "error",
-		"editorconfig/no-trailing-spaces": "error",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/ban-ts-comment": "off",
 		"prefer-const": "off",
-		"indent": "off"
+		"indent": "off",
+		"sort-class-members/sort-class-members": [
+			2,
+			{
+				"order": [
+					"[static-properties]",
+					"[properties]",
+					"[conventional-private-properties]",
+					"constructor",
+					"[getters]",
+					"[setters]",
+					"[accessor-pairs]",
+					"[static-methods]",
+					"[methods]",
+					"[async-methods]",
+					"[conventional-private-methods]",
+					"[everything-else]"
+				],
+				"accessorPairPositioning": "getThenSet",
+				"stopAfterFirstProblem": false
+			}
+		]
 	}
 }
