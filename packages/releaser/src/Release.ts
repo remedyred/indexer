@@ -27,7 +27,6 @@ export interface Release {
 }
 
 export class Release {
-	private _config: ReleaserConfig
 	protected proxy: Release
 	pkg: Pkg
 	version?: string
@@ -37,16 +36,15 @@ export class Release {
 	bumpReady = false
 	branch = 'main'
 	repoPath: string
-
 	commitMessage?: string
 	tagMessage?: string
 	tagName?: string
 	lastTagName?: string
-
 	changelogContent?: string
 	changelogPath?: string
-
 	out: Renderer | Out
+	private _config: ReleaserConfig
+
 
 	constructor(pkg: Pkg, bump: Bump, version: string) {
 		this.pkg = pkg

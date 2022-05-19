@@ -38,12 +38,6 @@ export class Render {
 		return this
 	}
 
-	private _log(key, text) {
-		// this.data[key].text.push(text)
-		this.data[key].text = [...this.data[key].text.slice(-5), text]
-		this.render()
-	}
-
 	add(key: string, ...text: string[]): Renderer {
 		this.data[key] = {
 			color: cycle.next(),
@@ -90,6 +84,14 @@ export class Render {
 		this._log(key, text)
 		return this
 	}
+
+	private _log(key, text) {
+		// this.data[key].text.push(text)
+		this.data[key].text = [...this.data[key].text.slice(-5), text]
+		this.render()
+	}
+
+
 }
 
 export class Renderer {
