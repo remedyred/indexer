@@ -2,8 +2,7 @@ import {Bump, BumpRecord} from './definitions'
 import {$out, $queue, $run, releases} from './config'
 import {Release, ReleaseStage} from './Release'
 import {genBump} from './helpers'
-import {sortTopologically} from './packages'
-import {Pkg} from './Pkg'
+import {Pkg, sortTopologically} from '@remedyred/cli-utilities'
 
 export let $stage: ReleaseStage
 

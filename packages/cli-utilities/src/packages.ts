@@ -3,12 +3,12 @@ import {count, interpolate, isEmpty, isObject, parse} from '@snickbit/utilities'
 import {Pkg} from './Pkg'
 import {gitBehindUpstream, gitLog, gitRepoPath} from './git'
 import {npmVersion} from './npm'
-import {Release, ShouldPublishResults} from './Release'
 import {getDependentMap, getPackageInfos, PackageInfo, PackageInfos} from 'workspace-tools'
 import Topo from '@hapi/topo'
 import * as path from 'path'
 import {Queue} from '@snickbit/queue'
 import {progress, spinner} from '@snickbit/node-utilities'
+import {ShouldPublishResults} from './definitions'
 
 export type TopologicalGraph = {
 	[name: string]: {
@@ -16,6 +16,8 @@ export type TopologicalGraph = {
 		dependencies: string[];
 	};
 };
+
+export type TopoSortSubject = Pkg | any
 
 export interface Workspace {
 	root: string
@@ -126,8 +128,6 @@ export async function shouldPublish(packageInfo: PackageInfo): Promise<ShouldPub
 
 	return results
 }
-
-export type TopoSortSubject = Pkg | Release
 
 export function sortTopologically(packages: TopoSortSubject[]): TopoSortSubject[] {
 	if (!$run.toposort) {

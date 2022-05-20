@@ -1,4 +1,4 @@
-import {exTrim} from './helpers'
+import {exTrim} from './commands'
 
 export async function isGitClean(directory: string): Promise<string> {
 	return exTrim('git', ['status', '--porcelain'], directory)

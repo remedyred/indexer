@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 import {cli} from '@snickbit/node-cli'
 import {ask, confirm} from '@snickbit/node-utilities'
-import {$out, $run, getConfig, releases} from './config'
+import {$out, $run, releases, useConfig} from './config'
 import {plural} from '@snickbit/utilities'
-import {Pkg} from './Pkg'
 import {template} from 'ansi-styles-template'
 import {Release} from './Release'
 import {Bump, BumpRecord} from './definitions'
 import {genBump, genBumps} from './helpers'
 import {run} from './run'
 import packageJson from '../package.json'
+import {Pkg} from '@remedyred/cli-utilities'
 
 cli()
 .name('@snickbit/releaser')
@@ -47,7 +47,7 @@ cli()
 .defaultAction('release')
 .run()
 .then(async (argv) => {
-	const config = await getConfig(argv)
+	const config = await useConfig(argv)
 
 	let applyToAll: boolean | Bump
 	if (argv.bump) applyToAll = argv.bump as Bump

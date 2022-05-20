@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@hapi/topo": "^5.1.0",
+		"@remedyred/cli-utilities": "^0.0.0",
 		"@snickbit/cycle": "^0.0.19",
 		"@snickbit/node-cli": "^1.0.46",
 		"@snickbit/node-utilities": "^4.3.4",

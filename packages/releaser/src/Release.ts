@@ -1,12 +1,10 @@
 import {execa, execaCommand} from 'execa'
-import {$render, $run, getConfig} from './config'
-import {gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitLog, gitPush, gitRepoPath, gitTag, gitUrl, isGitClean} from './git'
-import {Pkg} from './Pkg'
+import {$run, useConfig} from './config'
+import {$render, gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitLog, gitPush, gitRepoPath, gitTag, gitUrl, isGitClean, Pkg, Renderer} from '@remedyred/cli-utilities'
 import {interpolate, isArray, isEmpty, sleep} from '@snickbit/utilities'
 import {fileExists, getFile, saveFile, saveFileJson} from '@snickbit/node-utilities'
 import path from 'path'
 import upwords from '@snickbit/upwords'
-import {Renderer} from './Render'
 import {Bump, ReleaserConfig} from './definitions'
 import {addRelease, isDependent} from './run'
 import {Out} from '@snickbit/out'
@@ -98,7 +96,7 @@ export class Release {
 
 	async getConfig() {
 		if (!this._config) {
-			this._config = await getConfig()
+			this._config = await useConfig()
 
 			if ('releaser' in this.pkg) {
 				this._config = {...this._config, ...this.pkg.releaser}
