@@ -2,15 +2,15 @@
 	"name": "@remedyred/releaser",
 	"version": "0.0.14",
 	"license": "UNLICENSED",
-	"main": "./bin/releaser.js",
+	"main": "./bin/releaser",
 	"bin": {
-		"releaser": "./bin/releaser.js"
+		"releaser": "./bin/releaser"
 	},
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"build": "esbuild --bundle --outfile=bin/releaser.js src/index.ts --target=node12 --platform=node --external:shelljs --sourcemap",
+		"build": "esbuild --bundle --outfile=bin/releaser src/index.ts --target=node12 --platform=node --external:shelljs --sourcemap",
 		"build:meta": "npm run build --metafile",
 		"clean": "shx rm -rf ./dist ./bin",
 		"depcheck": "depcheck",
