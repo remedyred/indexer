@@ -6,7 +6,7 @@ import {plural} from '@snickbit/utilities'
 import {template} from 'ansi-styles-template'
 import {Release} from './Release'
 import {Bump, BumpRecord} from './definitions'
-import {genBump, genBumps} from './helpers'
+import {genBump, genBumps, genConventionalBump, getBumpColor} from './helpers'
 import {run} from './run'
 import packageJson from '../package.json'
 import {Pkg} from '@remedyred/cli-utilities'
@@ -63,7 +63,7 @@ cli()
 
 	let packagesToRelease: Pkg[]
 
-	if (applyToAll) {
+	if (applyToAll || config.conventionalCommits) {
 		packagesToRelease = $run.packages
 	} else {
 		const choices: PackageChoice[] = $run.packages.map(p => {
@@ -84,27 +84,42 @@ cli()
 		})
 	}
 
+	let messages: string[] = []
+
+	const stats = {} as Record<Bump, number>
+
 	for (let pkg of packagesToRelease) {
 		type SkipBumpRecord = Omit<BumpRecord, 'type'> & { type: Bump | 'skip' }
 
-		const bumps = await genBumps(pkg) as SkipBumpRecord[]
+		let bump: SkipBumpRecord | Bump
+		if (config.conventionalCommits) {
+			bump = await genConventionalBump(pkg) as SkipBumpRecord
 
-		bumps.push({
-			title: 'Skip',
-			type: 'skip'
-		})
+			if (bump.type !== 'skip') {
+				stats[bump.type] = (stats[bump.type] || 0) + 1
+				const color = getBumpColor(bump.type)
+				messages.push(`{magenta}${pkg.name}{/magenta} {${color}}${bump.type}{/${color}} ${pkg.version} => {blueBright}${bump.version}{/blueBright}`)
+			}
+		} else {
+			const bumps = genBumps(pkg) as SkipBumpRecord[]
 
-		let bump: SkipBumpRecord | Bump = applyToAll || await ask(`Bump version for ${pkg.name} (${pkg.version})?`, {
-			type: 'select',
-			choices: bumps.map(b => ({title: b.title, value: b}))
-		})
+			bumps.push({
+				title: 'Skip',
+				type: 'skip'
+			})
+
+			bump = applyToAll || await ask(`Bump version for ${pkg.name} (${pkg.version})?`, {
+				type: 'select',
+				choices: bumps.map(b => ({title: b.title, value: b}))
+			})
+		}
 
 		if (!bump) {
 			$out.fatal('No bump version selected')
 		}
 
 		if (typeof bump === 'string') {
-			bump = await genBump(pkg, bump)
+			bump = genBump(pkg, bump)
 		}
 
 		if (bump.type === 'skip') {
@@ -113,14 +128,30 @@ cli()
 			continue
 		}
 
-		if (applyToAll === undefined && await confirm(`Apply to all?`)) {
+		if (!config.conventionalCommits && applyToAll === undefined && await confirm(`Apply to all?`)) {
 			applyToAll = bump.type
+		} else {
+			applyToAll = false
 		}
 
 		try {
 			releases[pkg.name] = new Release(pkg, bump.type, bump.version)
 		} catch (e) {
 			$out.fatal('Failed to add release', e)
+		}
+	}
+
+	if (config.conventionalCommits) {
+		let topMessage = 'Results:'
+		for (let bump of Object.keys(stats)) {
+			const color = getBumpColor(bump as Bump)
+			topMessage += ` {${color}}${plural(bump, stats[bump])}{/${color}}: ${stats[bump]}`
+		}
+
+		$out.broken.info(topMessage, ...messages)
+
+		if (!(await confirm('Are you sure you want to publish these packages?'))) {
+			$out.fatal('Aborting')
 		}
 	}
 

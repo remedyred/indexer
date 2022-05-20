@@ -70,9 +70,9 @@ export function queueRelease(release: Release, stage?: ReleaseStage) {
 	}
 }
 
-export async function addRelease(pkg: Pkg, bump: BumpRecord | Bump, queue?: boolean);
-export async function addRelease(packageName: string, bump: BumpRecord | Bump, queue?: boolean);
-export async function addRelease(pkgOrName: string | Pkg, bump: BumpRecord | Bump, queue?: boolean) {
+export function addRelease(pkg: Pkg, bump: BumpRecord | Bump, queue?: boolean);
+export function addRelease(packageName: string, bump: BumpRecord | Bump, queue?: boolean);
+export function addRelease(pkgOrName: string | Pkg, bump: BumpRecord | Bump, queue?: boolean) {
 	let pkg: Pkg
 	if (typeof pkgOrName === 'string') {
 		pkg = new Pkg($run.packageInfos[pkgOrName])
@@ -91,7 +91,7 @@ export async function addRelease(pkgOrName: string | Pkg, bump: BumpRecord | Bum
 	}
 
 	if (typeof bump === 'string') {
-		bump = await genBump(pkg, bump)
+		bump = genBump(pkg, bump)
 	}
 
 	releases[pkg.name] = new Release(pkg, bump.type, bump.version)

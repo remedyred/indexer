@@ -167,12 +167,12 @@ export class Release {
 				if (!pkg || pkg.name === this.name) continue
 				if (pkg.dependencies && this.name in pkg.dependencies) {
 					pkg.dependencies[this.name] = `^${this.version}`
-					await addRelease(pkg.name, dependencyBump, true)
+					addRelease(pkg.name, dependencyBump, true)
 					this.out.log(`Bumped ${this.name} to ${this.version} in ${pkg.name} dependencies`)
 				}
 				if (pkg.devDependencies && this.name in pkg.devDependencies) {
 					pkg.devDependencies[this.name] = `^${this.version}`
-					await addRelease(pkg.name, dependencyBump, true)
+					addRelease(pkg.name, dependencyBump, true)
 					this.out.log(`Bumped ${this.name} to ${this.version} in ${pkg.name} devDependencies`)
 				}
 			}

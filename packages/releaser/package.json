@@ -33,6 +33,7 @@
 		"@snickbit/upwords": "^2.0.16",
 		"@snickbit/utilities": "^3.0.19",
 		"ansi-styles-template": "^1.0.0",
+		"conventional-changelog-angular": "^5.0.13",
 		"conventional-recommended-bump": "^6.1.0",
 		"execa": "^6.1.0",
 		"lilconfig": "^2.0.5",
