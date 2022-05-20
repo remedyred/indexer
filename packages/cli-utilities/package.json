@@ -1,6 +1,6 @@
 {
 	"name": "@remedyred/cli-utilities",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "CLI helpers for @remedyred/cli",
 	"license": "MIT",
 	"exports": {
