@@ -87,7 +87,7 @@ cli()
 	for (let pkg of packagesToRelease) {
 		type SkipBumpRecord = Omit<BumpRecord, 'type'> & { type: Bump | 'skip' }
 
-		const bumps = genBumps(pkg.version) as SkipBumpRecord[]
+		const bumps = await genBumps(pkg) as SkipBumpRecord[]
 
 		bumps.push({
 			title: 'Skip',
@@ -104,7 +104,7 @@ cli()
 		}
 
 		if (typeof bump === 'string') {
-			bump = genBump(pkg.version, bump)
+			bump = await genBump(pkg, bump)
 		}
 
 		if (bump.type === 'skip') {

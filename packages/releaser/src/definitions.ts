@@ -57,6 +57,7 @@ export interface ReleaserConfig {
 	force?: boolean
 	dryRun?: boolean
 	allowPrivate?: boolean
+	conventionalCommits?: boolean
 	config?: string
 	rootPackage?: PackageJson
 	bump?: Bump

@@ -24,6 +24,7 @@ export const $queue = new Queue()
 export const defaultConfig: ReleaserConfig = {
 	workspaces: [],
 	dependencies: true,
+	conventionalCommits: false,
 	git: {
 		commit: true,
 		commitMessage: 'chore(release): publish',
