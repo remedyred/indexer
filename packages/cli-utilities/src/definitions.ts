@@ -30,6 +30,7 @@ export interface NpmConfig {
 }
 
 export interface Argv extends GitConfig, NpmConfig{
+	all: boolean
 	dryRun: boolean
 	config?: string
 	force?: boolean

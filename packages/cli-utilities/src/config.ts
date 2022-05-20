@@ -35,7 +35,7 @@ export const processes = []
 export const awaitProcesses = async () => await Promise.all(processes.splice(0))
 
 const configTypes: ConfigTypes = {
-	app: ['force', 'dryRun', 'allowPrivate', 'config'],
+	app: ['force', 'dryRun', 'allowPrivate', 'config', 'all'],
 	git: ['commitMessage', 'tagName', 'tagMessage'],
 	npm: ['access', 'otp', 'registry']
 }

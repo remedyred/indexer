@@ -30,6 +30,11 @@ cli()
 		description: 'Allow private packages',
 		type: 'boolean'
 	},
+	all: {
+		alias: 'a',
+		description: 'Select all packages',
+		type: 'boolean'
+	},
 	otp: {
 		description: 'One time password for private packages',
 		type: 'string'
@@ -63,7 +68,7 @@ cli()
 
 	let packagesToRelease: Pkg[]
 
-	if (applyToAll || config.conventionalCommits) {
+	if (applyToAll || config.all) {
 		packagesToRelease = $run.packages
 	} else {
 		const choices: PackageChoice[] = $run.packages.map(p => {
