@@ -153,7 +153,9 @@ cli()
 			topMessage += ` {${color}}${plural(bump, stats[bump])}{/${color}}: ${stats[bump]}`
 		}
 
-		$out.broken.info(topMessage, ...messages)
+		messages.unshift(topMessage, '')
+
+		$out.broken.ln.info(...messages).ln()
 
 		if (!(await confirm('Are you sure you want to publish these packages?'))) {
 			$out.fatal('Aborting')
