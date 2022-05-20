@@ -4,7 +4,7 @@ import {$out, bumpTypes} from './config'
 import semverInc from 'semver/functions/inc'
 import conventionalRecommendedBump from 'conventional-recommended-bump'
 import {Pkg} from '@remedyred/cli-utilities'
-
+import 'conventional-changelog-angular'
 
 export function getBumpColor(bump: Bump): string {
 	if (bump === 'patch') return 'green'

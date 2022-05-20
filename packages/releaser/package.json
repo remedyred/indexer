@@ -23,9 +23,7 @@
 		"testEnvironment": "node"
 	},
 	"dependencies": {
-		"@hapi/topo": "^5.1.0",
 		"@remedyred/cli-utilities": "^0.1.0",
-		"@snickbit/cycle": "^0.0.19",
 		"@snickbit/node-cli": "^1.0.46",
 		"@snickbit/node-utilities": "^4.3.4",
 		"@snickbit/out": "^2.0.25",
@@ -36,10 +34,7 @@
 		"conventional-changelog-angular": "^5.0.13",
 		"conventional-recommended-bump": "^6.1.0",
 		"execa": "^6.1.0",
-		"lilconfig": "^2.0.5",
-		"log-update": "^5.0.1",
-		"semver": "^7.3.7",
-		"workspace-tools": "^0.19.0"
+		"semver": "^7.3.7"
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.34",

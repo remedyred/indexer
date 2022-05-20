@@ -31,11 +31,9 @@
 	"dependencies": {
 		"@hapi/topo": "^5.1.0",
 		"@snickbit/cycle": "^0.0.19",
-		"@snickbit/node-cli": "^1.0.46",
 		"@snickbit/node-utilities": "^4.3.4",
 		"@snickbit/out": "^2.0.25",
 		"@snickbit/queue": "^1.1.2",
-		"@snickbit/upwords": "^2.0.16",
 		"@snickbit/utilities": "^3.0.19",
 		"ansi-styles-template": "^1.0.0",
 		"conventional-recommended-bump": "^6.1.0",

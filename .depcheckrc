@@ -6,7 +6,8 @@
 		"typedoc",
 		"typedoc-plugin-markdown",
 		"typedoc-plugin-no-inherit",
-		"@types/jest"
+		"@types/jest",
+		"@types/node"
 	],
 	"oneline": true,
 	"ignore-bin-package": true
