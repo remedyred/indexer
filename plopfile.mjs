@@ -1,6 +1,4 @@
 import {execa} from 'execa'
-import fs from 'fs'
-import path from 'path'
 
 export default function (plop) {
 	// create your generators here
@@ -22,22 +20,26 @@ export default function (plop) {
 		actions: [
 			{
 				type: 'addMany',
-				destination: '{{destination}}/{{name}}',
+				destination: 'packages/{{name}}',
 				base: '.templates/cli',
 				templateFiles: '.templates/cli/**/*',
 				force: true
 			},
-			async function renameFiles(answers, config, plop) {
-				console.log('Renaming files...')
-				const base = plop.getDestBasePath()
+			async function bootstrap() {
+				console.log('Bootstrapping')
 
-				const gitIgnore = path.join(base, '.gitignore.hbs')
-				if (fs.existsSync(gitIgnore)) {
-					fs.renameSync(gitIgnore, path.join(base, '.gitignore'))
-				}
-			},
-			async function bootstrap(answers) {
-				await execa('pnpm', ['install'])
+				const options = {cwd: process.cwd()}
+
+				/**
+				 * @type {Promise<any>[]}
+				 */
+				const tasks = [
+					execa('pnpm', ['install'], options).catch(() => console.warn('Failed to install dependencies')),
+					execa('pnpm', ['eslint', '.', '--quiet', '--fix'], options).catch(() => console.warn('Failed to install dependencies'))
+				]
+
+				await Promise.all(tasks)
+				return 'Bootstrap Complete'
 			}
 		]
 	})
