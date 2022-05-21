@@ -118,7 +118,6 @@ export async function shouldPublish(packageInfo: PackageInfo): Promise<ShouldPub
 			results.behindUpstream = (git_log).split('\n').filter(Boolean).length
 		} else {
 			results.behindUpstream = parse((await gitBehindUpstream(path.dirname(packageInfo.packageJsonPath))).match(/0\s+\d+/))
-			$out.fatal('Used git behind upstream to determine if package should be published', results.behindUpstream)
 		}
 
 		results.tests.push(results.behindUpstream > 0)
