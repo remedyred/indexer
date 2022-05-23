@@ -2,6 +2,8 @@
 
 export * as client from './client'
 export * as ftp from './ftp'
+export * as landing from './landing'
+export * as perms from './perms'
 export * as user from './user'
 export * as vhost from './vhost'
 export * as wordpress from './wordpress'
