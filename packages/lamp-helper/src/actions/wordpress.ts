@@ -1,6 +1,6 @@
-import {$out, cleanDomain, finish, required, run, runIn, start, test} from '../helpers'
+import {$out, cleanDomain, finish, required, run, runIn, start, template, test} from '../helpers'
 import {config} from '../config'
-import {mkdir} from '@snickbit/node-utilities'
+import {mkdir, saveFile} from '@snickbit/node-utilities'
 
 export default async function (username?: string, domain?: string, site_name?: string) {
 	username = await required('Username: ', username)
@@ -43,4 +43,12 @@ export default async function (username?: string, domain?: string, site_name?: s
 		`--admin_password=${username}`, `--admin_email=${await config('admin.email')}`
 	)
 	finish('WordPress installed for ' + domain)
+
+	start('Generating PHP-FPM pool file')
+	saveFile(`/etc/php/7.4/fpm/pool.d/${domain}.conf`, template('pool', {domain, username, date: new Date().toISOString()}))
+	finish('Generated PHP-FPM pool file')
+
+	start('Reloading PHP-FPM')
+	await run('service', 'php7.4-fpm', 'reload')
+	finish('Reloaded PHP-FPM')
 }
