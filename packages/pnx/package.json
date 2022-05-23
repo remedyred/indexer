@@ -24,8 +24,8 @@
 		"testEnvironment": "node"
 	},
 	"dependencies": {
-		"@snickbit/node-cli": "^1.0.46",
-		"@snickbit/out": "^2.0.25"
+		"@snickbit/node-cli": "^1.0.49",
+		"@snickbit/out": "^2.0.26"
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.34",
