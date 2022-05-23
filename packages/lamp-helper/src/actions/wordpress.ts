@@ -3,7 +3,7 @@ import {mkdir, saveFile} from '@snickbit/node-utilities'
 import {$out, cleanDomain} from '../helpers'
 import {finish, start} from '../spinner'
 import {run, runIn, test} from '../run'
-import {required} from '../prompt'
+import {confirm, required} from '../prompt'
 import {template} from '../template'
 
 export default async function () {
@@ -45,6 +45,15 @@ export default async function () {
 		`--url=${domain}`, `--title=${site_name}`, `--admin_user=${await config('admin.username')}`,
 		`--admin_password=${await config('admin.password')}`, `--admin_email=${await config('admin.email')}`
 	)
+
+	if (await confirm('Add user as admin?')) {
+		await runIn(domain_dir,
+			'wp', 'user', 'create', '--allow-root',
+			username, await config('user_email'), `--user_pass=${username}`,
+			`--role=administrator`
+		)
+	}
+
 	finish('WordPress installed for ' + domain)
 
 	start('Generating PHP-FPM pool file')
