@@ -9,7 +9,7 @@ import {template} from '../template'
 export default async function () {
 	const username = await required('username')
 	const domain = cleanDomain(await required('domain'))
-	const site_name = await required('site.name')
+	const site_name = await required('site_name')
 
 	$out.info('Starting WordPress installation')
 
