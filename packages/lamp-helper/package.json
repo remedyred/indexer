@@ -17,7 +17,7 @@
 		"clean": "shx rm -rf ./dist ./bin",
 		"depcheck": "depcheck",
 		"index": "indexer",
-		"prod": "pnpm run build --minify",
+		"prod": "pnpm run index && pnpm run build --minify",
 		"start": "node bin/lamp-helper",
 		"watch": "pnpm run build --watch"
 	},
