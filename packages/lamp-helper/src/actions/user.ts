@@ -11,7 +11,7 @@ export default async function (username?: string) {
 		let password = await required('Password: ', username, {type: 'password'})
 
 		start('Creating user and setting password')
-		await run('useradd', '-m', '-p', await hash(password), username)
+		await run('useradd', '-M', '-p', await hash(password), username)
 		finish('Created user and set password')
 	}
 
