@@ -21,7 +21,7 @@ export default async argv => cli(argv).args({
 		type: 'string'
 	}
 }).run(async args => {
-	$state.patch(args)
+	$state.set(args)
 	$out.info('Creating client')
 
 	await user()
