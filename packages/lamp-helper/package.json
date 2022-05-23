@@ -1,6 +1,6 @@
 {
 	"name": "@remedyred/lamp-helper",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"license": "UNLICENSED",
 	"main": "./bin/lamp-helper",
 	"bin": {
@@ -38,7 +38,7 @@
 		"handlebars": "^4.7.7"
 	},
 	"devDependencies": {
-		"@remedyred/indexer": "workspace:^2.2.6",
+		"@remedyred/indexer": "workspace:^2.2.7",
 		"@types/node": "^17.0.34",
 		"esbuild": "^0.14.39",
 		"shx": "^0.3.4",
