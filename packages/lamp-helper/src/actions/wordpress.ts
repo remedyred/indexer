@@ -5,6 +5,7 @@ import {finish, start} from '../spinner'
 import {run, runIn, test} from '../run'
 import {confirm, required} from '../prompt'
 import {template} from '../template'
+import perms from './perms'
 
 export default async function () {
 	const username = await required('username')
@@ -61,4 +62,6 @@ export default async function () {
 	start('Reloading PHP-FPM')
 	await run('service', 'php7.4-fpm', 'reload')
 	finish('Reloaded PHP-FPM')
+
+	return perms()
 }
