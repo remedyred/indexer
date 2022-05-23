@@ -20,8 +20,7 @@ export async function runIn(directory, ...args) {
 		$out.fatal(e.stderr || e.stdout || e.message)
 	}
 	if (results.stderr) {
-		$out.error('Command returned error: ' + args.join(' '))
-		$out.fatal(results.stderr)
+		$out.warn(results.stderr)
 	}
 
 	return results.stdout
