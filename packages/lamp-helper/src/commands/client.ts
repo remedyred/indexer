@@ -3,7 +3,7 @@ import {confirm} from '@snickbit/node-utilities'
 import user from '../actions/user'
 import ftp from '../actions/ftp'
 import vhost from '../actions/vhost'
-import {$out, $state, required} from '../helpers'
+import {$out, $state} from '../helpers'
 import wordpress from '../actions/wordpress'
 import landing from '../actions/landing'
 
@@ -24,7 +24,6 @@ export default async argv => cli(argv).args({
 	$state.patch(args)
 	$out.info('Creating client')
 
-	await required('username')
 	await user()
 
 	if (await confirm('Enable FTP?')) {
