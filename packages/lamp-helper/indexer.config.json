@@ -1,0 +1,15 @@
+{
+	"typescript": true,
+	"indexes": [
+		{
+			"source": "src/actions/**/*.ts",
+			"output": "src/actions/index.ts",
+			"type": "group"
+		},
+		{
+			"source": "src/commands/**/*.ts",
+			"output": "src/commands/index.ts",
+			"type": "group"
+		}
+	]
+}

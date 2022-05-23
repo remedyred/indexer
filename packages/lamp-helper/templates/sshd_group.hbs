@@ -1,0 +1,10 @@
+Match group {{group}}
+PasswordAuthentication yes
+# Force the connection to use SFTP and chroot to the required directory.
+ForceCommand internal-sftp
+ChrootDirectory /home/%u
+# Disable tunneling, authentication agent, TCP and X11 forwarding.
+PermitTunnel no
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no

@@ -1,0 +1,82 @@
+{
+	"name": "@remedyred/lamp-helper",
+	"version": "0.4.1",
+	"private": true,
+	"license": "UNLICENSED",
+	"main": "./bin/lamp-helper",
+	"bin": {
+		"lamp-helper": "./bin/lamp-helper",
+		"lh": "./bin/lamp-helper"
+	},
+	"files": [
+		"dist",
+		"templates"
+	],
+	"scripts": {
+		"build": "esbuild --bundle --outfile=bin/lamp-helper src/index.ts --target=node12 --platform=node --external:shelljs --sourcemap",
+		"build:meta": "npm run build --metafile",
+		"clean": "shx rm -rf ./dist ./bin",
+		"depcheck": "depcheck",
+		"index": "indexer",
+		"prod": "pnpm run build --minify",
+		"start": "node bin/lamp-helper",
+		"watch": "pnpm run build --watch"
+	},
+	"jest": {
+		"preset": "ts-jest",
+		"testEnvironment": "node"
+	},
+	"dependencies": {
+		"@snickbit/node-cli": "^1.0.48",
+		"@snickbit/node-utilities": "^4.3.4",
+		"@snickbit/out": "^2.0.25",
+		"@snickbit/upwords": "^2.0.16",
+		"bcrypt": "^5.0.1",
+		"bcrypt-ts": "^1.0.0",
+		"conf": "^10.1.2",
+		"execa": "^6.1.0",
+		"fs-extra": "^10.1.0",
+		"handlebars": "^4.7.7"
+	},
+	"devDependencies": {
+		"@lighthousesystems/esbuild-plugin-handlebars": "^1.0.0",
+		"@remedyred/indexer": "workspace:^2.2.6",
+		"@types/node": "^17.0.34",
+		"esbuild": "^0.14.39",
+		"shx": "^0.3.4",
+		"typescript": "^4.6.3"
+	},
+	"engines": {
+		"node": ">= 12"
+	},
+	"preferGlobal": true,
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://npm.remedyred.com/"
+	},
+	"tsup": {
+		"entry": [
+			"src/index.ts"
+		],
+		"clean": true,
+		"dts": true,
+		"format": [
+			"cjs"
+		]
+	},
+	"typedoc": {
+		"entryPoints": [
+			"src/index.ts"
+		],
+		"out": "docs",
+		"githubPages": false,
+		"hideBreadcrumbs": true,
+		"hideGenerator": true,
+		"excludeProtected": true,
+		"excludeInternal": true,
+		"excludePrivate": true,
+		"disableSources": true,
+		"defaultCategory": "Modules",
+		"readme": "none"
+	}
+}
