@@ -1,7 +1,7 @@
 import cli from '@snickbit/node-cli'
 import {confirm} from '@snickbit/node-utilities'
 import user from '../actions/user'
-import ftp from './ftp'
+import ftp from '../actions/ftp'
 import vhost from '../actions/vhost'
 import {$out, $state, required} from '../helpers'
 import wordpress from '../actions/wordpress'
