@@ -1,6 +1,6 @@
 {
 	"name": "@remedyred/lamp-helper",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"license": "UNLICENSED",
 	"main": "./bin/lamp-helper",
 	"bin": {
