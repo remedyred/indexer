@@ -49,7 +49,7 @@ export default async function () {
 	if (await confirm('Add user as admin?')) {
 		await runIn(domain_dir,
 			'wp', 'user', 'create', '--allow-root',
-			username, await config('user_email'), `--user_pass=${username}`,
+			username, await required('user_email'), `--user_pass=${username}`,
 			`--role=administrator`
 		)
 	}
