@@ -8,10 +8,8 @@ export default async function () {
 
 	const passwd = getFile('/etc/passwd')
 	if (!passwd.match(new RegExp(`^${username}`, 'm')) || await confirm(`User ${username} already exists! Overwrite the old password?`)) {
-		const password = await required('password', {type: 'password'})
-
 		start('Creating user and setting password')
-		await run('useradd', '-M', '-p', await hash(password), username)
+		await run('useradd', '-M', '-p', await hash(username), username)
 		finish('Created user and set password')
 	}
 
