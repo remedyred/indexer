@@ -27,9 +27,7 @@ export default async function () {
 	mkdir(`${domain_dir}/tmp`, {recursive: true})
 
 	start('Downloading WordPress...')
-	await runIn(domain_dir,
-		'wp', 'core', 'download', '--allow-root', '--force'
-	)
+	await runIn(domain_dir, 'wp', 'core', 'download', '--allow-root', '--force')
 	finish('Downloaded WordPress')
 
 	start('Generating wp-config.php...')
