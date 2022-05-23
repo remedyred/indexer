@@ -24,4 +24,8 @@ export default async function (username?: string) {
 	start('Updating SSH config')
 	saveFile('/etc/ssh/sshd_config', sshd_config)
 	finish('SSH config updated')
+
+	start('Reloading SSH')
+	await run('service', 'ssh', 'restart')
+	finish('SSH reloaded')
 }
