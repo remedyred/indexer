@@ -42,8 +42,8 @@ export default async function () {
 	start('Installing WordPress...')
 	await runIn(domain_dir,
 		'wp', 'core', 'install', '--skip-email', '--allow-root',
-		`--url=${domain}`, `--title=${site_name}`, `--admin_user=${username}`,
-		`--admin_password=${username}`, `--admin_email=${await config('admin.email')}`
+		`--url=${domain}`, `--title=${site_name}`, `--admin_user=${await config('admin.username')}`,
+		`--admin_password=${await config('admin.password')}`, `--admin_email=${await config('admin.email')}`
 	)
 	finish('WordPress installed for ' + domain)
 
