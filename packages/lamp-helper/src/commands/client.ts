@@ -11,6 +11,14 @@ export default async argv => cli(argv).args({
 	username: {
 		description: 'Username to create',
 		type: 'string'
+	},
+	domain: {
+		description: 'Domain to create',
+		type: 'string'
+	},
+	site_name: {
+		description: 'Name of the site to create',
+		type: 'string'
 	}
 }).run(async args => {
 	$state.patch(args)
@@ -25,5 +33,11 @@ export default async argv => cli(argv).args({
 
 	if (await confirm('Create virtualhost?')) {
 		await vhost()
+	}
+
+	if (await confirm('Install WordPress for this domain?')) {
+		await wordpress()
+	} else if (await confirm('Install landing page for this domain?')) {
+		await landing()
 	}
 })

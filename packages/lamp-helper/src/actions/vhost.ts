@@ -29,12 +29,6 @@ export default async function () {
 	finish('Reloaded apache')
 
 	if (await confirm('Enable SSL for this domain?')) {
-		await ssl(domain)
-	}
-
-	if (await confirm('Install WordPress for this domain?')) {
-		await wordpress(username, domain)
-	} else if (await confirm('Install landing page for this domain?')) {
-		await landing(username, domain)
+		await ssl()
 	}
 }
