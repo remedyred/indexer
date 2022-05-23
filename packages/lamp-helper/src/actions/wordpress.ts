@@ -19,9 +19,9 @@ export default async function (username?: string, domain?: string, site_name?: s
 	}
 
 	const user_dir = `/home/${username}`
-	const domain_dir = `${user_dir}/${domain}/`
+	const domain_dir = `${user_dir}/${domain}`
 
-	mkdir(domain_dir, {recursive: true})
+	mkdir(`${domain_dir}/tmp`, {recursive: true})
 
 	start('Downloading WordPress...')
 	await runIn(domain_dir,
