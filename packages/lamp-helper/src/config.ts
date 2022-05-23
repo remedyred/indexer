@@ -2,7 +2,7 @@ import Conf from 'conf'
 import upwords from '@snickbit/upwords'
 import {ask} from '@snickbit/node-utilities'
 
-const $config = new Conf()
+const $config = new Conf({projectName: '@remedyred/lamp-helper'})
 
 
 export async function useConfig() {
