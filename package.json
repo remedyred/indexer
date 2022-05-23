@@ -15,12 +15,11 @@
 		"clean:modules": "shx rm -rf **/node_modules **/.yalc **/yalc.lock",
 		"depcheck": "pnpm run -r depcheck",
 		"dev": "pnpm run -r dev",
-		"docs": "pnpm run -r docs",
 		"fix": "eslint **/*.{js,ts,vue,json} --cache --color --fix",
 		"lint": "eslint **/*.{js,ts,vue,json} --cache --color",
 		"prepare": "husky install",
 		"prod": "pnpm run -r prod",
-		"prerelease": "npm run test && npm run docs && npm run fix  && npm run depcheck",
+		"prerelease": "pnpm run prod && pnpm run fix && pnpm run depcheck",
 		"release": "lerna publish",
 		"test": "pnpm jest"
 	},
