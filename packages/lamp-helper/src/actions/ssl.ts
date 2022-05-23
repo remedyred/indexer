@@ -7,6 +7,10 @@ export default async function () {
 	$out.info('Starting SSL certificate creation')
 
 	start('Creating SSL certificate for ' + domain)
-	await run('certbot', '--apache', '--agree-tos', '--non-interactive', '--email', await config('admin.email'), '-d', domain, '-d', 'www.' + domain)
+	await run(
+		'certbot', '--apache', '--agree-tos',
+		'--non-interactive', '--email', await config('admin.email'),
+		'-d', domain, '-d', 'www.' + domain
+	)
 	finish('Created SSL certificate for ' + domain)
 }
