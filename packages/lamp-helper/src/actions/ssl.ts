@@ -1,9 +1,8 @@
 import {$out, cleanDomain, finish, required, run, start} from '../helpers'
 import {config} from '../config'
 
-export default async function (domain?: string) {
-	domain = await required('Domain: ', domain)
-	domain = cleanDomain(domain)
+export default async function () {
+	const domain = cleanDomain(await required('domain'))
 
 	$out.info('Starting SSL certificate creation')
 

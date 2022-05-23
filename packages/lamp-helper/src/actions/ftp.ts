@@ -1,8 +1,8 @@
 import {getFile, saveFile} from '@snickbit/node-utilities'
 import {$out, finish, required, run, start, template} from '../helpers'
 
-export default async function (username?: string) {
-	username = await required('Username: ', username)
+export default async function () {
+	const username = await required('username')
 
 	$out.info('Starting FTP account creation')
 

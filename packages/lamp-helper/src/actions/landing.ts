@@ -1,11 +1,10 @@
 import {$out, cleanDomain, finish, required, start, template} from '../helpers'
 import {mkdir, saveFile} from '@snickbit/node-utilities'
 
-export default async function (username?: string, domain?: string, site_name?: string) {
-	username = await required('Username: ', username)
-	domain = await required('Domain: ', domain)
-	domain = cleanDomain(domain)
-	site_name = await required('Site Name: ', site_name)
+export default async function () {
+	const username = await required('username')
+	const domain = cleanDomain(await required('domain'))
+	const site_name = await required('site.name')
 
 	$out.info('Starting Landing installation')
 

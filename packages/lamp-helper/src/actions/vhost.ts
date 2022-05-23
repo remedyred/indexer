@@ -2,13 +2,10 @@ import {$out, cleanDomain, finish, required, run, start, template} from '../help
 import {confirm, mkdir, saveFile} from '@snickbit/node-utilities'
 import {config} from '../config'
 import ssl from './ssl'
-import wordpress from './wordpress'
-import landing from './landing'
 
-export default async function (username?: string, domain?: string) {
-	username = await required('Username: ', username)
-	domain = await required('Domain: ', domain)
-	domain = cleanDomain(domain)
+export default async function () {
+	const username = await required('username')
+	const domain = cleanDomain(await required('domain'))
 
 	$out.info('Starting VirtualHost creation')
 

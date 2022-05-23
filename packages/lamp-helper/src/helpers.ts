@@ -3,14 +3,23 @@ import {ask, getFile, Question, Spinner} from '@snickbit/node-utilities'
 import Handlebars from 'handlebars'
 import path from 'path'
 import {Out} from '@snickbit/out'
+import {Model} from '@snickbit/model'
+import {isEmpty} from '@snickbit/utilities'
 import {hash as bcryptHash} from 'bcrypt-ts'
-
-export const $out = new Out('lamp')
+import upwords from '@snickbit/upwords'
 
 interface RunResults {
 	stdout?: string
 	stderr?: string
 }
+
+export interface State {
+	username?: string
+}
+
+export const $out = new Out('lamp')
+
+export const $state: Model = new Model()
 
 export async function test(...args) {
 	try {
@@ -88,9 +97,12 @@ export function cleanDomain(domain: string) {
 	return domain.replace(/\s/g, '').replace(/^(http|https):\/\//, '').replace(/^www\./, '')
 }
 
-export async function required(question: string, answer?: string, options?: Partial<Question>): Promise<string> {
-	while (!answer) {
-		answer = await ask(question, options)
+export async function required(key: string, options?: Partial<Question>): Promise<string> {
+	let answer = $state.get(key)
+	while (isEmpty(answer)) {
+		answer = await ask(upwords(key.split('.').join(' ')), options)
 	}
+	$state.set(key, answer)
+
 	return answer
 }
