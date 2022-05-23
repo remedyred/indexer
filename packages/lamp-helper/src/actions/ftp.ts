@@ -1,5 +1,9 @@
 import {getFile, saveFile} from '@snickbit/node-utilities'
-import {$out, finish, required, run, start, template} from '../helpers'
+import {$out} from '../helpers'
+import {finish, start} from '../spinner'
+import {required} from '../prompt'
+import {run} from '../run'
+import {template} from '../template'
 
 export default async function () {
 	const username = await required('username')

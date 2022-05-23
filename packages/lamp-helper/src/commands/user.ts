@@ -1,6 +1,6 @@
 import cli from '@snickbit/node-cli'
 import user from '../actions/user'
-import {$state} from '../helpers'
+import {$state} from '../state'
 
 export default async argv => cli(argv).args({
 	username: {

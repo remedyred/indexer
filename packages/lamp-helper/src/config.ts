@@ -1,14 +1,12 @@
 import Conf from 'conf'
 import upwords from '@snickbit/upwords'
-import {ask} from '@snickbit/node-utilities'
+import {ask} from './prompt'
 
 const $config = new Conf({projectName: '@remedyred/lamp-helper'})
-
 
 export async function useConfig() {
 	return $config
 }
-
 
 export async function config(key: string) {
 	while (!$config.has(key)) {

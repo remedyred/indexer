@@ -1,6 +1,10 @@
-import {$out, cleanDomain, finish, required, run, runIn, start, template, test} from '../helpers'
 import {config} from '../config'
 import {mkdir, saveFile} from '@snickbit/node-utilities'
+import {$out, cleanDomain} from '../helpers'
+import {finish, start} from '../spinner'
+import {run, runIn, test} from '../run'
+import {required} from '../prompt'
+import {template} from '../template'
 
 export default async function () {
 	const username = await required('username')

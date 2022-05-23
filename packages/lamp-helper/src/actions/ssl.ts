@@ -1,5 +1,8 @@
-import {$out, cleanDomain, finish, required, run, start} from '../helpers'
 import {config} from '../config'
+import {$out, cleanDomain} from '../helpers'
+import {finish, start} from '../spinner'
+import {required} from '../prompt'
+import {run} from '../run'
 
 export default async function () {
 	const domain = cleanDomain(await required('domain'))

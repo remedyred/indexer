@@ -1,5 +1,8 @@
-import {confirm, getFile, mkdir} from '@snickbit/node-utilities'
-import {$out, finish, hash, required, run, start} from '../helpers'
+import {getFile, mkdir} from '@snickbit/node-utilities'
+import {$out, hash} from '../helpers'
+import {finish, start} from '../spinner'
+import {confirm, required} from '../prompt'
+import {run} from '../run'
 
 export default async function () {
 	const username = await required('username')
