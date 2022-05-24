@@ -66,9 +66,9 @@ export default async function () {
 	saveFile(`${domain_dir}/.htaccess`, template('htaccess'))
 	finish('Generated htaccess file')
 
+	await perms()
+
 	start('Reloading PHP-FPM')
 	await run('service', 'php7.4-fpm', 'reload')
 	finish('Reloaded PHP-FPM')
-
-	return perms()
 }
