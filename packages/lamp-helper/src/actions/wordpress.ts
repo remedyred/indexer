@@ -69,6 +69,6 @@ export default async function () {
 	await perms()
 
 	start('Reloading PHP-FPM')
-	await run('service', 'php7.4-fpm', 'reload')
+	await run('service', 'php7.4-fpm', 'restart')
 	finish('Reloaded PHP-FPM')
 }
