@@ -1,6 +1,6 @@
 {
 	"name": "@remedyred/cli-utilities",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "CLI helpers for @remedyred/cli",
 	"license": "MIT",
 	"exports": {
@@ -44,7 +44,7 @@
 		"workspace-tools": "^0.19.0"
 	},
 	"devDependencies": {
-		"@remedyred/indexer": "workspace:^2.2.7",
+		"@remedyred/indexer": "workspace:^2.2.8",
 		"@types/jest": "^27.4.1",
 		"@types/node": "^17.0.31",
 		"jest": "^27.5.1",
