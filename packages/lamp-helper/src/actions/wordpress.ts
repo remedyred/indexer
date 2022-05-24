@@ -36,7 +36,8 @@ export default async function () {
 	start('Generating wp-config.php...')
 	await runIn(domain_dir,
 		'wp', 'config', 'create', '--allow-root', '--force',
-		`--dbname=${username}`, `--dbuser=${username}`, `--dbpass=${username}`
+		`--dbname=${username}`, `--dbuser=${username}`, `--dbpass=${username}`,
+		`--extra-php=${template('wp-config.php')}`
 	)
 	finish('Generated wp-config.php')
 
