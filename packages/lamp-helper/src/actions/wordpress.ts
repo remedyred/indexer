@@ -71,4 +71,8 @@ export default async function () {
 	start('Reloading PHP-FPM')
 	await run('service', 'php7.4-fpm', 'restart')
 	finish('Reloaded PHP-FPM')
+
+	start('Reloading Apache')
+	await run('service', 'apache2', 'reload')
+	finish('Reloaded Apache')
 }
