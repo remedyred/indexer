@@ -1,6 +1,6 @@
 {
 	"name": "@remedyred/releaser",
-	"version": "0.2.5",
+	"version": "0.2.6",
 	"license": "UNLICENSED",
 	"main": "./bin/releaser",
 	"bin": {
@@ -23,7 +23,7 @@
 		"testEnvironment": "node"
 	},
 	"dependencies": {
-		"@remedyred/cli-utilities": "^0.2.3",
+		"@remedyred/cli-utilities": "^0.2.4",
 		"@snickbit/node-cli": "^1.0.49",
 		"@snickbit/node-utilities": "^4.3.6",
 		"@snickbit/out": "^2.0.26",
