@@ -14,7 +14,9 @@ export default async function () {
 
 	$out.info('Starting WordPress installation')
 
-	if (!(await test('mysql', '-e', `SHOW DATABASES LIKE '${username}';`))) {
+	const db_exists = await test('mysql', '-e', `SHOW DATABASES LIKE '${username}';`)
+
+	if (!db_exists) {
 		start('Creating MySQL database & user for ' + username + '...')
 		await run('mysql', '-e', `CREATE DATABASE IF NOT EXISTS ${username};`)
 		await run('mysql', '-e', `GRANT ALL PRIVILEGES ON ${username}.* TO '${username}'@'localhost' IDENTIFIED BY '${username}';`)
@@ -45,7 +47,7 @@ export default async function () {
 		`--admin_password=${await config('admin.password')}`, `--admin_email=${await config('admin.email')}`
 	)
 
-	if (await confirm('Add user as admin?')) {
+	if (!db_exists && await confirm('Add user as admin?')) {
 		await runIn(domain_dir,
 			'wp', 'user', 'create', '--allow-root',
 			username, await required('user_email'), `--user_pass=${username}`,
