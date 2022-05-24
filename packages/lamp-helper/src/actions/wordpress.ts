@@ -59,6 +59,10 @@ export default async function () {
 	saveFile(`/etc/php/7.4/fpm/pool.d/${domain}.conf`, template('pool', {domain, username, date: new Date().toISOString()}))
 	finish('Generated PHP-FPM pool file')
 
+	start('Generating htaccess file')
+	saveFile(`${domain_dir}/.htaccess`, template('htaccess'))
+	finish('Generated htaccess file')
+
 	start('Reloading PHP-FPM')
 	await run('service', 'php7.4-fpm', 'reload')
 	finish('Reloaded PHP-FPM')
