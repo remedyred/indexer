@@ -1,6 +1,6 @@
 ;PHP-FPM configuration for domain "{{domain}}" for user "{{username}}" created on {{date}}
 [{{domain}}]
-listen = /var/lib/apache2/fastcgi/1-{{username}}-{{domain}}-php-fpm.socket
+listen = /run/php/{{domain}}.sock
 listen.owner = {{username}}
 listen.group = {{username}}
 listen.mode = 0660
