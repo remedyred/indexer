@@ -1,10 +1,11 @@
 import {$out} from '../helpers'
-import {finish, start} from '../spinner'
 import {required} from '../prompt'
 import {run} from '../run'
-import {fileExists} from '@snickbit/node-utilities'
+import {fileExists, progress} from '@snickbit/node-utilities'
+import {Queue} from '@snickbit/queue'
 import fg from 'fast-glob'
 import {$state} from '../state'
+import {Options as OptionsInternal} from 'fast-glob/out/settings'
 
 const globOptions = {
 	onlyDirectories: true,
@@ -25,36 +26,84 @@ export default async function () {
 
 	const domains = $state.has('domain') ? [$state.get('domain')] : await fg(`${user_dir}/*`, globOptions)
 
+	const $queue = new Queue()
+
+	$queue.finallyEach(() => {
+		if (total) {
+			$progress.tick()
+		}
+	})
+
+	const $progress = progress({autoStart: false, message: 'Fixing permissions'})
+
+	let total = 0
+
+	const modMany = async (filePath: string, permissions: string | number, onlyDirectories = true) => {
+		const options = {} as OptionsInternal
+		if (onlyDirectories) {
+			options.onlyDirectories = true
+		} else {
+			options.onlyFiles = true
+		}
+		const files = await fg(`${filePath}/**`, options)
+
+		// fg won't include the root directory, but we want it
+		if (onlyDirectories) {
+			files.push(filePath)
+		}
+
+		total += files.length
+		$progress.setTotal(total)
+		$queue.push(...files.map(file => run('chmod', String(permissions), file)))
+	}
+
 	for (const domain of domains) {
 		const domain_dir = `${user_dir}/www/${domain}`
 
-		start('Fixing permissions for ' + domain)
+		const is_wp = fileExists(`${domain_dir}/wp-content`)
 
-		const processes = []
+		total = 2
+		$progress.start({message: 'Fixing permissions for ' + domain, total})
 
-		// set user as owner
-		processes.push(run('chown', '-R', `${username}:${username}`, domain_dir))
+		// Ensure .htaccess exists
+		await run('touch', domain_dir + '/.htaccess')
+		$progress.tick()
+
+		// Set user as owner
+		await run('chown', '-R', `${username}:${username}`, domain_dir)
+		$progress.tick()
 
 		// Set all files to 644
-		processes.push(run('chmod', '-R', '644', `${domain_dir}`))
+		await run('chmod', '-R', `644`, domain_dir)
+		$progress.tick()
 
 		// Set all directories to 755
-		processes.push(run('chmod', '-R', '755', `${domain_dir}`))
+		await modMany(domain_dir, '755')
 
-		if (fileExists(`${domain_dir}/wp-content`)) {
-			// Apply WordPress permissions
+		await $queue.run()
+		$progress.finish('Fixed permissions for ' + domain)
 
-			// Finish these processes before continuing
-			await Promise.all(processes)
+		if (is_wp) {
+			total = 1
+			$progress.start({message: 'Applying WordPress permissions for ' + domain, total})
 
-			// Set wp-content to 775
-			processes.push(run('chmod', '-R', '775', `${domain_dir}/wp-content`))
+			// allow WordPress to manage wp-config.php
+			await run('chmod', '-R', '660', `${domain_dir}/wp-config.php`)
+			$progress.tick()
 
-			// Set wp-config to 660
-			processes.push(run('chmod', '-R', '660', `${domain_dir}/wp-config.php`))
+			// allow WordPress to manage wp-content
+
+			// set wp-content files to 664
+			await run('chmod', '-R', `664`, `${domain_dir}/wp-content`)
+			$progress.tick()
+
+			// set wp-content directories to 775
+			await modMany(`${domain_dir}/wp-content`, '775')
+
+			await $queue.run()
+			$progress.finish('Applied WordPress permissions for ' + domain)
 		}
-
-		await Promise.all(processes)
-		finish('Fixed permissions for ' + domain)
 	}
+
+	$out.success('Permissions fixed')
 }
