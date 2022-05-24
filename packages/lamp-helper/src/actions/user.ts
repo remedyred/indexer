@@ -6,6 +6,7 @@ import {run} from '../run'
 
 export default async function () {
 	const username = await required('username')
+	const www_user = 'www-data'
 
 	$out.info('Starting user creation')
 
@@ -16,8 +17,19 @@ export default async function () {
 		finish('Created user and set password')
 	}
 
-	start('Creating home directory')
+	start(`Adding ${www_user} user's group`)
+	await run('usermod', '-a', '-G', username, www_user)
+	finish(`Added ${www_user} user's group`)
+
 	let user_dir = `/home/${username}`
+
+	start('Creating home directory file structure')
+	mkdir(`${user_dir}/tmp`, {recursive: true})
+	mkdir(`${user_dir}/www`, {recursive: true})
+	mkdir(`${user_dir}/logs`, {recursive: true})
+	finish('Created home directory')
+
+	start('Creating home directory')
 	mkdir(`${user_dir}`, {recursive: true})
 	finish('Created home directory')
 }

@@ -14,7 +14,7 @@ export default async function () {
 	$out.info('Starting VirtualHost creation')
 
 	const user_dir = `/home/${username}`
-	const domain_dir = `${user_dir}/${domain}`
+	const domain_dir = `${user_dir}/www/${domain}`
 
 	$out.info('Creating domain directory')
 	mkdir(domain_dir, {recursive: true})

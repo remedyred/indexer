@@ -23,7 +23,7 @@ export default async function () {
 	}
 
 	const user_dir = `/home/${username}`
-	const domain_dir = `${user_dir}/${domain}`
+	const domain_dir = `${user_dir}/www/${domain}`
 
 	mkdir(`${domain_dir}/tmp`, {recursive: true})
 

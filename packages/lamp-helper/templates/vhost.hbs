@@ -1,25 +1,25 @@
 <VirtualHost *:80>
 	ServerAdmin {{ admin_email }}
-
 	ServerName {{domain}}
 	ServerAlias www.{{domain}}
-	DocumentRoot "/home/{{username}}/{{domain}}"
+	DocumentRoot "/home/{{username}}/www/{{domain}}"
+
 	<Directory />
-	AllowOverride All
+	    AllowOverride All
 	</Directory>
 
-	<Directory /home/{{username}}/{{domain}}>
-	allow from all
-	Options ExecCGI FollowSymLinks Includes IncludesNOEXEC Indexes MultiViews SymLinksIfOwnerMatch
-	AllowOverride all
-	Require all granted
+	<Directory /home/{{username}}/www/{{domain}}>
+        allow from all
+        Options ExecCGI FollowSymLinks Includes IncludesNOEXEC Indexes MultiViews SymLinksIfOwnerMatch
+        AllowOverride all
+        Require all granted
 	</Directory>
 
-	ErrorLog /var/log/apache2/{{domain}}-error.log
+	<FilesMatch \.php$>
+      SetHandler "proxy:unix:/run/php/{{domain}}.sock|fcgi://localhost"
+    </FilesMatch>
+
+	ErrorLog /home/{{username}}/logs/{{domain}}-error.log
 	LogLevel error
-	CustomLog /var/log/apache2/{{domain}}-access.log combined
-	RewriteEngine on
-	RewriteCond %{SERVER_NAME} =www.{{domain}} [OR]
-	RewriteCond %{SERVER_NAME} ={{domain}}
-	RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+	CustomLog /home/{{username}}/logs/{{domain}}-access.log combined
 </VirtualHost>

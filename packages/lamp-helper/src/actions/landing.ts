@@ -12,7 +12,7 @@ export default async function () {
 	$out.info('Starting Landing installation')
 
 	const user_dir = `/home/${username}`
-	const domain_dir = `${user_dir}/${domain}/`
+	const domain_dir = `${user_dir}/www/${domain}/`
 
 	mkdir(domain_dir, {recursive: true})
 

@@ -26,7 +26,7 @@ export default async function () {
 	const domains = $state.has('domain') ? [$state.get('domain')] : await fg(`${user_dir}/*`, globOptions)
 
 	for (const domain of domains) {
-		const domain_dir = `${user_dir}/${domain}`
+		const domain_dir = `${user_dir}/www/${domain}`
 
 		start('Fixing permissions for ' + domain)
 
