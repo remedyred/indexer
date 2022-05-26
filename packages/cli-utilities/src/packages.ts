@@ -117,7 +117,9 @@ export async function shouldPublish(packageInfo: PackageInfo): Promise<ShouldPub
 			const git_log = await gitLog(repoPath, lastTagName, gitRelativePath)
 			results.behindUpstream = (git_log).split('\n').filter(Boolean).length
 		} else {
-			results.behindUpstream = parse((await gitBehindUpstream(path.dirname(packageInfo.packageJsonPath))).match(/0\s+\d+/))
+			const behindUpstream = await gitBehindUpstream(path.dirname(packageInfo.packageJsonPath))
+			const matches = /0\s+(?<commits>\d+)/.exec(behindUpstream)
+			results.behindUpstream = matches ? parse(matches.groups.commits) : 0
 		}
 
 		results.tests.push(results.behindUpstream > 0)
