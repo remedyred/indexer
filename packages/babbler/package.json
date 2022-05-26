@@ -18,13 +18,13 @@
 		"watch": "npm run build --watch"
 	},
 	"dependencies": {
-		"@babel/core": "^7.17.12",
-		"@snickbit/node-cli": "^1.0.49",
-		"@snickbit/node-utilities": "^4.3.6",
-		"@snickbit/out": "^2.0.26",
+		"@babel/core": "^7.18.2",
+		"@snickbit/node-cli": "^1.0.50",
+		"@snickbit/node-utilities": "^4.3.7",
+		"@snickbit/out": "^2.0.27",
 		"chokidar": "^3.5.3",
 		"debounce": "^1.2.1",
-		"del": "^6.1.0",
+		"del": "^6.1.1",
 		"glob": "^7.2.0",
 		"lilconfig": "^2.0.5",
 		"terser": "^5.13.1"
