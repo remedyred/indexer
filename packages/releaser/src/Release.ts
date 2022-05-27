@@ -222,7 +222,7 @@ export class Release {
 					const logLines = getFile(this.changelogPath).split('\n')
 					let headerLines
 					for (headerLines = 0; headerLines < logLines.length; headerLines++) {
-						if (logLines[headerLines].match(/^\s*$/)) {
+						if (/^\s*$/.test(logLines[headerLines])) {
 							break
 						}
 					}

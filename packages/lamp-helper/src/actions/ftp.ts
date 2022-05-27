@@ -14,7 +14,7 @@ export default async function () {
 	const groups = getFile('/etc/group')
 	let sshd_config = getFile('/etc/ssh/sshd_config', '')
 
-	if (!groups.match(new RegExp(`^${ftp_group}`, 'm'))) {
+	if (!((new RegExp(`^${ftp_group}`, 'm'))).test(groups)) {
 		start('Creating FTP group')
 		await run('groupadd', ftp_group)
 		sshd_config += '\n\n' + template('sshd_group', {group: ftp_group})

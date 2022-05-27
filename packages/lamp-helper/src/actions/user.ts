@@ -11,7 +11,7 @@ export default async function () {
 	$out.info('Starting user creation')
 
 	const passwd = getFile('/etc/passwd')
-	if (!passwd.match(new RegExp(`^${username}`, 'm')) || await confirm(`User ${username} already exists! Overwrite the old password?`)) {
+	if (!(new RegExp(`^${username}`, 'm')).test(passwd) || await confirm(`User ${username} already exists! Overwrite the old password?`)) {
 		start('Creating user and setting password')
 		await run('useradd', '-s', '/bin/false', '-M', '-p', await hash(username), username)
 		finish('Created user and set password')

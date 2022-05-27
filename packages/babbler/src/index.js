@@ -88,7 +88,7 @@ export default async function (config) {
 			continue
 		}
 
-		if (source_path.match(/\.([cm]?js|vue|ts)$/)) {
+		if (/\.([cm]?js|vue|ts)$/.test(source_path)) {
 			_out.debug(`Transpiling ${source_path} to ${dest_path}`)
 
 			let transpile_request = babel.transformFileAsync(source_path, config.babel)
