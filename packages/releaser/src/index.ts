@@ -47,12 +47,23 @@ cli()
 			alias: 'f',
 			description: 'Force bump',
 			type: 'boolean'
+		},
+		skipDependencies: {
+			alias: 's',
+			description: "Don't bump dependencies",
+			type: 'boolean'
 		}
 	})
 	.defaultAction('release')
 	.run()
 	.then(async argv => {
 		const config = await useConfig(argv)
+
+		if (config.skipDependencies) {
+			$out.force.warn('Skipping all dependency bumps')
+		} else {
+			$out.force.info('Bumping dependencies')
+		}
 
 		let applyToAll: Bump | boolean
 		if (argv.bump) {

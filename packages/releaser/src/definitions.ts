@@ -17,6 +17,7 @@ export interface ChangelogConfig {
 }
 
 export interface Argv extends ArgvBase {
+	skipDependencies?: boolean
 	bump: Bump
 }
 

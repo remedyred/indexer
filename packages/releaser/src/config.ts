@@ -50,7 +50,7 @@ $run.pushedRepos = new Set<string>()
 
 export const $out = new Out('releaser')
 
-setConfigTypes({app: ['bump']})
+setConfigTypes({app: ['bump', 'skipDependencies']})
 
 export async function useConfig(argv?: Argv): Promise<Argv & ReleaserConfig> {
 	if (config) {
