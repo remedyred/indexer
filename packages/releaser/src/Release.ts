@@ -157,8 +157,8 @@ export class Release {
 		this.out.log(`Bumping version from {cyan}${this.pkg.version}{/cyan} to {magenta}${this.version}{/magenta}`)
 		this.pkg.version = this.version
 
-		this.out.log('Checking for dependencies')
 		if (!config.skipDependencies) {
+			this.out.log('Checking for dependencies')
 			const dependencyBump = [
 				'prerelease',
 				'prepatch',

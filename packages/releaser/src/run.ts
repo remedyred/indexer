@@ -2,7 +2,7 @@ import {Bump, BumpRecord} from './definitions'
 import {$out, $queue, $run, releases} from './config'
 import {Release, ReleaseStage} from './Release'
 import {genBump} from './helpers'
-import {Pkg, sortTopologically} from '@remedyred/cli-utilities'
+import {$render, Pkg, sortTopologically} from '@remedyred/cli-utilities'
 
 export let $stage: ReleaseStage
 
@@ -29,12 +29,14 @@ export async function run() {
 		const active = sortTopologically(Object.values(releases).filter((release: Release) => release.stage === stage)) as Release[]
 
 		$out.block.info(`Processing stage: {yellow}${stage}{/yellow} for {blueBright}${active.length}{/blueBright} releases`)
+		$render.start()
 		for (let release of active) {
 			queueRelease(release)
 		}
 
 		await $queue.run()
 		await Promise.all(Object.values(activeReleases).map(release => release.promise))
+		$render.stop()
 
 		activeReleases = {}
 	}
@@ -53,10 +55,8 @@ export function queueRelease(release: Release, stage?: ReleaseStage) {
 	if (!stage) {
 		stage = $stage
 	}
-	const releasePromise = release[stage]().then(() => {
-		$out.success(`{green}${stage}{/green} {blueBright}${release.name}{/blueBright}`)
-	}).catch(e => {
-		$out.error(`Error while processing {yellow}${stage}{/yellow} for {magenta}${release.name}{magenta}`, e)
+	const releasePromise = release[stage]().catch(e => {
+		$render.error(`Error while processing {yellow}${stage}{/yellow} for {magenta}${release.name}{magenta}`, e)
 	}).finally(() => {
 		if (release.name in activeReleases) {
 			delete activeReleases[release.name]

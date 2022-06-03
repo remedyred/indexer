@@ -1,6 +1,6 @@
 import {Cycle} from '@snickbit/cycle'
 import {template} from 'ansi-styles-template'
-import logUpdate from 'log-update'
+import UpdateManager from 'stdout-update'
 
 export interface RenderData {
 	[key: string]: RenderDefinition
@@ -10,6 +10,8 @@ export interface RenderDefinition {
 	color: string
 	text: string[]
 }
+
+const manager = UpdateManager.getInstance()
 
 const cycle = new Cycle('ansi')
 
@@ -46,18 +48,30 @@ export class Render {
 		return new Renderer(this, key)
 	}
 
+	erase(count = 1) {
+		manager.erase(count)
+	}
+
+	start() {
+		manager.hook()
+	}
+
+	stop(separateHistory = true) {
+		manager.unhook(separateHistory)
+	}
+
 	render() {
 		let output = []
 		for (let key in this.data) {
 			const {color, text} = this.data[key]
-			output.push(template(`\n{${color}}${key}{/${color}}`))
+			output.push('', template(`{${color}}${key}{/${color}}`))
 
 			for (let txt of text) {
 				output.push(template(` {${color}}--{/${color}} ${txt}`))
 			}
 		}
 
-		logUpdate(output.join('\n'))
+		manager.update(output)
 	}
 
 	warn(key: string, text: string) {
