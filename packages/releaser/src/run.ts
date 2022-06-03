@@ -28,7 +28,7 @@ export async function run() {
 
 		const active = sortTopologically(Object.values(releases).filter((release: Release) => release.stage === stage)) as Release[]
 
-		$out.info(`Processing stage: {yellow}${stage}{/yellow} for {blueBright}${active.length}{/blueBright} releases`)
+		$out.block.info(`Processing stage: {yellow}${stage}{/yellow} for {blueBright}${active.length}{/blueBright} releases`)
 		for (let release of active) {
 			queueRelease(release)
 		}
