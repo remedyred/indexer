@@ -21,7 +21,9 @@
 		"prod": "pnpm run -r prod",
 		"prerelease": "pnpm run prod && pnpm run fix && pnpm run depcheck",
 		"release": "lerna publish",
-		"test": "pnpm jest"
+		"test": "pnpm jest",
+		"update": "ncu --upgrade --target minor --deep",
+		"upgrade": "ncu --upgrade --target newest --filter /@snickbit/ --deep"
 	},
 	"jest": {
 		"noStackTrace": true,
@@ -31,13 +33,13 @@
 		"testEnvironment": "node"
 	},
 	"devDependencies": {
-		"@lerna-lite/cli": "^1.3.0",
-		"@types/jest": "^27.5.1",
-		"@typescript-eslint/eslint-plugin": "^5.26.0",
-		"@typescript-eslint/parser": "^5.26.0",
+		"@lerna-lite/cli": "^1.4.0",
+		"@types/jest": "^27.5.2",
+		"@typescript-eslint/eslint-plugin": "^5.27.0",
+		"@typescript-eslint/parser": "^5.27.0",
 		"depcheck": "^1.4.3",
-		"esbuild": "^0.14.39",
-		"eslint": "^8.15.0",
+		"esbuild": "^0.14.42",
+		"eslint": "^8.16.0",
 		"eslint-plugin-json": "^3.1.0",
 		"eslint-plugin-json-files": "^1.3.0",
 		"eslint-plugin-sort-class-members": "^1.14.1",
@@ -49,8 +51,8 @@
 		"shx": "^0.3.4",
 		"sort-package-json": "^1.57.0",
 		"sync-monorepo-packages": "^0.3.5",
-		"ts-jest": "^27.1.4",
-		"typescript": "^4.6.4"
+		"ts-jest": "^27.1.5",
+		"typescript": "^4.7.2"
 	},
 	"engines": {
 		"node": ">= 12"

@@ -19,15 +19,15 @@
 	},
 	"dependencies": {
 		"@babel/core": "^7.18.2",
-		"@snickbit/node-cli": "^1.0.50",
-		"@snickbit/node-utilities": "^4.3.7",
-		"@snickbit/out": "^2.0.27",
+		"@snickbit/node-cli": "^1.0.54",
+		"@snickbit/node-utilities": "^4.3.11",
+		"@snickbit/out": "^2.0.31",
 		"chokidar": "^3.5.3",
 		"debounce": "^1.2.1",
 		"del": "^6.1.1",
-		"glob": "^7.2.0",
+		"glob": "^7.2.3",
 		"lilconfig": "^2.0.5",
-		"terser": "^5.13.1"
+		"terser": "^5.14.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.17.10"
