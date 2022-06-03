@@ -4,18 +4,18 @@ import {Pkg} from './Pkg'
 import {gitBehindUpstream, gitLog, gitRepoPath} from './git'
 import {npmVersion} from './npm'
 import {getDependentMap, getPackageInfos, PackageInfo, PackageInfos} from 'workspace-tools'
-import Topo from '@hapi/topo'
-import * as path from 'path'
 import {Queue} from '@snickbit/queue'
 import {progress, spinner} from '@snickbit/node-utilities'
 import {ShouldPublishResults} from './definitions'
+import * as path from 'path'
+import Topo from '@hapi/topo'
 
 export type TopologicalGraph = {
 	[name: string]: {
-		location: string;
-		dependencies: string[];
-	};
-};
+		location: string
+		dependencies: string[]
+	}
+}
 
 export type TopoSortSubject = Pkg | any
 
@@ -49,8 +49,9 @@ export async function findPackages(): Promise<Pkg[]> {
 		}))
 	}
 	await $q.run()
-	.catchEach(err => errors.push(err.message))
-	.finallyEach(() => $progress.tick())
+		.catchEach(err => errors.push(err.message))
+		.finallyEach(() => $progress.tick())
+
 	$progress.finish()
 
 	if (!isEmpty(errors)) {
@@ -115,7 +116,7 @@ export async function shouldPublish(packageInfo: PackageInfo): Promise<ShouldPub
 			const repoPath = await gitRepoPath(pkgDir)
 			const gitRelativePath = path.relative(repoPath, pkgDir).replace(/\\/g, '/')
 			const git_log = await gitLog(repoPath, lastTagName, gitRelativePath)
-			results.behindUpstream = (git_log).split('\n').filter(Boolean).length
+			results.behindUpstream = git_log.split('\n').filter(Boolean).length
 		} else {
 			const behindUpstream = await gitBehindUpstream(path.dirname(packageInfo.packageJsonPath))
 			const matches = /0\s+(?<commits>\d+)/.exec(behindUpstream)

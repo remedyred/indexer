@@ -1,7 +1,7 @@
 import {PackageInfo} from 'workspace-tools'
-import path from 'path'
 import {objectExcept} from '@snickbit/utilities'
 import {PackageJson, ShouldPublishResults} from './definitions'
+import path from 'path'
 
 export interface Pkg extends PackageJson {
 	[key: string]: any

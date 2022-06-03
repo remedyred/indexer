@@ -8,58 +8,60 @@ import {Release} from './Release'
 import {Bump, BumpRecord} from './definitions'
 import {genBump, genBumps, genConventionalBump, getBumpColor} from './helpers'
 import {run} from './run'
-import packageJson from '../package.json'
 import {Pkg} from '@remedyred/cli-utilities'
+import packageJson from '../package.json'
 
 cli()
-.name('@snickbit/releaser')
-.version(packageJson.version)
-.arg('bump')
-.options({
-	config: {
-		alias: 'c',
-		description: 'Release config file'
-	},
-	dryRun: {
-		alias: 'd',
-		description: 'Dry run',
-		type: 'boolean'
-	},
-	allowPrivate: {
-		alias: 'p',
-		description: 'Allow private packages',
-		type: 'boolean'
-	},
-	all: {
-		alias: 'a',
-		description: 'Select all packages',
-		type: 'boolean'
-	},
-	otp: {
-		description: 'One time password for private packages',
-		type: 'string'
-	},
-	access: {
-		description: 'Access level for packages',
-		type: 'string'
-	},
-	force: {
-		alias: 'f',
-		description: 'Force bump',
-		type: 'boolean'
-	}
-})
-.defaultAction('release')
-.run()
-.then(async (argv) => {
-	const config = await useConfig(argv)
+	.name('@snickbit/releaser')
+	.version(packageJson.version)
+	.arg('bump')
+	.options({
+		config: {
+			alias: 'c',
+			description: 'Release config file'
+		},
+		dryRun: {
+			alias: 'd',
+			description: 'Dry run',
+			type: 'boolean'
+		},
+		allowPrivate: {
+			alias: 'p',
+			description: 'Allow private packages',
+			type: 'boolean'
+		},
+		all: {
+			alias: 'a',
+			description: 'Select all packages',
+			type: 'boolean'
+		},
+		otp: {
+			description: 'One time password for private packages',
+			type: 'string'
+		},
+		access: {
+			description: 'Access level for packages',
+			type: 'string'
+		},
+		force: {
+			alias: 'f',
+			description: 'Force bump',
+			type: 'boolean'
+		}
+	})
+	.defaultAction('release')
+	.run()
+	.then(async argv => {
+		const config = await useConfig(argv)
 
-	let applyToAll: boolean | Bump
-	if (argv.bump) applyToAll = argv.bump as Bump
+		let applyToAll: Bump | boolean
+		if (argv.bump) {
+			applyToAll = argv.bump as Bump
+		}
 
-	if (!$run.packages.length) {
-		$out.done('No packages to release!')
-	}
+		if (!$run.packages.length) {
+			$out.done('No packages to release!')
+		}
 
 	interface PackageChoice {
 		title: string
@@ -94,9 +96,9 @@ cli()
 	const stats = {} as Record<Bump, number>
 
 	for (let pkg of packagesToRelease) {
-		type SkipBumpRecord = Omit<BumpRecord, 'type'> & { type: Bump | 'skip' }
+		type SkipBumpRecord = Omit<BumpRecord, 'type'> & {type: Bump | 'skip'}
 
-		let bump: SkipBumpRecord | Bump
+		let bump: Bump | SkipBumpRecord
 		if (config.conventionalCommits) {
 			bump = await genConventionalBump(pkg) as SkipBumpRecord
 
@@ -157,13 +159,12 @@ cli()
 
 		$out.broken.ln.info(...messages).ln()
 
-		if (!(await confirm('Are you sure you want to publish these packages?'))) {
+		if (!await confirm('Are you sure you want to publish these packages?')) {
 			$out.fatal('Aborting')
 		}
 	}
 
 	await run()
 
-	$out.block.ln().done('Done')
-})
-.catch(err => $out.error(err))
+	$out.block.ln.done('Done')
+	}).catch(err => $out.error(err))

@@ -34,7 +34,7 @@ export async function run() {
 		}
 
 		await $queue.run()
-		await Promise.all(Object.values(activeReleases).map((release) => release.promise))
+		await Promise.all(Object.values(activeReleases).map(release => release.promise))
 
 		activeReleases = {}
 	}
@@ -50,12 +50,12 @@ export async function isDependent(packageName: string): Promise<any> {
 }
 
 export function queueRelease(release: Release, stage?: ReleaseStage) {
-	if (!stage) stage = $stage
-	const releasePromise = release[stage]()
-	.then(() => {
+	if (!stage) {
+		stage = $stage
+	}
+	const releasePromise = release[stage]().then(() => {
 		$out.success(`{green}${stage}{/green} {blueBright}${release.name}{/blueBright}`)
-	})
-	.catch(e => {
+	}).catch(e => {
 		$out.error(`Error while processing {yellow}${stage}{/yellow} for {magenta}${release.name}{magenta}`, e)
 	}).finally(() => {
 		if (release.name in activeReleases) {
@@ -70,9 +70,9 @@ export function queueRelease(release: Release, stage?: ReleaseStage) {
 	}
 }
 
-export function addRelease(pkg: Pkg, bump: BumpRecord | Bump, queue?: boolean);
-export function addRelease(packageName: string, bump: BumpRecord | Bump, queue?: boolean);
-export function addRelease(pkgOrName: string | Pkg, bump: BumpRecord | Bump, queue?: boolean) {
+export function addRelease(pkg: Pkg, bump: Bump | BumpRecord, queue?: boolean)
+export function addRelease(packageName: string, bump: Bump | BumpRecord, queue?: boolean)
+export function addRelease(pkgOrName: Pkg | string, bump: Bump | BumpRecord, queue?: boolean) {
 	let pkg: Pkg
 	if (typeof pkgOrName === 'string') {
 		pkg = new Pkg($run.packageInfos[pkgOrName])

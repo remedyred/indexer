@@ -9,11 +9,21 @@ export async function gitBranch(directory: string): Promise<string> {
 }
 
 export async function gitBehindUpstream(directory: string, branch = 'main'): Promise<string> {
-	return exTrim('git', ['rev-list', '--left-right', '--count', `origin/${branch}..HEAD`], directory)
+	return exTrim('git', [
+		'rev-list',
+		'--left-right',
+		'--count',
+		`origin/${branch}..HEAD`
+	], directory)
 }
 
 export async function gitPush(directory: string, branch: string): Promise<string> {
-	return exTrim('git', ['push', 'origin', branch, '--follow-tags'], directory)
+	return exTrim('git', [
+		'push',
+		'origin',
+		branch,
+		'--follow-tags'
+	], directory)
 }
 
 export async function gitCommit(directory: string, commitMessage: string): Promise<string> {
@@ -25,7 +35,13 @@ export async function gitAdd(directory: string, ...paths: string[]): Promise<str
 }
 
 export async function gitTag(directory: string, tagName: string, tagMessage: string): Promise<string> {
-	return exTrim('git', ['tag', '--annotate', '--message', tagMessage, tagName], directory)
+	return exTrim('git', [
+		'tag',
+		'--annotate',
+		'--message',
+		tagMessage,
+		tagName
+	], directory)
 }
 
 export async function gitRepoPath(directory: string): Promise<string> {
@@ -33,7 +49,13 @@ export async function gitRepoPath(directory: string): Promise<string> {
 }
 
 export async function gitLog(directory: string, tagName: string, gitRelativePath: string): Promise<string> {
-	return exTrim('git', ['log', '--pretty=format:"* %s (%h)"', `${tagName}..HEAD`, '--', gitRelativePath || '.'], directory)
+	return exTrim('git', [
+		'log',
+		'--pretty=format:"* %s (%h)"',
+		`${tagName}..HEAD`,
+		'--',
+		gitRelativePath || '.'
+	], directory)
 }
 
 export async function gitUrl(directory: string) {

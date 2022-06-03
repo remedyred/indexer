@@ -7,7 +7,7 @@ import {confirm, required} from '../prompt'
 import {template} from '../template'
 import perms from './perms'
 
-export default async function () {
+export default async function() {
 	const username = await required('username')
 	const domain = cleanDomain(await required('domain'))
 	const site_name = await required('site_name')
@@ -17,11 +17,11 @@ export default async function () {
 	const db_exists = await test('mysql', '-e', `SHOW DATABASES LIKE '${username}';`)
 
 	if (!db_exists) {
-		start('Creating MySQL database & user for ' + username + '...')
+		start(`Creating MySQL database & user for ${username}...`)
 		await run('mysql', '-e', `CREATE DATABASE IF NOT EXISTS ${username};`)
 		await run('mysql', '-e', `GRANT ALL PRIVILEGES ON ${username}.* TO '${username}'@'localhost' IDENTIFIED BY '${username}';`)
 		await run('mysql', '-e', `FLUSH PRIVILEGES;`)
-		finish('Created MySQL database & user for ' + username)
+		finish(`Created MySQL database & user for ${username}`)
 	}
 
 	const user_dir = `/home/${username}`
@@ -30,33 +30,56 @@ export default async function () {
 	mkdir(`${domain_dir}/tmp`, {recursive: true})
 
 	start('Downloading WordPress...')
-	await runIn(domain_dir, 'wp', 'core', 'download', '--allow-root', '--force')
+	await runIn(
+		domain_dir, 'wp', 'core', 'download', '--allow-root', '--force'
+	)
 	finish('Downloaded WordPress')
 
 	start('Generating wp-config.php...')
-	await runIn(domain_dir,
-		'wp', 'config', 'create', '--allow-root', '--force',
-		`--dbname=${username}`, `--dbuser=${username}`, `--dbpass=${username}`,
+	await runIn(
+		domain_dir,
+		'wp',
+		'config',
+		'create',
+		'--allow-root',
+		'--force',
+		`--dbname=${username}`,
+		`--dbuser=${username}`,
+		`--dbpass=${username}`,
 		`--extra-php=${template('wp-config.php')}`
 	)
 	finish('Generated wp-config.php')
 
 	start('Installing WordPress...')
-	await runIn(domain_dir,
-		'wp', 'core', 'install', '--skip-email', '--allow-root',
-		`--url=${domain}`, `--title=${site_name}`, `--admin_user=${await config('admin.username')}`,
-		`--admin_password=${await config('admin.password')}`, `--admin_email=${await config('admin.email')}`
+	await runIn(
+		domain_dir,
+		'wp',
+		'core',
+		'install',
+		'--skip-email',
+		'--allow-root',
+		`--url=${domain}`,
+		`--title=${site_name}`,
+		`--admin_user=${await config('admin.username')}`,
+		`--admin_password=${await config('admin.password')}`,
+		`--admin_email=${await config('admin.email')}`
 	)
 
 	if (!db_exists && await confirm('Add user as admin?')) {
-		await runIn(domain_dir,
-			'wp', 'user', 'create', '--allow-root',
-			username, await required('user_email'), `--user_pass=${username}`,
+		await runIn(
+			domain_dir,
+			'wp',
+			'user',
+			'create',
+			'--allow-root',
+			username,
+			await required('user_email'),
+			`--user_pass=${username}`,
 			`--role=administrator`
 		)
 	}
 
-	finish('WordPress installed for ' + domain)
+	finish(`WordPress installed for ${domain}`)
 
 	start('Generating PHP-FPM pool file')
 	saveFile(`/etc/php/7.4/fpm/pool.d/${domain}.conf`, template('pool', {domain, username, date: new Date().toISOString()}))

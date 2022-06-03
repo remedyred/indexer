@@ -1,13 +1,13 @@
 import {Out} from '@snickbit/out'
 import {fileExists, getFileJson} from '@snickbit/node-utilities'
-import os from 'os'
 import {lilconfig} from 'lilconfig'
-import path from 'path'
 import {findPackages} from './packages'
 import {Render} from './Render'
 import {AppConfig, AppRun, Argv, ConfigTypes} from './definitions'
 import {Queue} from '@snickbit/queue'
 import {mergeDeep} from '@snickbit/utilities'
+import os from 'os'
+import path from 'path'
 
 export const $queue = new Queue()
 
@@ -35,13 +35,21 @@ export const processes = []
 export const awaitProcesses = async () => await Promise.all(processes.splice(0))
 
 const configTypes: ConfigTypes = {
-	app: ['force', 'dryRun', 'allowPrivate', 'config', 'all'],
+	app: [
+		'force',
+		'dryRun',
+		'allowPrivate',
+		'config',
+		'all'
+	],
 	git: ['commitMessage', 'tagName', 'tagMessage'],
 	npm: ['access', 'otp', 'registry']
 }
 
 export async function getConfig(name = 'cli', appDefaults: any = {}, argv?: Argv): Promise<AppConfig> {
-	if (config) return config
+	if (config) {
+		return config
+	}
 
 	let conf: any
 	if (argv?.config && fileExists(argv.config)) {
@@ -56,7 +64,7 @@ export async function getConfig(name = 'cli', appDefaults: any = {}, argv?: Argv
 	if (fileExists('package.json')) {
 		let packageConfig = getFileJson('package.json')
 
-		if ((!conf || !conf.workspaces)) {
+		if (!conf || !conf.workspaces) {
 			$run.cwd = process.cwd()
 			if (packageConfig?.app?.workspaces) {
 				packageConfig = packageConfig.app

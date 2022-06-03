@@ -16,7 +16,7 @@ export async function runIn(directory, ...args) {
 	try {
 		results = await execa('sudo', args, {cwd: directory})
 	} catch (e) {
-		$out.error('Error running command: ' + args.join(' '))
+		$out.error(`Error running command: ${args.join(' ')}`)
 		$out.fatal(e.stderr || e.stdout || e.message)
 	}
 	if (results.stderr) {

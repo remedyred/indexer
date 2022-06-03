@@ -1,10 +1,10 @@
-import * as babel from '@babel/core'
 import {findUp, progress, Spinner} from '@snickbit/node-utilities'
 import {Out} from '@snickbit/out'
+import {minify} from 'terser'
+import * as babel from '@babel/core'
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
-import {minify} from 'terser'
 
 export const _out = new Out('babbler')
 
@@ -62,7 +62,7 @@ function safeReplace(string, replacements) {
  }
  */
 
-export default async function (config) {
+export default async function(config) {
 	// await verifyPackagesInstalled(config.babel)
 
 	const $spinner = new Spinner('Scanning files...')
@@ -99,9 +99,7 @@ export default async function (config) {
 						_out.debug(`Minifying ${source_path}`)
 						const minified = await minify(result.code, {
 							toplevel: true,
-							format: {
-								comments: 'all'
-							}
+							format: {comments: 'all'}
 						})
 						result.code = minified.code || result.code
 					}
@@ -156,11 +154,7 @@ async function copyAsset(source_path, dest_path) {
 }
 
 export function getBabelConfig() {
-	const babel_config_files = [
-		'babel.config.js',
-		'babel.config.json',
-		'.babelrc'
-	]
+	const babel_config_files = ['babel.config.js', 'babel.config.json', '.babelrc']
 	for (let babel_config_file of babel_config_files) {
 		const path = findUp(babel_config_file)
 		if (path) {

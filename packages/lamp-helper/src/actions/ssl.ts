@@ -4,16 +4,14 @@ import {finish, start} from '../spinner'
 import {required} from '../prompt'
 import {run} from '../run'
 
-export default async function () {
+export default async function() {
 	const domain = cleanDomain(await required('domain'))
 
 	$out.info('Starting SSL certificate creation')
 
-	start('Creating SSL certificate for ' + domain)
+	start(`Creating SSL certificate for ${domain}`)
 	await run(
-		'certbot', '--apache', '--agree-tos',
-		'--non-interactive', '--email', await config('admin.email'),
-		'-d', domain, '-d', 'www.' + domain
+		'certbot', '--apache', '--agree-tos', '--non-interactive', '--email', await config('admin.email'), '-d', domain, '-d', `www.${domain}`
 	)
-	finish('Created SSL certificate for ' + domain)
+	finish(`Created SSL certificate for ${domain}`)
 }

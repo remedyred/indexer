@@ -1,12 +1,12 @@
+import {$state} from '../state'
+import {$out} from '../helpers'
+import {confirm} from '../prompt'
 import cli from '@snickbit/node-cli'
 import user from '../actions/user'
 import ftp from '../actions/ftp'
 import vhost from '../actions/vhost'
 import wordpress from '../actions/wordpress'
 import landing from '../actions/landing'
-import {$state} from '../state'
-import {$out} from '../helpers'
-import {confirm} from '../prompt'
 
 export default async argv => cli(argv).args({
 	username: {

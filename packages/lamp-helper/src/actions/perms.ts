@@ -3,9 +3,9 @@ import {required} from '../prompt'
 import {run} from '../run'
 import {fileExists, progress} from '@snickbit/node-utilities'
 import {Queue} from '@snickbit/queue'
-import fg from 'fast-glob'
 import {$state} from '../state'
 import {Options as OptionsInternal} from 'fast-glob/out/settings'
+import fg from 'fast-glob'
 
 const globOptions = {
 	onlyDirectories: true,
@@ -17,7 +17,7 @@ const globOptions = {
 	]
 }
 
-export default async function () {
+export default async function() {
 	const username = await required('username')
 
 	$out.info('Starting Permissions fix')
@@ -38,7 +38,7 @@ export default async function () {
 
 	let total = 0
 
-	const modMany = async (filePath: string, permissions: string | number, onlyDirectories = true) => {
+	const modMany = async (filePath: string, permissions: number | string, onlyDirectories = true) => {
 		const options = {} as OptionsInternal
 		if (onlyDirectories) {
 			options.onlyDirectories = true
@@ -63,10 +63,10 @@ export default async function () {
 		const is_wp = fileExists(`${domain_dir}/wp-content`)
 
 		total = 2
-		$progress.start({message: 'Fixing permissions for ' + domain, total})
+		$progress.start({message: `Fixing permissions for ${domain}`, total})
 
 		// Ensure .htaccess exists
-		await run('touch', domain_dir + '/.htaccess')
+		await run('touch', `${domain_dir}/.htaccess`)
 		$progress.tick()
 
 		// Set user as owner
@@ -81,11 +81,11 @@ export default async function () {
 		await modMany(domain_dir, '755')
 
 		await $queue.run()
-		$progress.finish('Fixed permissions for ' + domain)
+		$progress.finish(`Fixed permissions for ${domain}`)
 
 		if (is_wp) {
 			total = 1
-			$progress.start({message: 'Applying WordPress permissions for ' + domain, total})
+			$progress.start({message: `Applying WordPress permissions for ${domain}`, total})
 
 			// allow WordPress to manage wp-config.php
 			await run('chmod', '-R', '660', `${domain_dir}/wp-config.php`)
@@ -101,7 +101,7 @@ export default async function () {
 			await modMany(`${domain_dir}/wp-content`, '775')
 
 			await $queue.run()
-			$progress.finish('Applied WordPress permissions for ' + domain)
+			$progress.finish(`Applied WordPress permissions for ${domain}`)
 		}
 	}
 

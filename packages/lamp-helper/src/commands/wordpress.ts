@@ -1,6 +1,6 @@
+import {$state} from '../state'
 import cli from '@snickbit/node-cli'
 import wordpress from '../actions/wordpress'
-import {$state} from '../state'
 
 export default async argv => cli(argv).args({
 	username: {
@@ -15,7 +15,7 @@ export default async argv => cli(argv).args({
 		description: 'Name of the site to create',
 		type: 'string'
 	}
-}).run(async (args) => {
+}).run(async args => {
 	$state.set(args)
 	return wordpress()
 })

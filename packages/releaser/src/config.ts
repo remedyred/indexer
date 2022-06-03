@@ -10,7 +10,15 @@ export interface AppRun extends AppRunBase {
 
 export const releases: Record<string, Release> = {}
 
-export const bumpTypes: Bump[] = ['patch', 'minor', 'major', 'prerelease', 'prepatch', 'preminor', 'premajor']
+export const bumpTypes: Bump[] = [
+	'patch',
+	'minor',
+	'major',
+	'prerelease',
+	'prepatch',
+	'preminor',
+	'premajor'
+]
 
 export const $queue = new Queue()
 
@@ -32,9 +40,7 @@ export const defaultConfig: ReleaserConfig = {
 		access: 'public',
 		publish: true
 	},
-	changelog: {
-		file: 'CHANGELOG.md'
-	}
+	changelog: {file: 'CHANGELOG.md'}
 }
 
 let config: ReleaserConfig
@@ -44,12 +50,12 @@ $run.pushedRepos = new Set<string>()
 
 export const $out = new Out('releaser')
 
-setConfigTypes({
-	app: ['bump']
-})
+setConfigTypes({app: ['bump']})
 
 export async function useConfig(argv?: Argv): Promise<ReleaserConfig> {
-	if (config) return config
+	if (config) {
+		return config
+	}
 	config = await getConfig('releaser', defaultConfig, argv)
 	return config
 }

@@ -1,5 +1,5 @@
-import cli from '@snickbit/node-cli'
 import {$state} from '../state'
+import cli from '@snickbit/node-cli'
 import perms from '../actions/perms'
 
 export default async argv => cli(argv).args({

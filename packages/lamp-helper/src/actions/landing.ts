@@ -4,7 +4,7 @@ import {finish, start} from '../spinner'
 import {required} from '../prompt'
 import {template} from '../template'
 
-export default async function () {
+export default async function() {
 	const username = await required('username')
 	const domain = cleanDomain(await required('domain'))
 	const site_name = await required('site_name')

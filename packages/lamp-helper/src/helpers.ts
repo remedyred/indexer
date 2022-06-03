@@ -8,7 +8,7 @@ export async function hash(password): Promise<string> {
 }
 
 export function cleanDomain(domain: string) {
-	//trim http:// | https:// | www | and all spaces from domain
+	// trim http:// | https:// | www | and all spaces from domain
 	return domain.replace(/\s/g, '').replace(/^(http|https):\/\//, '').replace(/^www\./, '')
 }
 

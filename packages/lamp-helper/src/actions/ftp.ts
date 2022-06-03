@@ -5,7 +5,7 @@ import {required} from '../prompt'
 import {run} from '../run'
 import {template} from '../template'
 
-export default async function () {
+export default async function() {
 	const username = await required('username')
 
 	$out.info('Starting FTP account creation')
@@ -14,10 +14,10 @@ export default async function () {
 	const groups = getFile('/etc/group')
 	let sshd_config = getFile('/etc/ssh/sshd_config', '')
 
-	if (!((new RegExp(`^${ftp_group}`, 'm'))).test(groups)) {
+	if (!new RegExp(`^${ftp_group}`, 'm').test(groups)) {
 		start('Creating FTP group')
 		await run('groupadd', ftp_group)
-		sshd_config += '\n\n' + template('sshd_group', {group: ftp_group})
+		sshd_config += `\n\n${template('sshd_group', {group: ftp_group})}`
 		finish('FTP group created')
 	}
 

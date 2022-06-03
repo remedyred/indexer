@@ -1,6 +1,6 @@
 import {AppConfig, Argv as ArgvBase} from '@remedyred/cli-utilities'
 
-export type Bump = 'major' | 'minor' | 'patch' | 'prerelease' | 'prepatch' | 'preminor' | 'premajor';
+export type Bump = 'major' | 'minor' | 'patch' | 'premajor' | 'preminor' | 'prepatch' | 'prerelease'
 
 export interface BumpRecord {
 	title: string
@@ -9,7 +9,7 @@ export interface BumpRecord {
 }
 
 export interface DependencyConfig {
-	patch?: boolean | Bump
+	patch?: Bump | boolean
 }
 
 export interface ChangelogConfig {

@@ -2,17 +2,16 @@ import {exTrim} from './commands'
 
 let preferred_client: string
 
-const npmClients = [
-	'pnpm',
-	'yarn'
-]
+const npmClients = ['pnpm', 'yarn']
 
 export async function npmVersion(packageName: string): Promise<string> {
 	return exTrim('npm', ['show', packageName, 'version'])
 }
 
 export async function npmPreferredClient(config): Promise<string> {
-	if (preferred_client) return preferred_client
+	if (preferred_client) {
+		return preferred_client
+	}
 
 	if (config.npm && config.npm.client) {
 		preferred_client = config.npm.client

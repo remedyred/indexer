@@ -29,7 +29,7 @@ export interface NpmConfig {
 	client?: string
 }
 
-export interface Argv extends GitConfig, NpmConfig{
+export interface Argv extends GitConfig, NpmConfig {
 	all: boolean
 	dryRun: boolean
 	config?: string

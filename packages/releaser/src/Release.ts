@@ -3,11 +3,11 @@ import {$run, useConfig} from './config'
 import {$render, gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitLog, gitPush, gitRepoPath, gitTag, gitUrl, isGitClean, Pkg, Renderer} from '@remedyred/cli-utilities'
 import {interpolate, isArray, isEmpty, sleep} from '@snickbit/utilities'
 import {fileExists, getFile, saveFile, saveFileJson} from '@snickbit/node-utilities'
-import path from 'path'
-import upwords from '@snickbit/upwords'
 import {Bump, ReleaserConfig} from './definitions'
 import {addRelease, isDependent} from './run'
 import {Out} from '@snickbit/out'
+import path from 'path'
+import upwords from '@snickbit/upwords'
 
 export interface ShouldPublishResults {
 	pass: boolean
@@ -18,7 +18,7 @@ export interface ShouldPublishResults {
 
 export type ReleaseName = string
 
-export type ReleaseStage = 'bump' | 'changelog' | 'save' | 'commit' | 'push' | 'publish'
+export type ReleaseStage = 'bump' | 'changelog' | 'commit' | 'publish' | 'push' | 'save'
 
 export interface Release {
 	[key: string | symbol]: any
@@ -40,9 +40,8 @@ export class Release {
 	lastTagName?: string
 	changelogContent?: string
 	changelogPath?: string
-	out: Renderer | Out
+	out: Out | Renderer
 	private _config: ReleaserConfig
-
 
 	constructor(pkg: Pkg, bump: Bump, version: string) {
 		this.pkg = pkg
@@ -55,7 +54,7 @@ export class Release {
 		// this.out = new Out(pkg.name)
 
 		this.proxy = new Proxy(this, {
-			get: (target: Release, prop: string, receiver?: any): any => {
+			get(target: Release, prop: string, receiver?: any): any {
 				if (prop in target) {
 					return target[prop]
 				}
@@ -66,7 +65,7 @@ export class Release {
 
 				return Reflect.get(target, prop, receiver)
 			},
-			set: (target: Release, prop: string, value?: any): any => {
+			set(target: Release, prop: string, value?: any): any {
 				if (prop in target) {
 					target[prop] = value
 					return true
@@ -160,11 +159,18 @@ export class Release {
 
 		this.out.log('Checking for dependencies')
 
-		const dependencyBump = ['prerelease', 'prepatch', 'preminor', 'premajor'].includes(this.bumpType) ? this.bumpType : 'patch'
+		const dependencyBump = [
+			'prerelease',
+			'prepatch',
+			'preminor',
+			'premajor'
+		].includes(this.bumpType) ? this.bumpType : 'patch'
 
 		if (this.name in $run.dependencyMap && !isEmpty($run.dependencyMap[this.name])) {
 			for (let pkg of Object.values($run.packageInfos)) {
-				if (!pkg || pkg.name === this.name) continue
+				if (!pkg || pkg.name === this.name) {
+					continue
+				}
 				if (pkg.dependencies && this.name in pkg.dependencies) {
 					pkg.dependencies[this.name] = `^${this.version}`
 					addRelease(pkg.name, dependencyBump, true)
@@ -382,11 +388,7 @@ export class Release {
 
 			this.out.log('Publishing package')
 
-			const npmPublishArgs = [
-				'publish',
-				'--ignore-scripts',
-				`--access=${npmConfig.access || 'public'}`
-			]
+			const npmPublishArgs = ['publish', '--ignore-scripts', `--access=${npmConfig.access || 'public'}`]
 
 			if (config.dryRun) {
 				npmPublishArgs.push('--dry-run')
@@ -404,7 +406,7 @@ export class Release {
 				const results = await execa('npm', npmPublishArgs, {cwd: this.dir})
 				this.out.log(results.stdout)
 			} catch (e) {
-				this.out.error('Publishing errored: ' + e.message)
+				this.out.error(`Publishing errored: ${e.message}`)
 				return
 			}
 
@@ -422,6 +424,4 @@ export class Release {
 		}
 	}
 }
-
-
 

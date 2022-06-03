@@ -1,14 +1,14 @@
-import logUpdate from 'log-update'
 import {Cycle} from '@snickbit/cycle'
 import {template} from 'ansi-styles-template'
+import logUpdate from 'log-update'
 
 export interface RenderData {
-	[key: string]: RenderDefinition;
+	[key: string]: RenderDefinition
 }
 
 export interface RenderDefinition {
-	color: string;
-	text: string[];
+	color: string
+	text: string[]
 }
 
 const cycle = new Cycle('ansi')
@@ -19,7 +19,7 @@ export class Render {
 
 	constructor() {
 		this.proxy = new Proxy(this, {
-			get: (target, prop: string, receiver) => {
+			get(target, prop: string, receiver) {
 				if (prop in target.data) {
 					return target.data[prop]
 				}
@@ -90,8 +90,6 @@ export class Render {
 		this.data[key].text = [...this.data[key].text.slice(-5), text]
 		this.render()
 	}
-
-
 }
 
 export class Renderer {
