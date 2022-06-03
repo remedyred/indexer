@@ -43,7 +43,7 @@ export const defaultConfig: ReleaserConfig = {
 	changelog: {file: 'CHANGELOG.md'}
 }
 
-let config: ReleaserConfig
+let config: Argv & ReleaserConfig
 
 export const $run = $superRun as AppRun
 $run.pushedRepos = new Set<string>()
@@ -52,10 +52,10 @@ export const $out = new Out('releaser')
 
 setConfigTypes({app: ['bump']})
 
-export async function useConfig(argv?: Argv): Promise<ReleaserConfig> {
+export async function useConfig(argv?: Argv): Promise<Argv & ReleaserConfig> {
 	if (config) {
 		return config
 	}
-	config = await getConfig('releaser', defaultConfig, argv)
+	config = await getConfig<ReleaserConfig, Argv>('releaser', defaultConfig, argv)
 	return config
 }

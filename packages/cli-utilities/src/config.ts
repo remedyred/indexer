@@ -17,7 +17,7 @@ export const defaultConfig: AppConfig = {
 	npm: false
 }
 
-let config: AppConfig
+let config: AppConfig & Argv
 
 export const $run: AppRun = {
 	cwd: process.cwd(),
@@ -46,9 +46,9 @@ const configTypes: ConfigTypes = {
 	npm: ['access', 'otp', 'registry']
 }
 
-export async function getConfig(name = 'cli', appDefaults: any = {}, argv?: Argv): Promise<AppConfig> {
+export async function getConfig<AppT extends AppConfig = any, ArgT extends Argv = any>(name = 'cli', appDefaults: any = {}, argv?: Argv): Promise<AppT & ArgT> {
 	if (config) {
-		return config
+		return config as AppT & ArgT
 	}
 
 	let conf: any
@@ -83,7 +83,7 @@ export async function getConfig(name = 'cli', appDefaults: any = {}, argv?: Argv
 	}
 
 	if (conf?.workspaces) {
-		config = mergeDeep(defaultConfig, appDefaults, conf) as AppConfig
+		config = mergeDeep(defaultConfig, appDefaults, conf) as AppConfig & Argv
 
 		// load config args from argv
 		for (let [configType, configArgs] of Object.entries(configTypes)) {
@@ -105,7 +105,7 @@ export async function getConfig(name = 'cli', appDefaults: any = {}, argv?: Argv
 			$out.force.warn('Dry run enabled')
 		}
 
-		return config
+		return config as AppT & ArgT
 	}
 
 	$out.fatal('No workspaces defined')
