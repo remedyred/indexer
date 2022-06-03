@@ -23,7 +23,8 @@
 		"release": "lerna publish",
 		"test": "pnpm jest",
 		"update": "ncu --upgrade --target minor --deep",
-		"upgrade": "ncu --upgrade --target newest --filter /@snickbit/ --deep"
+		"upgrade": "ncu --upgrade --target newest --filter @snickbit/*,@remedyred/* --deep",
+		"uplist": "ncu --target minor --deep"
 	},
 	"jest": {
 		"noStackTrace": true,
