@@ -1,8 +1,6 @@
-import {Bump, BumpRecord} from './definitions'
-import {$out, $queue, $run, releases} from './config'
+import {$queue, releases} from './config'
 import {Release, ReleaseStage} from './Release'
-import {genBump} from './helpers'
-import {$render, Pkg, sortTopologically} from '@remedyred/cli-utilities'
+import {$render, sortTopologically} from '@remedyred/cli-utilities'
 
 export let $stage: ReleaseStage
 
@@ -23,23 +21,30 @@ interface ActiveRelease {
 export let activeReleases: Record<string, ActiveRelease> = {}
 
 export async function run() {
+	$render.start()
+	const $main = $render.add('Releaser')
 	for (let stage of stages) {
+		$main.info(`Starting stage ${stage}`)
 		$stage = stage
 
 		const active = sortTopologically(Object.values(releases).filter((release: Release) => release.stage === stage)) as Release[]
 
-		$out.block.info(`Processing stage: {yellow}${stage}{/yellow} for {blueBright}${active.length}{/blueBright} releases`)
-		$render.start()
+		$main.info(`Processing stage: {yellow}${stage}{/yellow} for {blueBright}${active.length}{/blueBright} releases`)
+
 		for (let release of active) {
 			queueRelease(release)
 		}
 
+		$main.info('Waiting for all releases to complete...')
 		await $queue.run()
+		$main.info('All queue items completed')
 		await Promise.all(Object.values(activeReleases).map(release => release.promise))
-		$render.stop()
-
+		$main.info('All releases completed')
 		activeReleases = {}
 	}
+	$main.info('All stages completed')
+
+	$render.stop()
 }
 
 export async function isDependent(packageName: string): Promise<any> {
@@ -67,36 +72,5 @@ export function queueRelease(release: Release, stage?: ReleaseStage) {
 	activeReleases[release.name] = {
 		promise: releasePromise,
 		dependents: release.dependencies
-	}
-}
-
-export function addRelease(pkg: Pkg, bump: Bump | BumpRecord, queue?: boolean)
-export function addRelease(packageName: string, bump: Bump | BumpRecord, queue?: boolean)
-export function addRelease(pkgOrName: Pkg | string, bump: Bump | BumpRecord, queue?: boolean) {
-	let pkg: Pkg
-	if (typeof pkgOrName === 'string') {
-		pkg = new Pkg($run.packageInfos[pkgOrName])
-	} else {
-		pkg = pkgOrName
-	}
-
-	if (!pkg) {
-		$out.error(`Package not found: {magenta}${pkgOrName}{/magenta}`)
-		return
-	}
-
-	if (pkg.name in releases) {
-		$out.force.warn(`Skipping release {magenta}${pkg.name}{/magenta}`)
-		return
-	}
-
-	if (typeof bump === 'string') {
-		bump = genBump(pkg, bump)
-	}
-
-	releases[pkg.name] = new Release(pkg, bump.type, bump.version)
-
-	if (queue) {
-		queueRelease(releases[pkg.name])
 	}
 }

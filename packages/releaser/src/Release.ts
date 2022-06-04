@@ -1,11 +1,12 @@
 import {execa, execaCommand} from 'execa'
-import {$run, useConfig} from './config'
+import {$run, releases, useConfig} from './config'
 import {$render, gitAdd, gitBehindUpstream, gitBranch, gitCommit, gitLog, gitPush, gitRepoPath, gitTag, gitUrl, isGitClean, Pkg, Renderer} from '@remedyred/cli-utilities'
 import {interpolate, isArray, isEmpty, sleep} from '@snickbit/utilities'
 import {fileExists, getFile, saveFile, saveFileJson} from '@snickbit/node-utilities'
-import {Bump, ReleaserConfig} from './definitions'
-import {addRelease, isDependent} from './run'
+import {Bump, BumpRecord, ReleaserConfig} from './definitions'
+import {isDependent, queueRelease} from './run'
 import {Out} from '@snickbit/out'
+import {genBump} from './helpers'
 import path from 'path'
 import upwords from '@snickbit/upwords'
 
@@ -93,6 +94,37 @@ export class Release {
 		return [...dependencies, ...devDependencies]
 	}
 
+	protected addRelease(pkg: Pkg, bump: Bump | BumpRecord, queue?: boolean)
+	protected addRelease(packageName: string, bump: Bump | BumpRecord, queue?: boolean)
+	protected addRelease(pkgOrName: Pkg | string, bump: Bump | BumpRecord, queue?: boolean) {
+		let pkg: Pkg
+		if (typeof pkgOrName === 'string') {
+			pkg = new Pkg($run.packageInfos[pkgOrName])
+		} else {
+			pkg = pkgOrName
+		}
+
+		if (!pkg) {
+			this.out.error(`Package not found: {magenta}${pkgOrName}{/magenta}`)
+			return
+		}
+
+		if (pkg.name in releases) {
+			this.out.log(`Skipping release {magenta}${pkg.name}{/magenta}`)
+			return
+		}
+
+		if (typeof bump === 'string') {
+			bump = genBump(pkg, bump)
+		}
+
+		releases[pkg.name] = new Release(pkg, bump.type, bump.version)
+
+		if (queue) {
+			queueRelease(releases[pkg.name])
+		}
+	}
+
 	async getConfig() {
 		if (!this._config) {
 			this._config = await useConfig()
@@ -173,12 +205,12 @@ export class Release {
 					}
 					if (pkg.dependencies && this.name in pkg.dependencies) {
 						pkg.dependencies[this.name] = `^${this.version}`
-						addRelease(pkg.name, dependencyBump, true)
+						this.addRelease(pkg.name, dependencyBump, true)
 						this.out.log(`Bumped ${this.name} to ${this.version} in ${pkg.name} dependencies`)
 					}
 					if (pkg.devDependencies && this.name in pkg.devDependencies) {
 						pkg.devDependencies[this.name] = `^${this.version}`
-						addRelease(pkg.name, dependencyBump, true)
+						this.addRelease(pkg.name, dependencyBump, true)
 						this.out.log(`Bumped ${this.name} to ${this.version} in ${pkg.name} devDependencies`)
 					}
 				}
