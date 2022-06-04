@@ -45,3 +45,4 @@ bin/
 !.eslintrc.json
 !.depcheckrc
 !.editorconfig
+!.templates
