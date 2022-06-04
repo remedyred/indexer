@@ -1,5 +1,7 @@
 import {Cycle} from '@snickbit/cycle'
 import {template} from 'ansi-styles-template'
+import {saveFile} from '@snickbit/node-utilities'
+import {JSONPrettify} from '@snickbit/utilities'
 import UpdateManager from 'stdout-update'
 
 export interface RenderData {
@@ -12,12 +14,14 @@ export interface RenderDefinition {
 }
 
 const manager = UpdateManager.getInstance()
+const logfile = `${process.cwd()}/render.log`
 
 const cycle = new Cycle('ansi')
 
 export class Render {
 	data: RenderData = {}
 	proxy: Render
+	limit = 5
 
 	constructor() {
 		this.proxy = new Proxy(this, {
@@ -34,6 +38,12 @@ export class Render {
 					return true
 				}
 				return Reflect.set(target, prop, value)
+			}
+		})
+
+		process.on('exit', () => {
+			if (this.limit <= 0) {
+				saveFile(logfile, JSONPrettify(this.data))
 			}
 		})
 
@@ -100,8 +110,11 @@ export class Render {
 	}
 
 	private _log(key, text) {
-		// this.data[key].text.push(text)
-		this.data[key].text = [...this.data[key].text.slice(-5), text]
+		if (!this.limit || this.limit < 0) {
+			this.data[key].text.push(text)
+		} else {
+			this.data[key].text = [...this.data[key].text.slice(this.limit * -1), text]
+		}
 		this.render()
 	}
 }
