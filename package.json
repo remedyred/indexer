@@ -25,7 +25,7 @@
 	},
 	"dependencies": {
 		"@snickbit/node-cli": "2.0.2",
-		"@snickbit/node-utilities": "4.4.3",
+		"@snickbit/node-utilities": "4.4.4",
 		"@snickbit/out": "2.0.37",
 		"@snickbit/utilities": "3.2.1",
 		"fast-glob": "3.2.11",
