@@ -27,7 +27,7 @@
 		"@snickbit/node-cli": "2.0.2",
 		"@snickbit/node-utilities": "4.4.3",
 		"@snickbit/out": "2.0.37",
-		"@snickbit/utilities": "3.2.1",
+		"@snickbit/utilities": "3.2.2",
 		"fast-glob": "3.2.11",
 		"lilconfig": "2.0.6",
 		"picomatch": "2.3.1"
