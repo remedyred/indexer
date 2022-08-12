@@ -30,7 +30,7 @@ cli().name('@snickbit/indexer')
 	})
 	.run()
 	.then(async argv => {
-		let config: AppConfig = {
+		const config: AppConfig = {
 			source: argv.source,
 			output: argv.output,
 			dryRun: argv.dryRun
@@ -57,7 +57,7 @@ cli().name('@snickbit/indexer')
 			const conf = config.indexer as IndexerConfig
 			if (conf?.indexes) {
 				const root: Omit<IndexerConfig, 'indexes'> = objectExcept(conf, ['indexes']) as IndexerConfig
-				for (let key in conf.indexes) {
+				for (const key in conf.indexes) {
 					conf.indexes[key] = await generateIndexes(config, {...root, ...conf.indexes[key]}) as IndexerConfig
 				}
 				config.indexer = conf

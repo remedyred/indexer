@@ -72,7 +72,7 @@ export default async function(appConfig: AppConfig, config?: IndexerConfig): Pro
 		})
 	}
 
-	for (let file of files) {
+	for (const file of files) {
 		if (await shouldIgnore(conf, file)) {
 			$out.warn(`Ignoring file: ${file}`)
 			continue
@@ -95,10 +95,10 @@ export default async function(appConfig: AppConfig, config?: IndexerConfig): Pro
 
 		// loop indexes and write each index
 		const ext = path.extname(conf.output)
-		for (let [dir, files] of Object.entries(indexes)) {
+		for (const [dir, files] of Object.entries(indexes)) {
 			const indexFile = posix.join(dir, `index${ext}`)
-			let indexContent: string[] = []
-			for (let file of files) {
+			const indexContent: string[] = []
+			for (const file of files) {
 				indexContent.push(makeExport(conf, indexFile, file))
 			}
 
@@ -138,7 +138,7 @@ export default async function(appConfig: AppConfig, config?: IndexerConfig): Pro
 		if (appConfig.dryRun) {
 			$out.info('DRY RUN : No changes have been made to the filesystem')
 		}
-		for (let result of results) {
+		for (const result of results) {
 			if ($out[result.type]) {
 				$out[result.type](result.message)
 			} else {
@@ -185,7 +185,7 @@ function makeExport(conf: IndexerConfig, source: string, file: string) {
 		const slug = safeVarName(slugify(path.join(dirname, filename)))
 		return `export * as ${slug} from '${file_path}'`
 	}
-	let export_name = makeExportName(filename, conf.casing)
+	const export_name = makeExportName(filename, conf.casing)
 
 	switch (export_type) {
 		case 'group':
