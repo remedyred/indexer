@@ -15,5 +15,6 @@ bin/
 
 # Keep
 !.git*
-!.*ignore
 !.*rc*
+!.*ignore
+!.*config
