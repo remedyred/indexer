@@ -1,6 +1,22 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": [
-		"src/**/*.ts"
-	]
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"allowJs": true,
+		"declaration": true,
+		"declarationMap": true,
+		"downlevelIteration": true,
+		"emitDeclarationOnly": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"newLine": "lf",
+		"noImplicitAny": false,
+		"noImplicitThis": false,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"target": "esnext"
+	}
 }
