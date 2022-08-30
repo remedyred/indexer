@@ -243,11 +243,7 @@ async function makeDefaultExport(indexConf: IndexConfig, existingContent: string
 		exportNames.push(export_name)
 	}
 
-	if (Array.isArray(indexConf.default.source)) {
-		defaultExport = `export default { ${exportNames.sort().join(', ')} }`
-	} else {
-		defaultExport = `export default ${exportNames.shift()}`
-	}
+	defaultExport = Array.isArray(indexConf.default.source) ? `export default { ${exportNames.sort().join(', ')} }` : `export default ${exportNames.shift()}`
 
 	return [
 		...contentImports.sort(),
