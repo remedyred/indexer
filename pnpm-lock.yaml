@@ -577,7 +577,7 @@ packages:
     resolution: {integrity: sha512-/l/VWsdt/aBXgjshLWOFyFt3IVdYypu5y2Wn2rOO1un6nkqIn8SLXzgIMYXFyYsRWDyF5EthmKJMIdJvk08grg==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     dependencies:
-      '@sinclair/typebox': 0.24.31
+      '@sinclair/typebox': 0.24.34
     dev: true
 
   /@jest/source-map/28.1.2:
@@ -700,8 +700,8 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@sinclair/typebox/0.24.31:
-    resolution: {integrity: sha512-uWZaAsh9WFhcY1rWLLcMU/omiIIAQ/PmgqplaF6UWY6ULPH0ZO8hupJRAydzlTQZJIK3Voz8o8dYlEx+Cm6BAA==}
+  /@sinclair/typebox/0.24.34:
+    resolution: {integrity: sha512-x3ejWKw7rpy30Bvm6U0AQMOHdjqe2E3YJrBHlTxH0KFsp77bBa+MH324nJxtXZFpnTy/JW2h5HPYVm0vG2WPnw==}
     dev: true
 
   /@sinonjs/commons/1.8.3:
@@ -849,7 +849,7 @@ packages:
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
-      '@types/minimatch': 5.1.1
+      '@types/minimatch': 5.1.2
       '@types/node': 17.0.45
     dev: true
 
@@ -886,8 +886,8 @@ packages:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
 
-  /@types/minimatch/5.1.1:
-    resolution: {integrity: sha512-v55NF6Dz0wrj14Rn8iEABTWrhYRmgkJYuokduunSiq++t3hZ9VZ6dvcDt+850Pm5sGJZk8RaHzkFCXPxVINZ+g==}
+  /@types/minimatch/5.1.2:
+    resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
     dev: true
 
   /@types/node/17.0.45:
@@ -1236,8 +1236,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001385
-      electron-to-chromium: 1.4.236
+      caniuse-lite: 1.0.30001387
+      electron-to-chromium: 1.4.238
       node-releases: 2.0.6
       update-browserslist-db: 1.0.5_browserslist@4.21.3
     dev: true
@@ -1279,8 +1279,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001385:
-    resolution: {integrity: sha512-MpiCqJGhBkHgpyimE9GWmZTnyHyEEM35u115bD3QBrXpjvL/JgcP8cUhKJshfmg4OtEHFenifcK5sZayEw5tvQ==}
+  /caniuse-lite/1.0.30001387:
+    resolution: {integrity: sha512-fKDH0F1KOJvR+mWSOvhj8lVRr/Q/mc5u5nabU2vi1/sgvlSqEsE8dOq0Hy/BqVbDkCYQPRRHB1WRjW6PGB/7PA==}
     dev: true
 
   /chalk/2.4.2:
@@ -1442,8 +1442,8 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /electron-to-chromium/1.4.236:
-    resolution: {integrity: sha512-41wPRcb9OIpB0RMLnIIDbfbJ5IXwuQ2qAr0jCTSpv5s7M61MazcBGS5kovW5E28SGxum/KR3fm2imswjdlTWmw==}
+  /electron-to-chromium/1.4.238:
+    resolution: {integrity: sha512-Vcw+jaLrdCj6Ds4p4FpVYn8UBa+DSRt4FwO5r6+6xifKbeRQ/MsC0vYOjLYkz4JJGDi/wZkjrxuZULn/E69w9Q==}
     dev: true
 
   /emittery/0.10.2:
@@ -3633,14 +3633,14 @@ packages:
     resolution: {integrity: sha512-xGmv9QIWs2H8obGbWg+sIPI/3/pFgj/5OWBhNzs00BkYQ9UaB2F6JJaGB/2/YOZJ3BvLXQTC4Q7muqU25QgAhA==}
     dependencies:
       jsonc-parser: 3.2.0
-      vscode-languageserver-textdocument: 1.0.5
+      vscode-languageserver-textdocument: 1.0.7
       vscode-languageserver-types: 3.17.2
       vscode-nls: 5.2.0
       vscode-uri: 3.0.3
     dev: true
 
-  /vscode-languageserver-textdocument/1.0.5:
-    resolution: {integrity: sha512-1ah7zyQjKBudnMiHbZmxz5bYNM9KKZYz+5VQLj+yr8l+9w3g+WAhCkUkWbhMEdC5u0ub4Ndiye/fDyS8ghIKQg==}
+  /vscode-languageserver-textdocument/1.0.7:
+    resolution: {integrity: sha512-bFJH7UQxlXT8kKeyiyu41r22jCZXG8kuuVVA33OEJn1diWOZK5n8zBSPZFHVBOu8kXZ6h0LIRhf5UnCo61J4Hg==}
     dev: true
 
   /vscode-languageserver-types/3.17.2:
