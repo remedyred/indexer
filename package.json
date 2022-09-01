@@ -18,7 +18,6 @@
 		"watch": "pnpm run dev --watch"
 	},
 	"jest": {
-		"onlyChanged": true,
 		"preset": "ts-jest",
 		"testEnvironment": "node"
 	},
