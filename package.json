@@ -17,6 +17,11 @@
 		"start": "node bin/indexer",
 		"watch": "pnpm run dev --watch"
 	},
+	"release": {
+		"extends": [
+			"@snickbit/semantic-release"
+		]
+	},
 	"jest": {
 		"preset": "ts-jest",
 		"testEnvironment": "node"
@@ -32,11 +37,13 @@
 	},
 	"devDependencies": {
 		"@snickbit/eslint-config": "1.3.2",
+		"@snickbit/semantic-release": "^1.5.3",
 		"@types/jest": "28.1.8",
 		"@types/node": "17.0.45",
 		"esbuild": "0.15.6",
 		"eslint": "8.22.0",
 		"jest": "28.1.3",
+		"semantic-release": "^19.0.5",
 		"shx": "0.3.4",
 		"ts-jest": "28.0.8",
 		"typescript": "4.8.2"
