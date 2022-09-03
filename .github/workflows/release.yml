@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Release
-        uses: remedyred/semantic-release-action@v1.0.4
+        uses: remedyred/semantic-release-action@v1.0.5
         with:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
