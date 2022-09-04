@@ -1,6 +1,6 @@
 {
 	"name": "@snickbit/indexer",
-	"version": "2.5.11",
+	"version": "2.5.12",
 	"description": "Simple cli tool to generate index files for almost any project.",
 	"license": "MIT",
 	"bin": {
@@ -16,11 +16,6 @@
 		"dev": "pnpm run bundle --sourcemap",
 		"start": "node bin/indexer",
 		"watch": "pnpm run dev --watch"
-	},
-	"release": {
-		"extends": [
-			"@snickbit/semantic-release"
-		]
 	},
 	"release": {
 		"extends": [
