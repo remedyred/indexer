@@ -22,6 +22,11 @@
 			"@snickbit/semantic-release"
 		]
 	},
+	"release": {
+		"extends": [
+			"@snickbit/semantic-release"
+		]
+	},
 	"jest": {
 		"preset": "ts-jest",
 		"testEnvironment": "node"
