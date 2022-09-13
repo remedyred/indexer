@@ -199,7 +199,7 @@ function makeExport(conf: IndexerConfig, source: string, file: string) {
 }
 
 async function saveIndex(indexConf: IndexConfig, filePath: string, content: string[]) {
-	mkdir(path.dirname(filePath), {recursive: true})
+	mkdir(path.dirname(filePath), true)
 
 	content = content.sort()
 
