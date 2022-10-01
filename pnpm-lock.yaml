@@ -4,7 +4,7 @@ specifiers:
   '@snickbit/eslint-config': 1.3.5
   '@snickbit/node-cli': 2.0.2
   '@snickbit/node-utilities': 4.4.9
-  '@snickbit/out': 2.0.43
+  '@snickbit/out': 2.0.44
   '@snickbit/semantic-release': ^1.5.3
   '@snickbit/utilities': 3.4.2
   '@types/jest': 28.1.8
@@ -23,7 +23,7 @@ specifiers:
 dependencies:
   '@snickbit/node-cli': 2.0.2
   '@snickbit/node-utilities': 4.4.9
-  '@snickbit/out': 2.0.43
+  '@snickbit/out': 2.0.44
   '@snickbit/utilities': 3.4.2
   fast-glob: 3.2.11
   lilconfig: 2.0.6
@@ -1017,7 +1017,7 @@ packages:
     engines: {node: '>= 12'}
     dependencies:
       '@snickbit/node-utilities': 4.4.9
-      '@snickbit/out': 2.0.43
+      '@snickbit/out': 2.0.44
       '@snickbit/utilities': 3.4.2
       lilconfig: 2.0.6
       yargs-parser: 21.1.1
@@ -1027,7 +1027,7 @@ packages:
     resolution: {integrity: sha512-FZPHi2JhujSIwGi113iHz2+0G9mEBR0m1H8y87kY9Sov3PdzCuBq8zBoy+i2cWjJzPHQj++MhLyCXmu2ArBOlg==}
     engines: {node: '>= 12'}
     dependencies:
-      '@snickbit/out': 2.0.43
+      '@snickbit/out': 2.0.44
       '@snickbit/utilities': 3.4.2
       ansi-styles-template: 1.0.0
       cli-progress: 3.11.2
@@ -1037,8 +1037,8 @@ packages:
       prompts: 2.4.2
     dev: false
 
-  /@snickbit/out/2.0.43:
-    resolution: {integrity: sha512-VrAPmU3yVvbGY2MpryFNzJ/0yCdViTJUSadVAqnVg9luCAdvVWOG7QgIqDPiNc7WO3vPvYIKwV6m5nhgJDHKrw==}
+  /@snickbit/out/2.0.44:
+    resolution: {integrity: sha512-MC36yhVTXqMSMfneG2g6X0yx7IhhJYu/19zU0nhkXd01EfPPqbYo4QOZLkLtnffnXQ6OiCgNGDHmLh+ruyzA/g==}
     engines: {node: '>= 12'}
     dependencies:
       '@snickbit/ansi': 0.0.18

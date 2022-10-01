@@ -29,7 +29,7 @@
 	"dependencies": {
 		"@snickbit/node-cli": "2.0.2",
 		"@snickbit/node-utilities": "4.4.9",
-		"@snickbit/out": "2.0.43",
+		"@snickbit/out": "2.0.44",
 		"@snickbit/utilities": "3.4.2",
 		"fast-glob": "3.2.11",
 		"lilconfig": "2.0.6",
