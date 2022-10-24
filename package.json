@@ -31,7 +31,7 @@
 		"@snickbit/node-utilities": "4.4.9",
 		"@snickbit/out": "2.0.45",
 		"@snickbit/utilities": "3.4.2",
-		"fast-glob": "3.2.11",
+		"fast-glob": "3.2.12",
 		"lilconfig": "2.0.6",
 		"picomatch": "2.3.1"
 	},
