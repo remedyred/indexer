@@ -175,7 +175,7 @@ function resolvePath(source: string, file: string): string {
 }
 
 function makeExport(conf: IndexerConfig, source: string, file: string) {
-	const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file))
+	const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
 	const export_type = override ? conf.overrides[override] : conf.type
 	const file_path = resolvePath(source, file)
 	const dirname = path.dirname(file)
@@ -188,13 +188,16 @@ function makeExport(conf: IndexerConfig, source: string, file: string) {
 	const export_name = makeExportName(filename, conf.casing)
 
 	switch (export_type) {
-		case 'group':
+		case 'group': {
 			return `export * as ${export_name} from '${file_path}'`
+		}
 		case 'individual':
-		case 'wildcard':
+		case 'wildcard': {
 			return `export * from '${file_path}'`
-		default:
+		}
+		default: {
 			return `export {default as ${export_name}} from '${file_path}'`
+		}
 	}
 }
 
@@ -224,7 +227,7 @@ async function makeDefaultExport(indexConf: IndexConfig, existingContent: string
 
 	$out.debug('Found files', files)
 	for (const file of files) {
-		const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file))
+		const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
 		const export_type: DefaultFileExport = override ? conf.overrides[override] : conf.type
 		const file_path = resolvePath(path.dirname(indexConf.output), file)
 		const filename = path.basename(file, path.extname(file))
@@ -265,18 +268,24 @@ function makeIgnore(conf) {
 
 function makeExportName(name: string, casing: IndexerConfig['casing'] = 'keep'): string {
 	switch (casing) {
-		case 'camel':
+		case 'camel': {
 			return camelCase(name)
-		case 'pascal':
+		}
+		case 'pascal': {
 			return name.charAt(0).toUpperCase() + camelCase(name.slice(1))
-		case 'snake':
+		}
+		case 'snake': {
 			return snakeCase(name)
-		case 'upper':
+		}
+		case 'upper': {
 			return name.toUpperCase()
-		case 'lower':
+		}
+		case 'lower': {
 			return name.toLowerCase()
-		default: // case keep
+		}
+		default: { // case keep
 			return safeVarName(name).replace(/_/g, '')
+		}
 	}
 }
 
