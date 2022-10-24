@@ -14,6 +14,8 @@
 		"bundle": "esbuild --bundle --outfile=bin/indexer src/index.ts --target=node12 --platform=node --external:shelljs",
 		"clean": "shx rm -rf ./bin",
 		"dev": "pnpm run bundle --sourcemap",
+		"fix": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color --fix",
+		"lint": "tsc --noEmit && eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
 		"start": "node bin/indexer",
 		"watch": "pnpm run dev --watch"
 	},
