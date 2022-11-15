@@ -37,6 +37,7 @@
 		"@snickbit/node-utilities": "4.4.16",
 		"@snickbit/out": "2.0.48",
 		"@snickbit/utilities": "3.4.15",
+		"chokidar": "^3.5.3",
 		"fast-glob": "3.2.12",
 		"lilconfig": "2.0.6",
 		"picomatch": "2.3.1"
