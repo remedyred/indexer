@@ -6,7 +6,7 @@ import {AppConfig, IndexerConfig} from './definitions'
 import {objectExcept} from '@snickbit/utilities'
 import cli from '@snickbit/node-cli'
 import packageJson from '../package.json'
-import generateIndexes from './generate-indexes'
+import generateIndexes from './'
 
 cli().name('@snickbit/indexer')
 	.version(packageJson.version)
