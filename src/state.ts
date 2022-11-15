@@ -1,8 +1,9 @@
-import {Args} from './common'
+import {$out, Args} from './common'
 import {fileExists, getFileJson} from '@snickbit/node-utilities'
 import {lilconfig} from 'lilconfig'
 import {IndexerConfig} from './config'
 import {createStore} from '@snickbit/state'
+import {arrayWrap} from '@snickbit/utilities'
 
 export interface State {
 	changed_files: string[]
@@ -17,6 +18,31 @@ export interface State {
 }
 
 export const useState = createStore<Partial<State>>({changed_files: []})
+
+export function useSources(): string[] {
+	const $state = useState()
+	if (!$state.sources) {
+		const sources: string[] = []
+		const config = $state.config
+		$out.info('Loading sources...', {config})
+		if (config.source) {
+			sources.push(...arrayWrap(config.source))
+		}
+
+		if (config?.indexes) {
+			for (const key in config.indexes) {
+				const index = config.indexes[key]
+				if (index.source) {
+					sources.push(...arrayWrap(index.source))
+				}
+			}
+		}
+
+		$state.sources = sources
+	}
+
+	return $state.sources
+}
 
 export async function setup(argv: Args) {
 	const $state = useState()
