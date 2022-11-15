@@ -8,7 +8,7 @@ import {generateIndexes} from './'
 import cli from '@snickbit/node-cli'
 import packageJson from '../package.json'
 
-cli().name('@snickbit/indexer')
+cli().name(packageJson.name)
 	.version(packageJson.version)
 	.banner('Generating Indexes')
 	.includeWorkingPackage()
@@ -28,8 +28,7 @@ cli().name('@snickbit/indexer')
 			describe: 'Dry run, do not write to disk'
 		}
 	})
-	.run()
-	.then(async argv => {
+	.run(async argv => {
 		const config: AppConfig = {
 			source: argv.source,
 			output: argv.output,
