@@ -8,7 +8,7 @@ import picomatch from 'picomatch'
 import fs from 'fs'
 import readline from 'readline'
 
-export default async function(appConfig: AppConfig, config?: IndexerConfig): Promise<IndexerConfig> {
+export async function generateIndexes(appConfig: AppConfig, config?: IndexerConfig): Promise<IndexerConfig> {
 	let indexer_config: IndexerConfig
 	let conf: IndexerConfig
 
