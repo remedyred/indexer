@@ -7,6 +7,7 @@ import {objectExcept} from '@snickbit/utilities'
 import {generateIndexes} from './'
 import {name as packageName, version} from '../package.json'
 import cli from '@snickbit/node-cli'
+import chokidar from 'chokidar'
 
 cli()
 	.name(packageName)
@@ -27,6 +28,10 @@ cli()
 		dryRun: {
 			alias: ['d', 'dry'],
 			describe: 'Dry run, do not write to disk'
+		},
+		watch: {
+			alias: 'w',
+			describe: 'Watch for changes and regenerate indexes'
 		}
 	})
 	.run(main)
@@ -34,6 +39,10 @@ cli()
 async function main(argv) {
 	const config = await useConfig(argv)
 	const {configPath} = useState() // must come after first useConfig
+
+	if (argv.watch) {
+		return watch()
+	}
 
 	await generate()
 
@@ -90,4 +99,22 @@ async function generate() {
 	} else {
 		$out.fatal('No configuration found and no source directory specified')
 	}
+}
+
+const changed_files: string[] = []
+
+async function watch() {
+	chokidar
+		.watch('src', {persistent: true})
+		.on('change', async file => {
+			$out.debug(`${file} changed`)
+			if (!changed_files.includes(file)) {
+				changed_files.push(file)
+			}
+			await generate()
+		}).on('ready', () => {
+			$out.info(`Waiting for file changes...`)
+		}).on('all', (event, path) => {
+			$out.label(event).verbose(path)
+		})
 }
