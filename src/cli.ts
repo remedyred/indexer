@@ -5,11 +5,12 @@ import {$out, $state, DEFAULT_CONFIG_NAME, useState} from './common'
 import {AppConfig, IndexerConfig} from './definitions'
 import {objectExcept} from '@snickbit/utilities'
 import {generateIndexes} from './'
+import {name as packageName, version} from '../package.json'
 import cli from '@snickbit/node-cli'
-import packageJson from '../package.json'
 
-cli().name(packageJson.name)
-	.version(packageJson.version)
+cli()
+	.name(packageName)
+	.version(version)
 	.banner('Generating Indexes')
 	.includeWorkingPackage()
 	.args({
