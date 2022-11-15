@@ -3,30 +3,34 @@
 	"version": "2.5.27",
 	"description": "Simple cli tool to generate index files for almost any project.",
 	"license": "MIT",
+	"exports": {
+		"require": "./dist/index.js",
+		"import": "./dist/index.mjs",
+		"types": "./dist/index.d.ts"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
 	"bin": {
-		"indexer": "./bin/indexer"
+		"indexer": "./dist/cli.js"
 	},
 	"files": [
-		"bin"
+		"dist"
 	],
 	"scripts": {
-		"build": "pnpm run bundle --minify",
-		"bundle": "esbuild --bundle --outfile=bin/indexer src/index.ts --target=node12 --platform=node --external:shelljs",
-		"clean": "shx rm -rf ./bin",
-		"dev": "pnpm run bundle --sourcemap",
-		"fix": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color --fix",
-		"lint": "tsc --noEmit && eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
-		"start": "node bin/indexer",
-		"watch": "pnpm run dev --watch"
+		"build": "tsup --minify",
+		"check": "pnpm run lint && pnpm run typecheck",
+		"clean": "shx rm -rf ./dist",
+		"dev": "tsup --watch",
+		"lint": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
+		"lint:fix": "pnpm run lint --fix",
+		"start": "ts-node ./src/cli.ts",
+		"typecheck": "tsc --noEmit"
 	},
 	"release": {
 		"extends": [
 			"@snickbit/semantic-release"
 		]
-	},
-	"jest": {
-		"preset": "ts-jest",
-		"testEnvironment": "node"
 	},
 	"dependencies": {
 		"@snickbit/node-cli": "2.0.2",
@@ -40,18 +44,27 @@
 	"devDependencies": {
 		"@snickbit/eslint-config": "1.3.8",
 		"@snickbit/semantic-release": "^1.6.0",
-		"@types/jest": "29.2.0",
 		"@types/node": "17.0.45",
-		"esbuild": "0.15.12",
 		"eslint": "8.26.0",
-		"jest": "29.2.1",
 		"semantic-release": "^19.0.5",
 		"shx": "0.3.4",
-		"ts-jest": "29.0.3",
+		"ts-node": "10.9.1",
+		"tsup": "6.3.0",
 		"typescript": "4.8.4"
 	},
 	"engines": {
 		"node": ">= 12"
 	},
-	"preferGlobal": true
+	"tsup": {
+		"entry": [
+			"src/index.ts",
+			"src/cli.ts"
+		],
+		"clean": true,
+		"dts": true,
+		"format": [
+			"cjs",
+			"esm"
+		]
+	}
 }
