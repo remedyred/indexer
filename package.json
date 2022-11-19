@@ -36,6 +36,7 @@
 		"@snickbit/node-cli": "2.0.2",
 		"@snickbit/node-utilities": "4.4.16",
 		"@snickbit/out": "2.0.48",
+		"@snickbit/state": "^1.0.1",
 		"@snickbit/utilities": "3.4.15",
 		"fast-glob": "3.2.12",
 		"lilconfig": "2.0.6",
