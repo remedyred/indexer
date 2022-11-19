@@ -1,2 +1,2 @@
 export {generateIndexes} from './generate-indexes'
-export * from './definitions'
+export * from './config'
