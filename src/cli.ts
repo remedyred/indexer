@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import {ask, confirm, fileExists, getFileJson, saveFileJson} from '@snickbit/node-utilities'
-import {lilconfig} from 'lilconfig'
-import {$out, $state, DEFAULT_CONFIG_NAME, useState} from './common'
-import {AppConfig, IndexerConfig} from './definitions'
+import {ask, confirm, saveFileJson} from '@snickbit/node-utilities'
+import {$out, Args, DEFAULT_CONFIG_NAME} from './common'
 import {objectExcept} from '@snickbit/utilities'
 import {generateIndexes} from './'
 import {name as packageName, version} from '../package.json'
+import {setup, useSources, useState} from './state'
+import {GenerateConfig, useConfig} from './config'
 import cli from '@snickbit/node-cli'
 import chokidar from 'chokidar'
 
@@ -36,9 +36,9 @@ cli()
 	})
 	.run(main)
 
-async function main(argv) {
-	const config = await useConfig(argv)
-	const {configPath} = useState() // must come after first useConfig
+async function main(argv: Args) {
+	await setup(argv)
+	const {configPath, dryRun} = useState()
 
 	if (argv.watch) {
 		return watch()
@@ -46,68 +46,42 @@ async function main(argv) {
 
 	await generate()
 
-	if (!config.dryRun && !configPath && await confirm('Do you want to save the configuration?')) {
+	if (!dryRun && !configPath && await confirm('Do you want to save the configuration?')) {
 		const save_path = configPath || await ask('Path to save config file?', DEFAULT_CONFIG_NAME)
 		if (!save_path) {
 			$out.fatal('No path provided')
 		}
-		await saveFileJson(save_path, $state.config.indexer)
+		await saveFileJson(save_path, useConfig())
 	}
 
 	$out.done('Done')
 }
 
-async function useConfig(argv?: any): Promise<AppConfig> {
-	if (!$state.config) {
-		$state.config = {
-			source: argv.source,
-			output: argv.output,
-			dryRun: argv.dryRun
-		}
-
-		if ($state.config.source && !$state.config.source.includes('*')) {
-			$state.config.source = `${$state.config.source}/**/*`
-		}
-
-		if (argv.config && argv.config !== 'false' && fileExists(argv.config)) {
-			$state.configPath = argv.config
-			$state.config.indexer = getFileJson(argv.config)
-		} else {
-			const result = await lilconfig('indexer').search()
-			if (result) {
-				$state.configPath = result.filepath
-				$state.config.indexer = result.config
-			}
-		}
-	}
-	return $state.config
-}
-
 async function generate() {
-	const {config} = useState()
-	if (config.indexer || config.source) {
-		const conf = config.indexer as IndexerConfig
-		if (conf?.indexes) {
-			const root: Omit<IndexerConfig, 'indexes'> = objectExcept(conf, ['indexes']) as IndexerConfig
-			for (const key in conf.indexes) {
-				conf.indexes[key] = await generateIndexes(config, {...root, ...conf.indexes[key]}) as IndexerConfig
+	const $state = useState()
+	if ($state.config || $state.args.source) {
+		if ($state.config?.indexes) {
+			const root: Omit<GenerateConfig, 'indexes'> = objectExcept<GenerateConfig>($state.config, ['indexes'])
+			for (const key in $state.config.indexes) {
+				$state.config.indexes[key] = await generateIndexes({...root, ...$state.config.indexes[key]})
 			}
-			config.indexer = conf
 		} else {
-			config.indexer = await generateIndexes(config)
+			$state.config = await generateIndexes($state.config)
 		}
 	} else {
 		$out.fatal('No configuration found and no source directory specified')
 	}
 }
 
-const changed_files: string[] = []
-
 async function watch() {
+	const sources = useSources()
+	$out.broken.fatal('sources: ', {sources})
+
 	chokidar
 		.watch('src', {persistent: true})
 		.on('change', async file => {
 			$out.debug(`${file} changed`)
+			const {changed_files} = useState()
 			if (!changed_files.includes(file)) {
 				changed_files.push(file)
 			}
