@@ -5,14 +5,14 @@ specifiers:
   '@snickbit/node-cli': 2.0.2
   '@snickbit/node-utilities': 4.4.16
   '@snickbit/out': 2.0.48
-  '@snickbit/semantic-release': ^1.6.0
+  '@snickbit/semantic-release': 1.6.3
   '@snickbit/utilities': 3.4.15
   '@types/node': 17.0.45
   eslint: 8.26.0
   fast-glob: 3.2.12
   lilconfig: 2.0.6
   picomatch: 2.3.1
-  semantic-release: ^19.0.5
+  semantic-release: 19.0.5
   shx: 0.3.4
   ts-node: 10.9.1
   tsup: 6.3.0
@@ -29,7 +29,7 @@ dependencies:
 
 devDependencies:
   '@snickbit/eslint-config': 1.3.8_wyqvi574yv7oiwfeinomdzmc3m
-  '@snickbit/semantic-release': 1.6.0_semantic-release@19.0.5
+  '@snickbit/semantic-release': 1.6.3_semantic-release@19.0.5
   '@types/node': 17.0.45
   eslint: 8.26.0
   semantic-release: 19.0.5
@@ -47,11 +47,6 @@ packages:
       '@babel/highlight': 7.18.6
     dev: true
 
-  /@babel/helper-validator-identifier/7.18.6:
-    resolution: {integrity: sha512-MmetCkz9ej86nJQV+sFCxoGGrUbU3q02kgLciwkrt9QqEB7cP39oKEY0PakknEO0Gu20SskMRi+AYZ3b1TpN9g==}
-    engines: {node: '>=6.9.0'}
-    dev: true
-
   /@babel/helper-validator-identifier/7.19.1:
     resolution: {integrity: sha512-awrNfaMtnHUr653GgGEs++LlAvW6w+DcPrOliSMXWCKo597CwL5Acf/wWdNkf/tfEQE3mjkeD1YOVZOUV/od1w==}
     engines: {node: '>=6.9.0'}
@@ -61,7 +56,7 @@ packages:
     resolution: {integrity: sha512-u7stbOuYjaPezCuLj29hNW1v64M2Md2qupEKP1fHc7WdOA3DgLh37suiSrZYY7haUB7iBeQZ9P1uiRF359do3g==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/helper-validator-identifier': 7.18.6
+      '@babel/helper-validator-identifier': 7.19.1
       chalk: 2.4.2
       js-tokens: 4.0.0
     dev: true
@@ -492,8 +487,8 @@ packages:
     engines: {node: '>= 12'}
     dev: false
 
-  /@snickbit/semantic-release/1.6.0_semantic-release@19.0.5:
-    resolution: {integrity: sha512-qT2YP6aPuUxpFSPjSI7rC6Dy082UHX0VdOGhT0dv+iyNV7JeHjE2LVYRWD5QQqOPmmTT2JwxJ6fA8ibUCfPEhQ==}
+  /@snickbit/semantic-release/1.6.3_semantic-release@19.0.5:
+    resolution: {integrity: sha512-wkpqt3vCymU5rGOJgEuT+corDSJubTWZo4xMRlU/7OotYJ6zapeN/GhqJ06wFmhVNKMpi/Jm/lCtfz3pwyHJYw==}
     engines: {node: '>= 14.17'}
     dependencies:
       '@semantic-release/changelog': 6.0.1_semantic-release@19.0.5
