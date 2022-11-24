@@ -1,5 +1,19 @@
 # @snickbit/indexer Changelog
 
+## [2.6.0](https://github.com/remedyred/indexer/compare/v2.5.28...v2.6.0) (2022-11-24)
+
+
+### Features
+
+* better default exports ([#55](https://github.com/remedyred/indexer/issues/55)) ([4174737](https://github.com/remedyred/indexer/commit/4174737ea11746c0b4784f51eb25cbcee29a6fc6))
+* split cli and library ([#53](https://github.com/remedyred/indexer/issues/53)) ([f53c1dd](https://github.com/remedyred/indexer/commit/f53c1dd20969dca12b0c9d4a9753fc6d4e53e57e))
+
+
+### Bug Fixes
+
+* **ci:** switch to release please ([b4ce12c](https://github.com/remedyred/indexer/commit/b4ce12c43eef5c8d2962f2811bb38864cb66d54e))
+* improve type exports ([#56](https://github.com/remedyred/indexer/issues/56)) ([4c09d2f](https://github.com/remedyred/indexer/commit/4c09d2f598ae4ed655410ac892be61bec13b3679))
+
 ## 2.5.7
 
 ### Patch Changes
@@ -40,4 +54,3 @@
 - [78528df](https://github.com/snickbit/indexer/commit/78528df) **docs**:  update
 - [73b68e8](https://github.com/snickbit/indexer/commit/73b68e8) **fix**:  remove unused "single" option
 - [a831d8e](https://github.com/snickbit/indexer/commit/a831d8e) **fix**:  don't kill on missing source and present indexes array
-
