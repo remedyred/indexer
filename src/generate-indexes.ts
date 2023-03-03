@@ -1,6 +1,15 @@
 import {ask, fileExists, mkdir, saveFile} from '@snickbit/node-utilities'
 import {$out, indexer_banner, posix} from './common'
-import {arrayWrap, camelCase, isArray, JSONPrettify, objectFindKey, safeVarName, slugify, snakeCase} from '@snickbit/utilities'
+import {
+	arrayWrap,
+	camelCase,
+	isArray,
+	JSONPrettify,
+	objectFindKey,
+	safeVarName,
+	slugify,
+	snakeCase
+} from '@snickbit/utilities'
 import {useState} from './state'
 import {DefaultFileExport, IndexConfig, IndexerConfig, useConfig} from './config'
 import path from 'path'
@@ -10,8 +19,8 @@ import fs from 'fs'
 import readline from 'readline'
 
 export interface IndexerResults {
-	message: string
-	type: 'error' | 'success' | 'warn'
+    message: string
+    type: 'error' | 'success' | 'warn'
 }
 
 export async function generateIndexes(config?: IndexerConfig): Promise<IndexerConfig> {
@@ -21,8 +30,8 @@ export async function generateIndexes(config?: IndexerConfig): Promise<IndexerCo
 
 	if (!conf) {
 		const source = config.source ||
-			sources && arrayWrap(sources)[0] ||
-			await ask('Source glob pattern:', {initial: 'src/**/*.ts'})
+            sources && arrayWrap(sources)[0] ||
+            await ask('Source glob pattern:', {initial: 'src/**/*.ts'})
 
 		const output = config.output || await ask('Output file:', {initial: source.replace(/(\*+\/?)+/, 'index.ts')})
 
@@ -59,9 +68,7 @@ export async function generateIndexes(config?: IndexerConfig): Promise<IndexerCo
 	if (!conf.output) {
 		$out.fatal('Output file is required')
 	}
-	if (!conf.type) {
-		conf.type = 'wildcard'
-	}
+	conf.type ||= 'wildcard'
 
 	const content: string[] = []
 	const results: IndexerResults[] = []
@@ -85,9 +92,7 @@ export async function generateIndexes(config?: IndexerConfig): Promise<IndexerCo
 
 		if (conf.recursive) {
 			const dirname = posix.dirname(file)
-			if (!indexes[dirname]) {
-				indexes[dirname] = []
-			}
+			indexes[dirname] ||= []
 
 			indexes[dirname].push(file.replace(/\.[jt]s$/, ''))
 		} else {
@@ -169,10 +174,11 @@ function getOutputs(indexerConfig: IndexerConfig): string[] {
 function resolvePath(source: string, file: string): string {
 	const resolvedIndex = posix.resolve(source)
 	const resolvedFile = posix.resolve(file)
-	let file_path = posix.relative(resolvedIndex, resolvedFile)
-	                     .replace(/^(\.\.)?\/?/, './')
-	                     .replace(/\.[jt]s$/, '')
-	                     .replace(/\/index$/, '')
+	let file_path = posix
+		.relative(resolvedIndex, resolvedFile)
+		.replace(/^(\.\.)?\/?/, './')
+		.replace(/\.[jt]s$/, '')
+		.replace(/\/index$/, '')
 	if (file_path === '.') {
 		file_path = './index'
 	}
