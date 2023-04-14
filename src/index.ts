@@ -1,13 +1,14 @@
-import {ask, fileExists, mkdir, saveFile} from '@snickbit/node-utilities'
-import {$out, indexer_banner, posix} from './common'
-import {arrayWrap, camelCase, isArray, JSONPrettify, objectFindKey, safeVarName, slugify, snakeCase} from '@snickbit/utilities'
-import {useState} from './state'
-import {DefaultFileExport, GenerateConfig, IndexConfig, useConfig} from './config'
+import {ask} from '@snickbit/node-utilities'
+import {$out, $state, posix} from './common'
+import {arrayWrap, JSONPrettify} from '@snickbit/utilities'
+import {GenerateConfig, useConfig} from './lib/config'
+import {makeIgnore} from './lib/make-ignore'
+import {makeExport} from './lib/make-export'
+import {getOutputs} from './lib/get-outputs'
+import {shouldIgnore} from './lib/should-ignore'
+import {saveIndex} from './lib/save-index'
 import path from 'path'
 import fg from 'fast-glob'
-import picomatch from 'picomatch'
-import fs from 'fs'
-import readline from 'readline'
 
 export interface IndexerResults {
 	message: string
@@ -17,7 +18,7 @@ export interface IndexerResults {
 export async function generateIndexes(config?: GenerateConfig): Promise<GenerateConfig> {
 	let indexer_config: GenerateConfig
 	let conf: GenerateConfig = useConfig(config)
-	const {dryRun, sources} = useState()
+	const {dryRun, sources} = $state
 
 	if (!conf) {
 		const source = config.source ||
@@ -155,208 +156,3 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 	return indexer_config
 }
 
-let _outputs: string[]
-
-function getOutputs(indexerConfig: GenerateConfig): string[] {
-	if (!_outputs) {
-		const indexes = indexerConfig?.indexes || [indexerConfig]
-
-		_outputs = indexes.filter(index => index?.output).map(index => index.output)
-	}
-	return _outputs
-}
-
-function resolvePath(source: string, file: string): string {
-	const resolvedIndex = posix.resolve(source)
-	const resolvedFile = posix.resolve(file)
-	let file_path = posix.relative(resolvedIndex, resolvedFile)
-		.replace(/^(\.\.)?\/?/, './')
-		.replace(/\.[jt]s$/, '')
-		.replace(/\/index$/, '')
-	if (file_path === '.') {
-		file_path = './index'
-	}
-	return file_path
-}
-
-function makeExport(conf: GenerateConfig, source: string, file: string) {
-	const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
-	const export_type = override ? conf.overrides[override] : conf.type
-	const file_path = resolvePath(source, file)
-	const dirname = path.dirname(file)
-	const filename = path.basename(file_path, path.extname(file))
-
-	if (export_type === 'slug') {
-		const slug = safeVarName(slugify(path.join(dirname, filename)))
-		return `export * as ${slug} from '${file_path}'`
-	}
-	const export_name = makeExportName(filename, conf.casing)
-
-	switch (export_type) {
-		case 'group': {
-			return `export * as ${export_name} from '${file_path}'`
-		}
-		case 'individual':
-		case 'wildcard': {
-			return `export * from '${file_path}'`
-		}
-		default: {
-			return `export {default as ${export_name}} from '${file_path}'`
-		}
-	}
-}
-
-/**
- * Save index file to disk
- */
-async function saveIndex(indexConf: IndexConfig, filePath: string, content: string[]) {
-	mkdir(path.dirname(filePath), true)
-
-	content = content.sort()
-
-	if (indexConf.default && indexConf.default.source) {
-		content = await makeDefaultExport(indexConf, content)
-	}
-
-	saveFile(filePath, `${indexer_banner}\n\n${content.join('\n')}\n`)
-}
-
-/**
- * Make default export
- */
-async function makeDefaultExport(indexConf: IndexConfig, existingContent: string[]): Promise<string[]> {
-	$out.debug('Making default export', indexConf.default.source)
-
-	const conf = indexConf.default
-	const contentImports: string[] = []
-	let defaultExport: string
-
-	$out.debug('Finding files matching source', {source: indexConf.default.source})
-
-	const exportNames = []
-	const files = Array.isArray(indexConf.default.source) ? await fg(indexConf.default.source, {
-		ignore: makeIgnore(indexConf.default),
-		onlyFiles: true
-	}) : [indexConf.default.source]
-
-	const singleDefault = indexConf.default?.type === 'default' && !Array.isArray(indexConf.default.source) ? indexConf.default.source : null
-
-	$out.debug('Found files', files)
-
-	for (const file of files) {
-		const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
-		const export_type: DefaultFileExport = override ? conf.overrides[override] : conf.type
-		const file_path = resolvePath(path.dirname(indexConf.output), file)
-		const filename = path.basename(file, path.extname(file))
-		let export_name = makeExportName(filename, conf.casing)
-
-		if (singleDefault === file) {
-			defaultExport = `export {default} from '${file_path}'`
-		} else if (export_type === 'slug') {
-			const dirname = path.dirname(file)
-			export_name = safeVarName(slugify(path.join(dirname, filename)))
-			contentImports.push(`import {* as ${export_name}} from '${file_path}'`)
-		} else if (export_type === 'default') {
-			contentImports.push(`import {default as ${export_name}} from '${file_path}'`)
-		} else { // wildcard
-			contentImports.push(`import * as ${export_name} from '${file_path}'`)
-		}
-
-		exportNames.push(export_name)
-	}
-
-	defaultExport ||= Array.isArray(indexConf.default.source)
-		? `export default { ${exportNames.sort().join(', ')} }`
-		: `export default ${exportNames.shift()}`
-
-	const results = []
-
-	if (contentImports.length) {
-		results.push(...contentImports.sort(), '')
-	}
-
-	if (existingContent.length) {
-		results.push(...existingContent, '')
-	}
-
-	results.push(defaultExport)
-
-	return results
-}
-
-/**
- * Make ignore array
- */
-function makeIgnore(conf) {
-	const ignore = [conf.output]
-
-	if (conf.ignore) {
-		ignore.push(...conf.ignore)
-	}
-	return ignore.filter(Boolean)
-}
-
-/**
- * Generate export name
- */
-function makeExportName(name: string, casing: GenerateConfig['casing'] = 'keep'): string {
-	switch (casing) {
-		case 'camel': {
-			return camelCase(name)
-		}
-		case 'pascal': {
-			return name.charAt(0).toUpperCase() + camelCase(name.slice(1))
-		}
-		case 'snake': {
-			return snakeCase(name)
-		}
-		case 'upper': {
-			return name.toUpperCase()
-		}
-		case 'lower': {
-			return name.toLowerCase()
-		}
-		default: { // case keep
-			return safeVarName(name).replace(/_/g, '')
-		}
-	}
-}
-
-/**
- * Whether or not to ignore a file
- */
-async function shouldIgnore(conf: GenerateConfig, file: string): Promise<boolean> {
-	if (!fileExists(file)) {
-		return true
-	}
-
-	if (isArray(conf.include) && conf.include.some(include => include && picomatch(include)(file))) {
-		return false
-	}
-
-	if (isArray(conf.ignore) && conf.ignore.some(ignore => ignore && picomatch(ignore)(file))) {
-		return true
-	}
-
-	if (getOutputs(conf).some(ignore => ignore && picomatch(ignore)(file)) || /\/index\.[a-z]+$/.test(file)) {
-		return await getFirstLine(file) === indexer_banner
-	}
-
-	return file === conf.output
-}
-
-/**
- * Get the first line of a file, helper for shouldIgnore
- */
-async function getFirstLine(pathToFile) {
-	const readable = fs.createReadStream(pathToFile)
-	const reader = readline.createInterface({input: readable})
-	const line = await new Promise(resolve => {
-		reader.once('line', line => {
-			reader.close()
-			resolve(line)
-		})
-	})
-	readable.close()
-	return line
-}

@@ -1,4 +1,6 @@
-import {useState} from './state'
+import {$state, Args} from '../common'
+import {fileExists, getFileJson} from '@snickbit/node-utilities'
+import {lilconfig} from 'lilconfig'
 
 export type FileExport = 'default' | 'group' | 'individual' | 'skip' | 'slug' | 'wildcard'
 export type DefaultFileExport = 'default' | 'group' | 'slug'
@@ -46,5 +48,28 @@ export interface GenerateConfig extends IndexConfig {
  * @param priority
  */
 export function useConfig(priority?: GenerateConfig): GenerateConfig {
-	return priority ?? useState().config
+	return priority ?? $state.config
+}
+
+export async function setup(argv: Args) {
+	$state.config = {
+		source: argv.source,
+		output: argv.output
+	}
+
+	if ($state.config.source && !$state.config.source.includes('*')) {
+		$state.config.source = `${$state.config.source}/**/*`
+	}
+
+	if (argv.config && argv.config !== 'false' && fileExists(argv.config)) {
+		$state.configPath = argv.config
+		const indexerConfig = getFileJson(argv.config)
+		$state.config = {...$state.config, ...indexerConfig}
+	} else {
+		const result = await lilconfig('indexer').search()
+		if (result) {
+			$state.configPath = result.filepath
+			$state.config = {...$state.config, ...result.config}
+		}
+	}
 }

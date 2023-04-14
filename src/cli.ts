@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import {ask, confirm, saveFileJson} from '@snickbit/node-utilities'
-import {$out, Args, DEFAULT_CONFIG_NAME} from './common'
+import {$out, $state, Args, DEFAULT_CONFIG_NAME} from './common'
 import {objectExcept} from '@snickbit/utilities'
 import {generateIndexes} from './'
 import {name as packageName, version} from '../package.json'
-import {setup, useSources, useState} from './state'
-import {GenerateConfig, useConfig} from './config'
+import {GenerateConfig, setup, useConfig} from './lib/config'
+import {useSources} from './lib/use-sources'
 import cli from '@snickbit/node-cli'
 import chokidar from 'chokidar'
 
@@ -38,7 +38,7 @@ cli()
 
 async function main(argv: Args) {
 	await setup(argv)
-	const {configPath, dryRun} = useState()
+	const {configPath, dryRun} = $state
 
 	if (argv.watch) {
 		return watch()
@@ -58,7 +58,6 @@ async function main(argv: Args) {
 }
 
 async function generate() {
-	const $state = useState()
 	if ($state.config || $state.args.source) {
 		if ($state.config?.indexes) {
 			const root: Omit<GenerateConfig, 'indexes'> = objectExcept<GenerateConfig>($state.config, ['indexes'])
@@ -81,7 +80,7 @@ async function watch() {
 		.watch('src', {persistent: true})
 		.on('change', async file => {
 			$out.debug(`${file} changed`)
-			const {changed_files} = useState()
+			const {changed_files} = $state
 			if (!changed_files.includes(file)) {
 				changed_files.push(file)
 			}

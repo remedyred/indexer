@@ -1,4 +1,5 @@
 import {Out} from '@snickbit/out'
+import {GenerateConfig} from './lib/config'
 import path from 'path'
 
 export const DEFAULT_CONFIG_NAME = 'indexer.config.json'
@@ -16,3 +17,17 @@ export interface Args {
 	config?: string
 	watch?: boolean
 }
+
+export interface State {
+	changed_files: string[]
+	config?: GenerateConfig
+	args: Args
+	configPath: string
+	sources: string[]
+	outputs: string[]
+	dryRun: boolean
+	watch: boolean
+	rootOnly: boolean
+}
+
+export const $state = {} as State
