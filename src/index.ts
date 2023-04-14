@@ -4,7 +4,7 @@ import {arrayWrap, JSONPrettify} from '@snickbit/utilities'
 import {GenerateConfig, useConfig} from './lib/config'
 import {makeIgnore} from './lib/make-ignore'
 import {makeExport} from './lib/make-export'
-import {getOutputs} from './lib/get-outputs'
+import {useOutputs} from './lib/use-outputs'
 import {shouldIgnore} from './lib/should-ignore'
 import {saveIndex} from './lib/save-index'
 import path from 'path'
@@ -16,7 +16,6 @@ export interface IndexerResults {
 }
 
 export async function generateIndexes(config?: GenerateConfig): Promise<GenerateConfig> {
-	let indexer_config: GenerateConfig
 	let conf: GenerateConfig = useConfig(config)
 	const {dryRun, sources} = $state
 
@@ -49,20 +48,19 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 			]
 		})
 
-		indexer_config = conf = {source, output, type}
+		conf = {source, output, type}
 	}
 
-	getOutputs(config)
+	useOutputs(config)
 
 	if (!conf.source && !conf.indexes) {
-		$out.fatal('Source glob pattern or indexes is required')
+		$out.verbose({conf})
+		$out.fatal('Source glob pattern or indexes are required')
 	}
 	if (!conf.output) {
 		$out.fatal('Output file is required')
 	}
-	if (!conf.type) {
-		conf.type = 'wildcard'
-	}
+	conf.type ||= 'wildcard'
 
 	const content: string[] = []
 	const results: IndexerResults[] = []
@@ -86,9 +84,7 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 
 		if (conf.recursive) {
 			const dirname = posix.dirname(file)
-			if (!indexes[dirname]) {
-				indexes[dirname] = []
-			}
+			indexes[dirname] ||= []
 
 			indexes[dirname].push(file.replace(/\.[jt]s$/, ''))
 		} else {
@@ -142,7 +138,7 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 
 	if (results.length) {
 		if (dryRun) {
-			$out.info('DRY RUN : No changes have been made to the filesystem')
+			$out.force.warn('DRY RUN : No changes have been made to the filesystem')
 		}
 		for (const result of results) {
 			if ($out[result.type]) {
@@ -153,6 +149,6 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 		}
 	}
 
-	return indexer_config
+	return conf
 }
 

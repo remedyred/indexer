@@ -28,6 +28,7 @@ export interface State {
 	dryRun: boolean
 	watch: boolean
 	rootOnly: boolean
+	isGenerating: boolean
 }
 
 export const $state = {} as State

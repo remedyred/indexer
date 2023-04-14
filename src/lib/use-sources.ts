@@ -5,14 +5,13 @@ export function useSources(): string[] {
 	if (!$state.sources) {
 		const sources: string[] = []
 		const config = $state.config
-		$out.info('Loading sources...', {config})
+		$out.verbose('Loading sources...', {$state})
 		if (config.source) {
 			sources.push(...arrayWrap(config.source))
 		}
 
 		if (config?.indexes) {
-			for (const key in config.indexes) {
-				const index = config.indexes[key]
+			for (const index of config.indexes) {
 				if (index.source) {
 					sources.push(...arrayWrap(index.source))
 				}

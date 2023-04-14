@@ -1,7 +1,7 @@
 import {GenerateConfig} from './config'
 import {fileExists} from '@snickbit/node-utilities'
 import {isArray} from '@snickbit/utilities'
-import {getOutputs} from './get-outputs'
+import {useOutputs} from './use-outputs'
 import {getFirstLine} from './get-first-line'
 import {indexer_banner} from '../common'
 import picomatch from 'picomatch'
@@ -22,7 +22,7 @@ export async function shouldIgnore(conf: GenerateConfig, file: string): Promise<
 		return true
 	}
 
-	if (getOutputs(conf).some(ignore => ignore && picomatch(ignore)(file)) || /\/index\.[a-z]+$/.test(file)) {
+	if (useOutputs(conf).some(ignore => ignore && picomatch(ignore)(file)) || /\/index\.[a-z]+$/.test(file)) {
 		return await getFirstLine(file) === indexer_banner
 	}
 
