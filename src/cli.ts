@@ -1,15 +1,11 @@
 #!/usr/bin/env node
 import {ask, confirm, saveFileJson} from '@snickbit/node-utilities'
 import {$out, $state, Args, DEFAULT_CONFIG_NAME} from './common'
-import {debounceAsync, objectExcept} from '@snickbit/utilities'
-import {generateIndexes} from './'
 import {name as packageName, version} from '../package.json'
-import {GenerateConfig, setup, useConfig} from './lib/config'
-import {useSources} from './lib/use-sources'
-import {getIndexConfig} from './lib/get-index-config'
-import {useOutputs} from './lib/use-outputs'
+import {setup, useConfig} from './lib/config'
+import {watch} from './watch'
+import {indexer} from './index'
 import cli from '@snickbit/node-cli'
-import chokidar from 'chokidar'
 
 cli()
 	.name(packageName)
@@ -45,18 +41,7 @@ async function main(argv: Args) {
 		return watch()
 	}
 
-	if ($state.config || $state.args.source) {
-		if ($state.config?.indexes) {
-			const root: Omit<GenerateConfig, 'indexes'> = objectExcept<GenerateConfig>($state.config, ['indexes'])
-			for (const key in $state.config.indexes) {
-				$state.config.indexes[key] = await generate({...root, ...$state.config.indexes[key]})
-			}
-		} else {
-			$state.config = await generate($state.config)
-		}
-	} else {
-		$out.fatal('No configuration found and no source directory specified')
-	}
+	$state.config = await indexer($state.config)
 
 	if (!$state.dryRun && !$state.configPath && await confirm('Do you want to save the configuration?')) {
 		const save_path = $state.configPath || await ask('Path to save config file?', DEFAULT_CONFIG_NAME)
@@ -67,38 +52,4 @@ async function main(argv: Args) {
 	}
 
 	$out.done('Done')
-}
-
-async function generate(config: GenerateConfig): Promise<GenerateConfig> {
-	$state.isGenerating = true
-	const results = await generateIndexes(config)
-	$state.isGenerating = false
-	return results
-}
-
-async function watch() {
-	const sources = useSources()
-	const outputs = useOutputs($state.config)
-
-	const debouncedGenerateIndexes = debounceAsync(generate, 200)
-	let fileChanged = true
-
-	chokidar
-		.watch(sources, {persistent: true, ignored: outputs})
-		.on('change', async file => {
-			fileChanged = true
-			$out.debug(`${file} changed`)
-			const indexConfig = getIndexConfig(file)
-			$out.verbose('Using index config:', indexConfig)
-			if (indexConfig) {
-				await debouncedGenerateIndexes(indexConfig)
-			}
-		}).on('ready', () => {
-			if (!$state.isGenerating && fileChanged) {
-				$out.info(`Waiting for file changes...`)
-				fileChanged = false
-			}
-		}).on('all', (event, path) => {
-			$out.label(event).verbose(path)
-		})
 }
