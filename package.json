@@ -36,7 +36,7 @@
 		"@snickbit/node-cli": "2.0.2",
 		"@snickbit/node-utilities": "4.7.2",
 		"@snickbit/out": "2.0.48",
-		"@snickbit/utilities": "3.8.1",
+		"@snickbit/utilities": "3.8.2",
 		"chokidar": "^3.5.3",
 		"fast-glob": "3.2.12",
 		"lilconfig": "2.1.0",

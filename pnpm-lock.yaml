@@ -11,8 +11,8 @@ dependencies:
     specifier: 2.0.48
     version: 2.0.48
   '@snickbit/utilities':
-    specifier: 3.8.1
-    version: 3.8.1
+    specifier: 3.8.2
+    version: 3.8.2
   chokidar:
     specifier: ^3.5.3
     version: 3.5.3
@@ -642,7 +642,7 @@ packages:
     resolution: {integrity: sha512-7BH1TBJZv7bxdsvhdtM0r79bLSjbR2Yef63nSSVHNez2Y3JWUF2N76Um4catkMx69PXL2fZFkK09MZwn7hyfWw==}
     engines: {node: '>= 12'}
     dependencies:
-      '@snickbit/utilities': 3.8.1
+      '@snickbit/utilities': 3.8.2
     dev: false
 
   /@snickbit/eslint-config@1.4.4(eslint@8.38.0)(typescript@4.9.5):
@@ -677,7 +677,7 @@ packages:
     dependencies:
       '@snickbit/node-utilities': 4.7.2
       '@snickbit/out': 2.0.48
-      '@snickbit/utilities': 3.8.1
+      '@snickbit/utilities': 3.8.2
       lilconfig: 2.1.0
       yargs-parser: 21.1.1
     dev: false
@@ -754,8 +754,8 @@ packages:
       nanoid: 3.3.4
     dev: false
 
-  /@snickbit/utilities@3.8.1:
-    resolution: {integrity: sha512-Zp3GMJymZQ3vJz3ZOR0WIKb7wtwMgeR2DknMuM6Fe9nQOem+dWpPqcC9MrYx1r3Wq6ZXuRALdm23lQrBnKm15A==}
+  /@snickbit/utilities@3.8.2:
+    resolution: {integrity: sha512-Qrc2J2HBDYq9rqQiDJIVUt1MD1YD5KPd1cZQaOFpDqOT5pDQ8m90psuTkFyZ9QV4bK/kFzLxN3Wq3M5c+ykiWQ==}
     engines: {node: '>= 14.17'}
     dependencies:
       '@snickbit/plural': 1.0.14
