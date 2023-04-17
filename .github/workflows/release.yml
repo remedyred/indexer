@@ -18,6 +18,7 @@ jobs:
       - name: Build, Test, and Lint
         uses: remedyred/check-action@v1.1.14
         with:
+          SCRIPTS: build,lint,test,docs,schema
           NO_BAIL: true
           AUTO_COMMIT: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
