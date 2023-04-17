@@ -21,12 +21,31 @@ export async function makeDefaultExport(indexConf: IndexConfig, existingContent:
 	$out.debug('Finding files matching source', {source: indexConf.default.source})
 
 	const exportNames = []
-	const files = Array.isArray(indexConf.default.source) ? await fg(indexConf.default.source, {
-		ignore: makeIgnore(indexConf.default),
-		onlyFiles: true
-	}) : [indexConf.default.source]
+	let commonSource = ''
+	let files: string[]
+	let singleDefault = ''
+	if (Array.isArray(indexConf.default.source)) {
+		// sorted from longest to shortest
+		for (const source of indexConf.default.source.sort()) {
+			const cleanSource = source
+				.replace(/\\/g, '/')
+				.replace(/([/\\]\*{1,2})+/g, '')
+			if (!commonSource || commonSource.startsWith(cleanSource)) {
+				commonSource = cleanSource
+			}
+		}
 
-	const singleDefault = indexConf.default?.type === 'default' && !Array.isArray(indexConf.default.source) ? indexConf.default.source : null
+		files = await fg(indexConf.default.source, {
+			ignore: makeIgnore(indexConf.default),
+			onlyFiles: true
+		})
+	} else {
+		files = [indexConf.default.source]
+
+		if (indexConf.default?.type === 'default') {
+			singleDefault = indexConf.default.source
+		}
+	}
 
 	$out.debug('Found files', files)
 
@@ -41,6 +60,7 @@ export async function makeDefaultExport(indexConf: IndexConfig, existingContent:
 			defaultExport = `export {default} from '${file_path}'`
 		} else if (export_type === 'slug') {
 			const dirname = path.dirname(file)
+				.replace(commonSource, '')
 			export_name = safeVarName(slugify(path.join(dirname, filename)))
 			contentImports.push(`import {* as ${export_name}} from '${file_path}'`)
 		} else if (export_type === 'default') {
