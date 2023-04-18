@@ -24,6 +24,7 @@
 		"dev": "tsup --watch",
 		"lint": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
 		"lint:fix": "pnpm run lint --fix",
+		"schema": "typescript-json-schema tsconfig.json GenerateConfig -o indexer.schema.json",
 		"start": "ts-node ./src/cli.ts",
 		"typecheck": "tsc --noEmit"
 	},
@@ -51,7 +52,8 @@
 		"shx": "0.3.4",
 		"ts-node": "10.9.1",
 		"tsup": "6.7.0",
-		"typescript": "4.9.5"
+		"typescript": "4.9.5",
+		"typescript-json-schema": "0.56.0"
 	},
 	"engines": {
 		"node": ">= 12"

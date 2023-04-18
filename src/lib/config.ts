@@ -22,7 +22,9 @@ export interface CommonIndexConfig {
 export interface DefaultIndexConfig extends Omit<CommonIndexConfig, 'source'> {
 	source?: string[] | string
 	type: DefaultFileExport
-	overrides?: Record<string, DefaultFileExport>
+	overrides?: {
+		[key: string]: DefaultFileExport
+	}
 }
 
 /**
@@ -32,7 +34,9 @@ export interface IndexConfig extends CommonIndexConfig {
 	output: string
 	type?: FileExport
 	default?: DefaultIndexConfig
-	overrides?: Record<string, FileExport>
+	overrides?: {
+		[key: string]: FileExport
+	}
 }
 
 /**
