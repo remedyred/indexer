@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@snickbit/node-cli':
-    specifier: 2.0.2
-    version: 2.0.2
+    specifier: 3.0.25
+    version: 3.0.25
   '@snickbit/node-utilities':
     specifier: 4.7.2
     version: 4.7.2
@@ -669,8 +669,8 @@ packages:
       - typescript
     dev: true
 
-  /@snickbit/node-cli@2.0.2:
-    resolution: {integrity: sha512-AAvtvzmL+b9lqT0gIzjWR98MVE5TEVDTv1eFFqAvEB9g+A+3aBE1wgdxLPqndaQpDg20SpbMl/xlzG4o3er0zQ==}
+  /@snickbit/node-cli@3.0.25:
+    resolution: {integrity: sha512-ubQ7jxGl4kA2jwlu4BveioXdJp9cIlFRgGHku5/tM07NRcRMYMoVbtunez5hkSUe8ijrmXzv+LoOZXR2DahoQw==}
     engines: {node: '>= 12'}
     dependencies:
       '@snickbit/node-utilities': 4.7.2
