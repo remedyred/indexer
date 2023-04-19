@@ -5,7 +5,7 @@ import {name as packageName, version} from '../package.json'
 import {setup, useConfig} from './lib/config'
 import {watch} from './watch'
 import {indexer} from './index'
-import cli from '@snickbit/node-cli'
+import {cli} from '@snickbit/node-cli'
 
 cli()
 	.name(packageName)
