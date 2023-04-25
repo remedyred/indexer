@@ -106,7 +106,7 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 			const indexFile = posix.join(dir, `index${ext}`)
 			const indexContent: string[] = []
 			for (const file of files.values()) {
-				indexContent.push(makeExport(conf, indexFile, file))
+				indexContent.push(makeExport(conf, dir, file))
 			}
 
 			if (indexContent.length > 0) {
