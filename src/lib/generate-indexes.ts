@@ -66,7 +66,7 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 	const results: IndexerResults[] = []
 
 	const source = posix.dirname(conf.output)
-	const indexes: Record<string, string[]> = {[source]: []}
+	const indexes: Record<string, Set<string>> = {[source]: new Set()}
 
 	const files = await fg(conf.source, {ignore: makeIgnore(conf), onlyFiles: !conf.recursive})
 	if (!files.length) {
@@ -84,24 +84,29 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 
 		if (conf.recursive) {
 			const dirname = posix.dirname(file)
-			indexes[dirname] ||= []
+			indexes[dirname] ||= new Set()
 
-			indexes[dirname].push(file.replace(/\.[jt]s$/, ''))
+			indexes[dirname].add(file.replace(/\.[jt]s$/, ''))
 		} else {
 			content.push(makeExport(conf, source, file))
 		}
 	}
 
 	if (conf.recursive) {
-		indexes[source].push(...await fg(`${source}/*`, {onlyDirectories: true}) || [])
+		const recurseResults = await fg(`${source}/*`, {onlyDirectories: true})
+		if (recurseResults && recurseResults.length) {
+			for (const dir of recurseResults) {
+				indexes[source].add(dir)
+			}
+		}
 
 		// loop indexes and write each index
 		const ext = path.extname(conf.output)
 		for (const [dir, files] of Object.entries(indexes)) {
 			const indexFile = posix.join(dir, `index${ext}`)
 			const indexContent: string[] = []
-			for (const file of files) {
-				indexContent.push(makeExport(conf, indexFile, file))
+			for (const file of files.values()) {
+				indexContent.push(makeExport(conf, dir, file))
 			}
 
 			if (indexContent.length > 0) {
