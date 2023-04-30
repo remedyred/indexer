@@ -52,7 +52,7 @@ export async function makeDefaultExport(indexConf: IndexConfig, existingContent:
 	for (const file of files) {
 		const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
 		const export_type: DefaultFileExport = override ? conf.overrides[override] : conf.type
-		const file_path = resolvePath(path.dirname(indexConf.output), file)
+		const file_path = await resolvePath(path.dirname(indexConf.output), file)
 		const filename = path.basename(file, path.extname(file))
 		let export_name = makeExportName(filename, conf.casing)
 
