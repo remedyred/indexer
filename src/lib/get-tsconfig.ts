@@ -3,12 +3,10 @@ import path from 'path'
 
 interface TsConfigData {
 	useExtension: boolean
-	absoluteImportPaths: Record<string, string[]>
 }
 
 const defaultTsConfigData: TsConfigData = {
-	useExtension: false,
-	absoluteImportPaths: {}
+	useExtension: false
 }
 
 const tsConfigCacheIndex = new Map<string, string>()
@@ -43,15 +41,13 @@ export async function getTsconfig(file?: string): Promise<TsConfigData> {
 		results.useExtension = true
 	}
 
-	const baseUrl = tsconfigContent.compilerOptions?.baseUrl
-	const paths = tsconfigContent.compilerOptions?.paths
-
-	if (baseUrl && paths) {
-		results.absoluteImportPaths = {...paths}
-	}
-
 	tsConfigCache.set(tsconfig, results)
 	tsConfigCacheIndex.set(cwd, tsconfig)
 
 	return results
+}
+
+export async function getRequiresExtension(file?: string): Promise<boolean> {
+	const {useExtension} = await getTsconfig(file)
+	return useExtension
 }
