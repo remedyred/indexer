@@ -7,7 +7,7 @@ import {makeIgnore} from './make-ignore'
 import {shouldIgnore} from './should-ignore'
 import {makeExport} from './make-export'
 import {saveIndex} from './save-index'
-import {getTsconfig} from './get-tsconfig'
+import {getRequiresExtension} from './get-tsconfig'
 import fg from 'fast-glob'
 import path from 'path'
 
@@ -87,8 +87,8 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 			const dirname = posix.dirname(file)
 			indexes[dirname] ||= new Set()
 			// if indexes need an extension, it should always be a .js
-			const {useExtension} = await getTsconfig(file)
-			indexes[dirname].add(file.replace(/\.m?[jt]sx?$/, useExtension ? '.js' : ''))
+			const requiresExtension = await getRequiresExtension(file)
+			indexes[dirname].add(file.replace(/\.m?[jt]sx?$/, requiresExtension ? '.js' : ''))
 		} else {
 			content.push(await makeExport(conf, source, file))
 		}
