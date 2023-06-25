@@ -3,13 +3,8 @@
 	"version": "2.5.27",
 	"description": "Simple cli tool to generate index files for almost any project.",
 	"license": "MIT",
-	"exports": {
-		"require": "./dist/index.js",
-		"import": "./dist/index.mjs",
-		"types": "./dist/index.d.ts"
-	},
+	"type": "module",
 	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"bin": {
 		"indexer": "./dist/cli.js"
@@ -56,18 +51,6 @@
 		"typescript-json-schema": "0.56.0"
 	},
 	"engines": {
-		"node": ">= 12"
-	},
-	"tsup": {
-		"entry": [
-			"src/index.ts",
-			"src/cli.ts"
-		],
-		"clean": true,
-		"dts": true,
-		"format": [
-			"cjs",
-			"esm"
-		]
+		"node": ">= 14"
 	}
 }
