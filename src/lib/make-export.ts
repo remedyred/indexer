@@ -3,11 +3,11 @@ import {camelCase, objectFindKey, safeVarName, spaceCase} from '@snickbit/utilit
 import {resolvePath} from './resolve-path'
 import {makeExportName} from './make-export-name'
 import {$out} from '@/common'
+import {Verbosity} from '@snickbit/out'
 import picomatch from 'picomatch'
 import path from 'path'
 
 export async function makeExport(conf: GenerateConfig, source: string, file: string) {
-	$out.debug({source, file})
 	const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
 	const export_type = override && conf.overrides?.[override] ? conf.overrides[override] : conf.type
 	const file_path = await resolvePath(source, file)
@@ -16,6 +16,20 @@ export async function makeExport(conf: GenerateConfig, source: string, file: str
 	if (filename.startsWith('index')) {
 		filename = path.basename(path.dirname(file_path))
 	}
+
+	let debugData: any = {source, file, export_type}
+	if (override) {
+		debugData.override = override
+	}
+	if ($out.isVerbose(Verbosity.trace)) {
+		debugData = {
+			...debugData,
+			file_path,
+			dirname,
+			filename
+		}
+	}
+	$out.debug(debugData)
 
 	if (export_type === 'slug') {
 		const slug = safeVarName(camelCase(spaceCase(path.join(dirname, filename))))
