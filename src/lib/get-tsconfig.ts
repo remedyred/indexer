@@ -14,13 +14,13 @@ const tsConfigCache = new Map<string, TsConfigData>()
 
 export async function getTsconfig(file?: string): Promise<TsConfigData> {
 	const cwd = file ? (isDirectory(file) ? file : path.dirname(file)) : process.cwd()
-	let tsconfig: string
+	let tsconfig: string | undefined
 	if (cwd && tsConfigCacheIndex.has(cwd)) {
 		tsconfig = tsConfigCacheIndex.get(cwd)
 	}
 	if (tsconfig) {
 		if (tsConfigCache.has(tsconfig)) {
-			return tsConfigCache.get(tsconfig)
+			return tsConfigCache.get(tsconfig) as TsConfigData
 		}
 	} else {
 		tsconfig = findUp('tsconfig.json', {cwd})

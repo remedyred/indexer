@@ -3,7 +3,7 @@ import {fileExists} from '@snickbit/node-utilities'
 import {isArray} from '@snickbit/utilities'
 import {useOutputs} from './use-outputs'
 import {getFirstLine} from './get-first-line'
-import {indexer_banner} from '../common'
+import {indexer_banner} from '@/common'
 import picomatch from 'picomatch'
 
 /**

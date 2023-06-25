@@ -14,13 +14,13 @@ export function makeExportName(name: string, casing: GenerateConfig['casing'] = 
 			return snakeCase(name)
 		}
 		case 'upper': {
-			return name.replace(/\s/g, '').toUpperCase()
+			return name.replaceAll(/\s/g, '').toUpperCase()
 		}
 		case 'lower': {
-			return name.replace(/\s/g, '').toLowerCase()
+			return name.replaceAll(/\s/g, '').toLowerCase()
 		}
 		case 'keep': {
-			return safeVarName(name).replace(/_/g, '')
+			return safeVarName(name).replaceAll('_', '')
 		}
 		default: { // camel case
 			return camelCase(name)

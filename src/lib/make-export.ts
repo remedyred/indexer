@@ -2,14 +2,14 @@ import {GenerateConfig} from './config'
 import {camelCase, objectFindKey, safeVarName, spaceCase} from '@snickbit/utilities'
 import {resolvePath} from './resolve-path'
 import {makeExportName} from './make-export-name'
-import {$out} from '../common'
+import {$out} from '@/common'
 import picomatch from 'picomatch'
 import path from 'path'
 
 export async function makeExport(conf: GenerateConfig, source: string, file: string) {
 	$out.debug({source, file})
 	const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
-	const export_type = override ? conf.overrides[override] : conf.type
+	const export_type = override && conf.overrides?.[override] ? conf.overrides[override] : conf.type
 	const file_path = await resolvePath(source, file)
 	const dirname = path.dirname(file).replace(source, '')
 	let filename = path.basename(file_path, path.extname(file_path))

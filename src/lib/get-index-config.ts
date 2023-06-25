@@ -6,7 +6,7 @@ import picomatch from 'picomatch'
  * Get index config that matches a file
  * @param file
  */
-export function getIndexConfig(file: string): GenerateConfig {
+export function getIndexConfig(file: string): GenerateConfig | undefined {
 	const config = useConfig()
 
 	if (config.source && picomatch(config.source)(file)) {

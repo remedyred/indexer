@@ -1,4 +1,4 @@
-import {posix} from '../common'
+import {posix} from '@/common'
 import {getRequiresExtension} from './get-tsconfig'
 
 const extensionRegex = /\.(m)?[jt]s(x)?$/

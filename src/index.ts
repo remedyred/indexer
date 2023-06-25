@@ -3,7 +3,7 @@ import {$out} from './common'
 import {objectExcept} from '@snickbit/utilities'
 import {generate} from './lib/generate'
 
-export async function indexer(config: GenerateConfig) {
+export async function indexer(config?: GenerateConfig) {
 	if (config) {
 		if (config?.indexes) {
 			const root: Omit<GenerateConfig, 'indexes'> = objectExcept<GenerateConfig>(config, ['indexes'])
