@@ -16,29 +16,22 @@ export async function makeExport(conf: GenerateConfig, source: string, file: str
 	if (filename.startsWith('index')) {
 		filename = path.basename(path.dirname(file_path))
 	}
-
-	if (export_type === 'slug') {
-		const slug = safeVarName(camelCase(spaceCase(path.join(dirname, filename))))
-		$out.debug({slug, file_path})
-		return `export * as ${slug} from '${file_path}'`
-	}
-	const export_name = makeExportName(filename, conf.casing)
-
 	let export_string = `// No export for ${file_path}`
+	const export_name = export_type === 'slug'
+		? safeVarName(camelCase(spaceCase(path.join(dirname, filename))))
+		: makeExportName(filename, conf.casing)
 
 	switch (export_type) {
+		case 'slug':
 		case 'group': {
-			$out.debug({export_type, export_name, file_path})
 			export_string = `export * as ${export_name} from '${file_path}'`
 			break
 		}
 		case 'individual': {
-			$out.debug({export_type, file_path})
 			export_string = `export * from '${file_path}'`
 			break
 		}
 		default: {
-			$out.debug({export_type, export_name, file_path})
 			export_string = `export {default as ${export_name}} from '${file_path}'`
 			break
 		}
