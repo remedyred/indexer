@@ -11,9 +11,18 @@
             "type": "string"
         },
         "DefaultIndexConfig": {
+            "description": "Special interface for Default Index",
             "properties": {
                 "casing": {
-                    "$ref": "#/definitions/WordCase"
+                    "enum": [
+                        "camel",
+                        "keep",
+                        "lower",
+                        "pascal",
+                        "snake",
+                        "upper"
+                    ],
+                    "type": "string"
                 },
                 "ignore": {
                     "items": {
@@ -64,12 +73,22 @@
             "type": "string"
         },
         "GenerateConfig": {
+            "description": "Root config interface for config file",
             "properties": {
                 "casing": {
-                    "$ref": "#/definitions/WordCase"
+                    "enum": [
+                        "camel",
+                        "keep",
+                        "lower",
+                        "pascal",
+                        "snake",
+                        "upper"
+                    ],
+                    "type": "string"
                 },
                 "default": {
-                    "$ref": "#/definitions/DefaultIndexConfig"
+                    "$ref": "#/definitions/DefaultIndexConfig",
+                    "description": "Special interface for Default Index"
                 },
                 "ignore": {
                     "items": {
@@ -115,22 +134,20 @@
                     ]
                 },
                 "type": {
-                    "$ref": "#/definitions/FileExport"
+                    "enum": [
+                        "default",
+                        "group",
+                        "individual",
+                        "skip",
+                        "slug",
+                        "wildcard"
+                    ],
+                    "type": "string"
                 }
             },
             "type": "object"
-        },
-        "WordCase": {
-            "enum": [
-                "camel",
-                "keep",
-                "lower",
-                "pascal",
-                "snake",
-                "upper"
-            ],
-            "type": "string"
         }
-    }
+    },
+    "description": "Root config interface for config file"
 }
 
