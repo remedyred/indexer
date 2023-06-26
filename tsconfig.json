@@ -13,7 +13,6 @@
 		"baseUrl": ".",
 		"declarationMap": true,
 		"downlevelIteration": true,
-		"emitDeclarationOnly": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"newLine": "lf",
