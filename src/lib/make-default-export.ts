@@ -1,5 +1,5 @@
-import {DefaultFileExport, IndexConfig} from './config'
-import {$out} from '../common'
+import {DefaultFileExport, DefaultIndexConfig, IndexConfig} from './config'
+import {$out} from '@/common'
 import {makeIgnore} from './make-ignore'
 import {objectFindKey, safeVarName, slugify} from '@snickbit/utilities'
 import {resolvePath} from './resolve-path'
@@ -12,38 +12,38 @@ import path from 'path'
  * Make default export
  */
 export async function makeDefaultExport(indexConf: IndexConfig, existingContent: string[]): Promise<string[]> {
-	$out.debug('Making default export', indexConf.default.source)
+	$out.debug('Making default export', indexConf.default?.source)
 
-	const conf = indexConf.default
+	const conf = indexConf.default || {} as DefaultIndexConfig
 	const contentImports: string[] = []
 	let defaultExport: string
 
-	$out.debug('Finding files matching source', {source: indexConf.default.source})
+	$out.debug('Finding files matching source', {source: conf.source})
 
-	const exportNames = []
+	const exportNames: string[] = []
 	let commonSource = ''
-	let files: string[]
+	let files: string[] = []
 	let singleDefault = ''
-	if (Array.isArray(indexConf.default.source)) {
+	if (Array.isArray(conf.source)) {
 		// sorted from longest to shortest
-		for (const source of indexConf.default.source.sort()) {
+		for (const source of conf.source.sort()) {
 			const cleanSource = source
-				.replace(/\\/g, '/')
-				.replace(/([/\\]\*{1,2})+/g, '')
+				.replaceAll('\\', '/')
+				.replaceAll(/([/\\]\*{1,2})+/g, '')
 			if (!commonSource || commonSource.startsWith(cleanSource)) {
 				commonSource = cleanSource
 			}
 		}
 
-		files = await fg(indexConf.default.source, {
+		files = await fg(conf.source, {
 			ignore: makeIgnore(indexConf.default),
 			onlyFiles: true
 		})
-	} else {
-		files = [indexConf.default.source]
+	} else if (conf.source) {
+		files = [conf.source]
 
 		if (indexConf.default?.type === 'default') {
-			singleDefault = indexConf.default.source
+			singleDefault = conf.source
 		}
 	}
 
@@ -51,7 +51,7 @@ export async function makeDefaultExport(indexConf: IndexConfig, existingContent:
 
 	for (const file of files) {
 		const override = conf.overrides && objectFindKey(conf.overrides, key => picomatch(key)(file)) as string
-		const export_type: DefaultFileExport = override ? conf.overrides[override] : conf.type
+		const export_type: DefaultFileExport = override && conf.overrides?.[override] ? conf.overrides[override] : conf.type
 		const file_path = await resolvePath(path.dirname(indexConf.output), file)
 		const filename = path.basename(file, path.extname(file))
 		let export_name = makeExportName(filename, conf.casing)
@@ -72,11 +72,11 @@ export async function makeDefaultExport(indexConf: IndexConfig, existingContent:
 		exportNames.push(export_name)
 	}
 
-	defaultExport ||= Array.isArray(indexConf.default.source)
+	defaultExport ||= Array.isArray(conf.source)
 		? `export default { ${exportNames.sort().join(', ')} }`
 		: `export default ${exportNames.shift()}`
 
-	const results = []
+	const results: string[] = []
 
 	if (contentImports.length) {
 		results.push(...contentImports.sort(), '')

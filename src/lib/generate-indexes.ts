@@ -1,5 +1,5 @@
 import {GenerateConfig, useConfig} from './config'
-import {$out, $state, posix} from '../common'
+import {$out, $state, posix} from '@/common'
 import {arrayWrap, JSONPrettify} from '@snickbit/utilities'
 import {ask} from '@snickbit/node-utilities'
 import {useOutputs} from './use-outputs'
@@ -20,7 +20,7 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 	let conf: GenerateConfig = useConfig(config)
 	const {dryRun, sources} = $state
 
-	if (!conf) {
+	if (!conf && config) {
 		const source = config.source ||
 			sources && arrayWrap(sources)[0] ||
 			await ask('Source glob pattern:', {initial: 'src/**/*.ts'})

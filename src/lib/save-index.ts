@@ -1,7 +1,7 @@
 import {IndexConfig} from './config'
 import {mkdir, saveFile} from '@snickbit/node-utilities'
 import {makeDefaultExport} from './make-default-export'
-import {indexer_banner} from '../common'
+import {indexer_banner} from '@/common'
 import path from 'path'
 
 /**

@@ -1,4 +1,4 @@
-import {$out, $state} from '../common'
+import {$out, $state} from '@/common'
 import {arrayWrap} from '@snickbit/utilities'
 
 export function useSources(): string[] {
@@ -6,7 +6,7 @@ export function useSources(): string[] {
 		const sources: string[] = []
 		const config = $state.config
 		$out.verbose('Loading sources...', {$state})
-		if (config.source) {
+		if (config?.source) {
 			sources.push(...arrayWrap(config.source))
 		}
 

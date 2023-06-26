@@ -1,14 +1,20 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"allowJs": true,
+		"target": "esnext",
+		"lib": [
+			"esnext"
+		],
+		"moduleResolution": "node",
+		"module": "NodeNext",
+		"strict": true,
+		"outDir": "./dist",
 		"declaration": true,
+		"baseUrl": ".",
 		"declarationMap": true,
 		"downlevelIteration": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"module": "commonjs",
-		"moduleResolution": "node",
 		"newLine": "lf",
 		"noImplicitAny": false,
 		"noImplicitThis": false,
@@ -16,6 +22,14 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"target": "esnext"
-	}
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
+	},
+	"include": [
+		"./src/**/*",
+		"tsup.config.ts"
+	]
 }

@@ -1,5 +1,5 @@
 import {GenerateConfig} from './config'
-import {$state} from '../common'
+import {$state} from '@/common'
 import {generateIndexes} from './generate-indexes'
 
 export async function generate(config: GenerateConfig): Promise<GenerateConfig> {
