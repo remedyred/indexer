@@ -27,7 +27,8 @@ export async function makeExport(conf: GenerateConfig, source: string, file: str
 			export_string = `export * as ${export_name} from '${file_path}'`
 			break
 		}
-		case 'individual': {
+		case 'individual':
+		case 'wildcard': {
 			export_string = `export * from '${file_path}'`
 			break
 		}
