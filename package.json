@@ -15,7 +15,6 @@
 	"scripts": {
 		"build": "tsup --minify",
 		"check": "pnpm run lint && pnpm run typecheck",
-		"clean": "shx rm -rf ./dist",
 		"dev": "tsup --watch",
 		"lint": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
 		"lint:fix": "pnpm run lint --fix",
@@ -30,11 +29,11 @@
 	},
 	"dependencies": {
 		"@snickbit/node-cli": "3.0.25",
-		"@snickbit/node-utilities": "4.7.5",
-		"@snickbit/out": "2.1.2",
-		"@snickbit/utilities": "3.9.4",
+		"@snickbit/node-utilities": "4.7.6",
+		"@snickbit/out": "2.1.3",
+		"@snickbit/utilities": "3.11.0",
 		"chokidar": "^3.5.3",
-		"fast-glob": "3.2.12",
+		"fast-glob": "3.3.0",
 		"lilconfig": "2.1.0",
 		"picomatch": "2.3.1"
 	},
@@ -42,13 +41,12 @@
 		"@snickbit/eslint-config": "1.5.3",
 		"@snickbit/semantic-release": "1.6.6",
 		"@types/node": "20.3.1",
-		"eslint": "8.43.0",
-		"semantic-release": "21.0.5",
-		"shx": "0.3.4",
+		"eslint": "8.45.0",
+		"semantic-release": "21.0.7",
 		"ts-node": "10.9.1",
 		"tsup": "7.1.0",
-		"typescript": "5.0.4",
-		"typescript-json-schema": "0.58.1"
+		"typescript": "5.1.6",
+		"typescript-json-schema": "0.59.0"
 	},
 	"engines": {
 		"node": ">= 14"

@@ -18,7 +18,6 @@
 		"newLine": "lf",
 		"noImplicitAny": false,
 		"noImplicitThis": false,
-		"removeComments": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
