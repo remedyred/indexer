@@ -18,7 +18,7 @@
 		"dev": "tsup --watch",
 		"lint": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
 		"lint:fix": "pnpm run lint --fix",
-		"schema": "typescript-json-schema tsconfig.json GenerateConfig -o indexer.schema.json",
+		"schema": "typescript-json-schema tsconfig.schema.json GenerateConfig -o indexer.schema.json",
 		"start": "tsx ./src/cli.ts",
 		"typecheck": "tsc --noEmit"
 	},
