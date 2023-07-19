@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {ask, confirm, saveFileJson} from '@snickbit/node-utilities'
+import {ask, confirm, saveFileJSON} from '@snickbit/node-utilities'
 import {$out, $state, Args, DEFAULT_CONFIG_NAME} from './common'
 import {name as packageName, version} from '../package.json'
 import {setup, useConfig} from './lib/config'
@@ -48,7 +48,7 @@ async function main(argv: Args) {
 		if (!save_path) {
 			$out.fatal('No path provided')
 		}
-		await saveFileJson(save_path, useConfig())
+		await saveFileJSON(save_path, useConfig())
 	}
 
 	$out.done('Done')
