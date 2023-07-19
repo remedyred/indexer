@@ -19,7 +19,7 @@
 		"lint": "eslint \"**/*.{ts,json,yml,yaml}\" --cache --color",
 		"lint:fix": "pnpm run lint --fix",
 		"schema": "typescript-json-schema tsconfig.json GenerateConfig -o indexer.schema.json",
-		"start": "ts-node ./src/cli.ts",
+		"start": "tsx ./src/cli.ts",
 		"typecheck": "tsc --noEmit"
 	},
 	"release": {
@@ -43,8 +43,8 @@
 		"@types/node": "20.3.1",
 		"eslint": "8.45.0",
 		"semantic-release": "21.0.7",
-		"ts-node": "10.9.1",
 		"tsup": "7.1.0",
+		"tsx": "3.12.7",
 		"typescript": "5.1.6",
 		"typescript-json-schema": "0.59.0"
 	},
