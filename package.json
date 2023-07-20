@@ -5,6 +5,10 @@
 	"license": "MIT",
 	"type": "module",
 	"main": "./dist/index.js",
+	"exports": {
+		".": "./dist/index.js",
+		"./esbuild": "./dist/esbuild.js"
+	},
 	"types": "./dist/index.d.ts",
 	"bin": {
 		"indexer": "./dist/cli.js"
