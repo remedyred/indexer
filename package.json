@@ -32,8 +32,8 @@
 		]
 	},
 	"dependencies": {
-		"@snickbit/node-cli": "3.0.26",
-		"@snickbit/node-utilities": "4.7.7",
+		"@snickbit/node-cli": "3.0.27",
+		"@snickbit/node-utilities": "4.7.8",
 		"@snickbit/out": "2.1.4",
 		"@snickbit/utilities": "3.11.1",
 		"chokidar": "^3.5.3",

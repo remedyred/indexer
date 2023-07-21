@@ -6,11 +6,11 @@ settings:
 
 dependencies:
   '@snickbit/node-cli':
-    specifier: 3.0.26
-    version: 3.0.26
+    specifier: 3.0.27
+    version: 3.0.27
   '@snickbit/node-utilities':
-    specifier: 4.7.7
-    version: 4.7.7
+    specifier: 4.7.8
+    version: 4.7.8
   '@snickbit/out':
     specifier: 2.1.4
     version: 2.1.4
@@ -1007,7 +1007,7 @@ packages:
     dependencies:
       '@octokit/auth-token': 4.0.0
       '@octokit/graphql': 7.0.1
-      '@octokit/request': 8.1.0
+      '@octokit/request': 8.1.1
       '@octokit/request-error': 5.0.0
       '@octokit/types': 11.1.0
       before-after-hook: 2.2.3
@@ -1047,7 +1047,7 @@ packages:
     resolution: {integrity: sha512-T5S3oZ1JOE58gom6MIcrgwZXzTaxRnxBso58xhozxHpOqSTgDS6YNeEUvZ/kRvXgPrRz/KHnZhtb7jUMRi9E6w==}
     engines: {node: '>= 18'}
     dependencies:
-      '@octokit/request': 8.1.0
+      '@octokit/request': 8.1.1
       '@octokit/types': 11.1.0
       universal-user-agent: 6.0.0
     dev: true
@@ -1150,8 +1150,8 @@ packages:
       - encoding
     dev: true
 
-  /@octokit/request@8.1.0:
-    resolution: {integrity: sha512-0gg/NwewU0iXctYBale0VVcCPqOtoW5lsog8cNBJgzV/CyTHa2gicUBOlNnzOk6pJkuwXI34qkq+uRm40PmD4A==}
+  /@octokit/request@8.1.1:
+    resolution: {integrity: sha512-8N+tdUz4aCqQmXl8FpHYfKG9GelDFd7XGVzyN8rc6WxVlYcfpHECnuRkgquzz+WzvHTK62co5di8gSXnzASZPQ==}
     engines: {node: '>= 18'}
     dependencies:
       '@octokit/endpoint': 9.0.0
@@ -1362,7 +1362,7 @@ packages:
       lodash-es: 4.17.21
       nerf-dart: 1.0.0
       normalize-url: 8.0.0
-      npm: 9.8.0
+      npm: 9.8.1
       rc: 1.2.8
       read-pkg: 8.0.0
       registry-auth-token: 5.0.2
@@ -1474,19 +1474,19 @@ packages:
       - typescript
     dev: true
 
-  /@snickbit/node-cli@3.0.26:
-    resolution: {integrity: sha512-Lkq0FVmCDRsPATuamgiGM5e0BSrgrxyQGxYjAGjax1L+w5/uLr3KM9gjfHjcqBe0EmsBbtQ+amFntguqodGJtQ==}
+  /@snickbit/node-cli@3.0.27:
+    resolution: {integrity: sha512-dNyG9UuPMQrg3EolFXSlbKHO+G6qwnxG++merCq6CvA2BrWbCFRUcLLkUaw/gSG4o7TyC5S3oTKf3jiypuixyg==}
     engines: {node: '>= 14.17'}
     dependencies:
-      '@snickbit/node-utilities': 4.7.7
+      '@snickbit/node-utilities': 4.7.8
       '@snickbit/out': 2.1.4
       '@snickbit/utilities': 3.11.1
       lilconfig: 2.1.0
       yargs-parser: 21.1.1
     dev: false
 
-  /@snickbit/node-utilities@4.7.7:
-    resolution: {integrity: sha512-85KvPuq3ZtimpbjvzDAeqwsnsP/FCD6VoFfteBV6oJyVWdbB2CTQIxYCaxnEypGJYXaIhq6fDbHWH1H89Z7zYQ==}
+  /@snickbit/node-utilities@4.7.8:
+    resolution: {integrity: sha512-m+VTAGJNZ91SBEbUiwxW0uYLXKliFZV3z1Za13URl5QrmEtbi2PdlpxS4zD18ja+n8sLuvRF0Mgiroyrf2sF+Q==}
     engines: {node: '>= 14.17'}
     dependencies:
       '@snickbit/out': 2.1.4
@@ -2013,8 +2013,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001516
-      electron-to-chromium: 1.4.461
+      caniuse-lite: 1.0.30001517
+      electron-to-chromium: 1.4.467
       node-releases: 2.0.13
       update-browserslist-db: 1.0.11(browserslist@4.21.9)
     dev: true
@@ -2062,8 +2062,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /caniuse-lite@1.0.30001516:
-    resolution: {integrity: sha512-Wmec9pCBY8CWbmI4HsjBeQLqDTqV91nFVR83DnZpYyRnPI1wePDsTg0bGLPC5VU/3OIZV1fmxEea1b+tFKe86g==}
+  /caniuse-lite@1.0.30001517:
+    resolution: {integrity: sha512-Vdhm5S11DaFVLlyiKu4hiUTkpZu+y1KA/rZZqVQfOD5YdDT/eQKlkt7NaE0WGOFgX32diqt9MiP9CAiFeRklaA==}
     dev: true
 
   /cardinal@2.1.1:
@@ -2442,8 +2442,8 @@ packages:
       readable-stream: 2.3.8
     dev: true
 
-  /electron-to-chromium@1.4.461:
-    resolution: {integrity: sha512-1JkvV2sgEGTDXjdsaQCeSwYYuhLRphRpc+g6EHTFELJXEiznLt3/0pZ9JuAOQ5p2rI3YxKTbivtvajirIfhrEQ==}
+  /electron-to-chromium@1.4.467:
+    resolution: {integrity: sha512-2qI70O+rR4poYeF2grcuS/bCps5KJh6y1jtZMDDEteyKJQrzLOEhFyXCLcHW6DTBjKjWkk26JhWoAi+Ux9A0fg==}
     dev: true
 
   /emoji-regex@8.0.0:
@@ -3950,8 +3950,8 @@ packages:
       - which
       - write-file-atomic
 
-  /npm@9.8.0:
-    resolution: {integrity: sha512-AXeiBAdfM5K2jvBwA7EGLKeYyt0VnhmJRnlq4k2+M0Ao9v7yKJBqF8xFPzQL8kAybzwlfpTPCZwM4uTIszb3xA==}
+  /npm@9.8.1:
+    resolution: {integrity: sha512-AfDvThQzsIXhYgk9zhbk5R+lh811lKkLAeQMMhSypf1BM7zUafeIIBzMzespeuVEJ0+LvY36oRQYf7IKLzU3rw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     hasBin: true
     dev: true
@@ -3959,8 +3959,10 @@ packages:
       - '@isaacs/string-locale-compare'
       - '@npmcli/arborist'
       - '@npmcli/config'
+      - '@npmcli/fs'
       - '@npmcli/map-workspaces'
       - '@npmcli/package-json'
+      - '@npmcli/promise-spawn'
       - '@npmcli/run-script'
       - abbrev
       - archy
@@ -4814,8 +4816,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /sucrase@3.33.0:
-    resolution: {integrity: sha512-ARGC7vbufOHfpvyGcZZXFaXCMZ9A4fffOGC5ucOW7+WHDGlAe8LJdf3Jts1sWhDeiI1RSWrKy5Hodl+JWGdW2A==}
+  /sucrase@3.34.0:
+    resolution: {integrity: sha512-70/LQEZ07TEcxiU2dz51FKaE6hCTWC6vr7FOk3Gr0U60C3shtAN+H+BFr9XlYe5xqf3RA8nrc+VIwzCfnxuXJw==}
     engines: {node: '>=8'}
     hasBin: true
     dependencies:
@@ -5027,7 +5029,7 @@ packages:
       resolve-from: 5.0.0
       rollup: 3.26.3
       source-map: 0.8.0-beta.0
-      sucrase: 3.33.0
+      sucrase: 3.34.0
       tree-kill: 1.2.2
       typescript: 5.1.6
     transitivePeerDependencies:
