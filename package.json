@@ -33,9 +33,9 @@
 	},
 	"dependencies": {
 		"@snickbit/node-cli": "3.0.27",
-		"@snickbit/node-utilities": "4.7.8",
+		"@snickbit/node-utilities": "4.7.10",
 		"@snickbit/out": "2.1.4",
-		"@snickbit/utilities": "3.11.1",
+		"@snickbit/utilities": "3.11.4",
 		"chokidar": "^3.5.3",
 		"esbuild": "0.18.13",
 		"fast-glob": "3.3.0",
