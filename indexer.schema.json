@@ -108,6 +108,9 @@
                     },
                     "type": "array"
                 },
+                "noExit": {
+                    "type": "boolean"
+                },
                 "output": {
                     "type": "string"
                 },
