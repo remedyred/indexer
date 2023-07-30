@@ -45,6 +45,7 @@ export interface IndexConfig extends CommonIndexConfig {
 export interface GenerateConfig extends IndexConfig {
 	recursive?: boolean
 	indexes?: GenerateConfig[]
+	noExit?: boolean
 }
 
 /**
