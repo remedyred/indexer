@@ -8,6 +8,7 @@ export default defineConfig({
 		'src/esbuild.ts'
 	],
 	clean: true,
+	dts: true,
 	splitting: false,
 	format: ['esm'],
 	external: [],
