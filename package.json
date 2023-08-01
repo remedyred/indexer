@@ -10,7 +10,6 @@
 		"./esbuild": "./dist/esbuild.js",
 		"./esbuild.js": "./dist/esbuild.js"
 	},
-	"types": "./dist/index.d.ts",
 	"bin": {
 		"indexer": "./dist/cli.js"
 	},
