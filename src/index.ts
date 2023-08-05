@@ -21,3 +21,5 @@ export async function indexer(config?: GenerateConfig) {
 }
 
 export default indexer
+
+export {default as indexerPlugin} from '@/esbuild'
