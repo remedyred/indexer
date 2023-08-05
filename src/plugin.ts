@@ -4,12 +4,12 @@ import {$out} from '@/common'
 import fs from 'fs'
 import indexer from '@/index'
 
-export default function esbuildIndexerPlugin(): Plugin {
+export default function indexerPlugin(): Plugin {
 	return {
 		name: 'indexer',
 		setup(build: PluginBuild) {
 			$out.prefix('IDX')
-			build.onStart(async (): Promise<undefined> => {
+			build.onStart(async (): Promise<void> => {
 				const {path: indexerPath} = await build.resolve('indexer.config.json', {kind: 'require-resolve', resolveDir: process.cwd()})
 				if (indexerPath && fs.existsSync(indexerPath)) {
 					const indexerConfig = getFileJSON(indexerPath)

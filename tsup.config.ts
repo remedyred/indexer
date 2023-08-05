@@ -1,12 +1,7 @@
 import {defineConfig} from 'tsup'
 
 export default defineConfig({
-	// bundle: false,
-	entry: [
-		'src/index.ts',
-		'src/cli.ts',
-		'src/esbuild.ts'
-	],
+	entry: ['src/index.ts', 'src/cli.ts'],
 	clean: true,
 	dts: true,
 	splitting: false,

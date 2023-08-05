@@ -3,7 +3,6 @@
 	"extends": "./tsconfig.json",
 	"exclude": [
 		"node_modules",
-		"dist",
-		"src/esbuild.ts"
+		"dist"
 	]
 }
