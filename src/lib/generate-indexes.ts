@@ -21,8 +21,8 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 	const {
 		dryRun,
 		sources,
-		results,
-		content
+		results = [],
+		content = []
 	} = $state
 
 	if (!conf && config) {
