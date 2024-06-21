@@ -6,7 +6,7 @@
 			"esnext"
 		],
 		"moduleResolution": "node",
-		"module": "NodeNext",
+		"module": "esnext",
 		"strict": true,
 		"outDir": "./dist",
 		"declaration": true,
@@ -21,6 +21,7 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
+		"rootDir": "./",
 		"paths": {
 			"@/*": [
 				"./src/*"
