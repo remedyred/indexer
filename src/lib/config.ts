@@ -65,6 +65,9 @@ export function useConfig(priority?: GenerateConfig): GenerateConfig {
 }
 
 export async function setup(argv: Args) {
+	$state.results = []
+	$state.content = []
+
 	$state.config = {
 		source: argv.source || '',
 		output: argv.output || ''

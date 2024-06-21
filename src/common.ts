@@ -1,5 +1,6 @@
 import {Out} from '@snickbit/out'
 import {GenerateConfig} from './lib/config'
+import {IndexerResults} from '@/lib/generate-indexes'
 import path from 'path'
 
 export const DEFAULT_CONFIG_NAME = 'indexer.config.json'
@@ -29,6 +30,8 @@ export interface State {
 	watch: boolean
 	rootOnly: boolean
 	isGenerating: boolean
+	results: IndexerResults[]
+	content: string[]
 }
 
 export const $state = {} as State

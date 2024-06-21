@@ -18,7 +18,12 @@ export interface IndexerResults {
 
 export async function generateIndexes(config?: GenerateConfig): Promise<GenerateConfig> {
 	let conf: GenerateConfig = useConfig(config)
-	const {dryRun, sources} = $state
+	const {
+		dryRun,
+		sources,
+		results,
+		content
+	} = $state
 
 	if (!conf && config) {
 		const source = config.source ||
@@ -55,6 +60,15 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 	useOutputs(config)
 
 	if (!conf.source && !conf.indexes) {
+		if (!conf.default) {
+			// just save the default index file
+			saveResults(conf, content, results)
+			logResults(results)
+			await saveIndex(conf, conf.output, content)
+
+			return conf
+		}
+
 		$out.verbose({conf})
 		$out.fatal('Source glob pattern or indexes are required')
 	}
@@ -62,9 +76,6 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 		$out.fatal('Output file is required')
 	}
 	conf.type ||= 'wildcard'
-
-	const content: string[] = []
-	const results: IndexerResults[] = []
 
 	const source = posix.dirname(conf.output)
 	const indexes: Record<string, Set<string>> = {[source]: new Set()}
@@ -128,8 +139,15 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 		}
 	}
 
+	saveResults(conf, content, results)
+	logResults(results)
+
+	return conf
+}
+
+async function saveResults(conf: GenerateConfig, content: string[], results: IndexerResults[]): Promise<void> {
 	if (content.length > 0) {
-		if (!dryRun) {
+		if (!$state.dryRun) {
 			await saveIndex(conf, conf.output, content)
 		}
 		results.push({
@@ -142,19 +160,22 @@ export async function generateIndexes(config?: GenerateConfig): Promise<Generate
 			message: `No exports to write for index: ${conf.output}`
 		})
 	}
+}
 
-	if (results.length) {
-		if (dryRun) {
-			$out.force.warn('DRY RUN : No changes have been made to the filesystem')
-		}
-		for (const result of results) {
-			if ($out[result.type]) {
-				$out[result.type](result.message)
-			} else {
-				$out.info(result.message)
-			}
-		}
+function logResults(results: IndexerResults[]): void {
+	if (!results.length) {
+		return
 	}
 
-	return conf
+	if ($state.dryRun) {
+		$out.force.warn('DRY RUN: No changes have been made to the filesystem')
+	}
+
+	for (const result of results) {
+		if ($out[result.type]) {
+			$out[result.type](result.message)
+		} else {
+			$out.info(result.message)
+		}
+	}
 }
